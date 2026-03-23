@@ -1,7 +1,7 @@
 SHELL = /bin/bash
 EMSDK_ENV = emsdk/emsdk_env.sh
 VEROVIO_DIR = verovio
-SRC = src/mozart.c
+SRC = src/mozart.cpp
 INIT_SRC = src/mozart_init.cpp
 OUT = mozart/mozart.wasm
 
@@ -52,7 +52,7 @@ clone:
 build: clone
 	@mkdir -p build
 	source $(EMSDK_ENV) 2>/dev/null && \
-		emcc -O3 -DNDEBUG $(VEROVIO_INCLUDES) -c $(SRC) -o build/mozart.o && \
+		emcc -O3 -DNDEBUG -std=c++20 $(VEROVIO_INCLUDES) -c $(SRC) -o build/mozart.o && \
 		emcc -O3 -DNDEBUG -std=c++20 $(LINK_FLAGS) $(VEROVIO_INCLUDES) \
 			-o $(OUT) build/mozart.o $(INIT_SRC) $(VEROVIO_SRC)
 	wasi-stub $(OUT) -o $(OUT) --stub-module env,wasi_snapshot_preview1 -r 0

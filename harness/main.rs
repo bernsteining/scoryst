@@ -300,7 +300,15 @@ fn main() {
             }
         }
         Err(err) => {
-            eprintln!("FAILED after {:.3}ms", elapsed.as_secs_f64() * 1000.0);
+            if use_fuel {
+                eprintln!(
+                    "FAILED after {:.3}ms ({} instructions)",
+                    elapsed.as_secs_f64() * 1000.0,
+                    fuel_used
+                );
+            } else {
+                eprintln!("FAILED after {:.3}ms", elapsed.as_secs_f64() * 1000.0);
+            }
             eprintln!("ERROR: {err}");
             std::process::exit(1);
         }
