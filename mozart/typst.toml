@@ -1,0 +1,7 @@
+[package]
+name = "mozart"
+version = "0.1.0"
+entrypoint = "mozart.typ"
+authors = ["bernsteining"]
+license = "MIT"
+description = "Music notation rendering for Typst via Verovio"
