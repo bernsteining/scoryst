@@ -3,8 +3,8 @@ DOCKER_IMAGE = verovio-builder
 OUT = pkg/verovio.wasm
 BUILD_DIR = pkg/obj
 
-# Optimization: override with `make OPT=-O0` for fast dev builds
-OPT = -O3
+# Optimization: -Os balances size and speed; override with `make OPT=-O0` for fast dev builds
+OPT = -Os
 
 CXXFLAGS = $(OPT) -DNDEBUG -std=c++20 -DPUGIXML_NO_EXCEPTIONS
 
@@ -47,6 +47,11 @@ LINK_FLAGS = --no-entry \
              -s ERROR_ON_UNDEFINED_SYMBOLS=0 \
              -s EXPORTED_FUNCTIONS='["_render","_render_page","_page_count","_malloc","_free"]'
 
+WASM_OPT_FLAGS = -O3 --enable-simd --enable-bulk-memory --enable-sign-ext \
+                 --enable-nontrapping-float-to-int --enable-mutable-globals --enable-multivalue \
+                 --traps-never-happen --fast-math --closed-world --directize \
+                 --inline-functions-with-loops --converge
+
 .PHONY: all clean submodule docker build wasm dev install
 
 all: wasm
@@ -64,10 +69,11 @@ $(BUILD_DIR)/src/verovio_data.o: src/verovio_data.S
 	@mkdir -p $(dir $@)
 	emcc $(CXXFLAGS) $(VEROVIO_INCLUDES) -c $< -o $@
 
-# Link all objects into wasm
+# Link all objects into wasm, stub WASI imports, optimize
 $(OUT): $(ALL_OBJ)
 	emcc $(CXXFLAGS) $(LINK_FLAGS) $(VEROVIO_INCLUDES) -o $(OUT) $(ALL_OBJ)
 	wasi-stub $(OUT) -o $(OUT) --stub-module env,wasi_snapshot_preview1 -r 0
+	wasm-opt $(WASM_OPT_FLAGS) $(OUT) -o $(OUT).opt && mv $(OUT).opt $(OUT)
 
 wasm: $(OUT)
 
@@ -78,12 +84,13 @@ dev: wasm
 submodule:
 	@git submodule update --init --depth 1 $(VEROVIO_DIR)
 	@cd $(VEROVIO_DIR) && git sparse-checkout init --cone && git sparse-checkout set src include libmei tools data
+	@cd $(VEROVIO_DIR) && git apply ../scripts/verovio-typst.patch
 
 docker:
 	docker build -t $(DOCKER_IMAGE) .
 
 build: submodule docker
-	docker run --rm -v $(CURDIR):/src $(DOCKER_IMAGE) make wasm
+	docker run --rm -v $(CURDIR):/src $(DOCKER_IMAGE) make -j$$(nproc) wasm
 
 install: wasm
 	mkdir -p ~/.local/share/typst/packages/local/verovio/0.1.0
@@ -91,4 +98,4 @@ install: wasm
 		~/.local/share/typst/packages/local/verovio/0.1.0/
 
 clean:
-	rm -rf $(OUT) $(BUILD_DIR)
+	rm -rf $(OUT) $(OUT).opt $(BUILD_DIR)

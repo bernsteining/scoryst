@@ -1,0 +1,116 @@
+diff --git a/include/vrv/resources.h b/include/vrv/resources.h
+index f7006b900..222e775e1 100644
+--- a/include/vrv/resources.h
++++ b/include/vrv/resources.h
+@@ -69,6 +69,8 @@ public:
+     ///@{
+     /** Init the SMufL music and text fonts */
+     bool InitFonts();
++    /** Init fonts from a zip archive (no filesystem access) */
++    bool InitFontsFromZip(ZipFileReader &zipFile);
+     /**  Set the font to be used and loads it if necessary */
+     bool SetFont(const std::string &fontName);
+     /** Add custom (external) fonts */
+diff --git a/include/vrv/svgdevicecontext.h b/include/vrv/svgdevicecontext.h
+index 60bd9bc65..eea8590b9 100644
+--- a/include/vrv/svgdevicecontext.h
++++ b/include/vrv/svgdevicecontext.h
+@@ -196,7 +196,7 @@ public:
+     /**
+      * In SVG use global styling but not with mm output (for pdf generation)
+      */
+-    bool UseGlobalStyling() override { return !m_mmOutput; }
++    bool UseGlobalStyling() override { return false; }
+ 
+     /**
+      * Setting mm output flag (false by default)
+diff --git a/include/vrv/toolkit.h b/include/vrv/toolkit.h
+index 6c846982c..e3f999020 100644
+--- a/include/vrv/toolkit.h
++++ b/include/vrv/toolkit.h
+@@ -816,7 +816,8 @@ private:
+     void SetMidiDoc();
+ 
+ public:
+-    //
++    Doc &GetDoc() { return m_doc; }
++
+ private:
+     Doc m_doc;
+     DocSelection m_docSelection;
+diff --git a/src/resources.cpp b/src/resources.cpp
+index 680176f3e..dc57bb092 100644
+--- a/src/resources.cpp
++++ b/src/resources.cpp
+@@ -95,6 +95,71 @@ bool Resources::InitFonts()
+     return true;
+ }
+ 
++bool Resources::InitFontsFromZip(ZipFileReader &zipFile)
++{
++    m_cachedGlyph.reset();
++    m_loadedFonts.clear();
++
++    if (!LoadFont(BRAVURA, &zipFile)) LogError("Bravura font could not be loaded.");
++    if (!LoadFont(LEIPZIG, &zipFile)) LogError("Leipzig font could not be loaded.");
++
++    m_defaultFontName = LEIPZIG;
++    m_currentFontName = m_defaultFontName;
++    m_fallbackFontName = m_defaultFontName;
++
++    // Load text fonts from zip
++    struct TextFontInfo {
++        StyleAttributes style;
++        std::string fileName;
++        bool mandatory;
++    };
++    TextFontInfo textFonts[] = {
++        { k_defaultStyle, "Times", true },
++        { { FONTWEIGHT_bold, FONTSTYLE_normal }, "Times-bold", false },
++        { { FONTWEIGHT_bold, FONTSTYLE_italic }, "Times-bold-italic", false },
++        { { FONTWEIGHT_normal, FONTSTYLE_italic }, "Times-italic", false }
++    };
++
++    for (const auto &tf : textFonts) {
++        std::string path = "text/" + tf.fileName + ".xml";
++        if (!zipFile.HasFile(path)) {
++            if (tf.mandatory) {
++                LogError("Text font could not be initialized.");
++                return false;
++            }
++            continue;
++        }
++        std::string content = zipFile.ReadTextFile(path);
++        pugi::xml_document doc;
++        if (!doc.load_string(content.c_str())) continue;
++
++        pugi::xml_node root = doc.first_child();
++        if (!root.attribute("units-per-em")) continue;
++
++        const int unitsPerEm = root.attribute("units-per-em").as_int();
++        if (!m_textFont.contains(tf.style)) {
++            m_textFont[tf.style] = {};
++        }
++        GlyphTable &table = m_textFont.at(tf.style);
++        for (pugi::xml_node g = root.child("g"); g; g = g.next_sibling("g")) {
++            if (!g.attribute("c")) continue;
++            char32_t code = (char32_t)strtol(g.attribute("c").value(), NULL, 16);
++            Glyph glyph(unitsPerEm);
++            float x = 0, y = 0, w = 0, h = 0;
++            if (g.attribute("x")) x = g.attribute("x").as_float();
++            if (g.attribute("y")) y = g.attribute("y").as_float();
++            if (g.attribute("w")) w = g.attribute("w").as_float();
++            if (g.attribute("h")) h = g.attribute("h").as_float();
++            glyph.SetBoundingBox(x, y, w, h);
++            if (g.attribute("h-a-x")) glyph.SetHorizAdvX(g.attribute("h-a-x").as_float());
++            table[code] = glyph;
++        }
++    }
++
++    m_currentStyle = k_defaultStyle;
++    return true;
++}
++
+ bool Resources::SetFont(const std::string &fontName)
+ {
+     m_cachedGlyph.reset();
