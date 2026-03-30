@@ -1,11 +1,16 @@
-SHELL = /bin/bash
-EMSDK_ENV = emsdk/emsdk_env.sh
 VEROVIO_DIR = verovio
-SRC = src/mozart.cpp
-INIT_SRC = src/mozart_init.cpp
-OUT = mozart/mozart.wasm
+DOCKER_IMAGE = verovio-builder
+OUT = pkg/verovio.wasm
+BUILD_DIR = pkg/obj
 
-# Verovio source files (core library)
+# Optimization: override with `make OPT=-O0` for fast dev builds
+OPT = -O3
+
+CXXFLAGS = $(OPT) -DNDEBUG -std=c++20 -DPUGIXML_NO_EXCEPTIONS
+
+# All source files
+PLUGIN_SRC = src/verovio_plugin.cpp
+INIT_SRC = src/verovio_init.cpp
 VEROVIO_SRC = $(wildcard $(VEROVIO_DIR)/src/*.cpp) \
               $(wildcard $(VEROVIO_DIR)/src/hum/*.cpp) \
               $(VEROVIO_DIR)/src/pugi/pugixml.cpp \
@@ -14,6 +19,11 @@ VEROVIO_SRC = $(wildcard $(VEROVIO_DIR)/src/*.cpp) \
               $(wildcard $(VEROVIO_DIR)/libmei/dist/*.cpp) \
               $(VEROVIO_DIR)/libmei/addons/att.cpp \
               $(VEROVIO_DIR)/tools/c_wrapper.cpp
+ALL_SRC = $(PLUGIN_SRC) $(INIT_SRC) $(VEROVIO_SRC)
+
+# Object files mirroring source tree under BUILD_DIR
+ALL_OBJ = $(patsubst %.cpp,$(BUILD_DIR)/%.o,$(patsubst %.cc,$(BUILD_DIR)/%.o,$(ALL_SRC))) \
+          $(BUILD_DIR)/src/verovio_data.o
 
 VEROVIO_INCLUDES = -Isrc \
                    -I$(VEROVIO_DIR)/include \
@@ -35,32 +45,50 @@ LINK_FLAGS = --no-entry \
              -s ALLOW_MEMORY_GROWTH=1 \
              -s STACK_SIZE=134217728 \
              -s ERROR_ON_UNDEFINED_SYMBOLS=0 \
-             -s EXPORTED_FUNCTIONS='["_hello","_render","_render_page","_page_count","_malloc","_free"]'
+             -s EXPORTED_FUNCTIONS='["_render","_render_page","_page_count","_malloc","_free"]'
 
-.PHONY: all clean clone build install
+.PHONY: all clean submodule docker build wasm dev install
 
-all: build
+all: wasm
 
-clone:
-	@if [ ! -d "$(VEROVIO_DIR)" ]; then \
-		echo "Cloning verovio..."; \
-		git clone --depth 1 https://github.com/rism-digital/verovio.git $(VEROVIO_DIR); \
-	else \
-		echo "Verovio already cloned."; \
-	fi
+# Compile .cpp -> .o (incremental)
+$(BUILD_DIR)/%.o: %.cpp
+	@mkdir -p $(dir $@)
+	emcc $(CXXFLAGS) $(VEROVIO_INCLUDES) -c $< -o $@
 
-build: clone
-	@mkdir -p build
-	source $(EMSDK_ENV) 2>/dev/null && \
-		emcc -O3 -DNDEBUG -std=c++20 $(VEROVIO_INCLUDES) -c $(SRC) -o build/mozart.o && \
-		emcc -O3 -DNDEBUG -std=c++20 $(LINK_FLAGS) $(VEROVIO_INCLUDES) \
-			-o $(OUT) build/mozart.o $(INIT_SRC) $(VEROVIO_SRC)
+$(BUILD_DIR)/%.o: %.cc
+	@mkdir -p $(dir $@)
+	emcc $(CXXFLAGS) $(VEROVIO_INCLUDES) -c $< -o $@
+
+$(BUILD_DIR)/src/verovio_data.o: src/verovio_data.S
+	@mkdir -p $(dir $@)
+	emcc $(CXXFLAGS) $(VEROVIO_INCLUDES) -c $< -o $@
+
+# Link all objects into wasm
+$(OUT): $(ALL_OBJ)
+	emcc $(CXXFLAGS) $(LINK_FLAGS) $(VEROVIO_INCLUDES) -o $(OUT) $(ALL_OBJ)
 	wasi-stub $(OUT) -o $(OUT) --stub-module env,wasi_snapshot_preview1 -r 0
 
-install: build
-	mkdir -p ~/.local/share/typst/packages/local/mozart/0.1.0
-	cp mozart/mozart.wasm mozart/mozart.typ mozart/typst.toml \
-		~/.local/share/typst/packages/local/mozart/0.1.0/
+wasm: $(OUT)
+
+# Fast dev build (no optimization)
+dev: OPT = -O0
+dev: wasm
+
+submodule:
+	@git submodule update --init --depth 1 $(VEROVIO_DIR)
+	@cd $(VEROVIO_DIR) && git sparse-checkout init --cone && git sparse-checkout set src include libmei tools data
+
+docker:
+	docker build -t $(DOCKER_IMAGE) .
+
+build: submodule docker
+	docker run --rm -v $(CURDIR):/src $(DOCKER_IMAGE) make wasm
+
+install: wasm
+	mkdir -p ~/.local/share/typst/packages/local/verovio/0.1.0
+	cp pkg/verovio.wasm pkg/verovio.typ pkg/typst.toml \
+		~/.local/share/typst/packages/local/verovio/0.1.0/
 
 clean:
-	rm -f $(OUT) build/*.o
+	rm -rf $(OUT) $(BUILD_DIR)

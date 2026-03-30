@@ -1,5 +1,4 @@
-verovio/
-emsdk/
-build/
-mozart/mozart.wasm
-src/verovio_data.h
+pkg/verovio.wasm
+pkg/obj/
+pkg/*.o
+harness/target/

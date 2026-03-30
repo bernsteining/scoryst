@@ -1,7 +1,8 @@
 [package]
-name = "mozart"
+name = "verovio"
 version = "0.1.0"
-entrypoint = "mozart.typ"
+entrypoint = "verovio.typ"
 authors = ["bernsteining"]
 license = "MIT"
 description = "Music notation rendering for Typst via Verovio"
+compile = "0.14.2"

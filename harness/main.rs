@@ -185,7 +185,7 @@ fn main() {
     if positional.is_empty() {
         eprintln!("Usage: harness <wasm_file> <music_file> [options_json] [--fuel] [--hello] [--page-count]");
         eprintln!();
-        eprintln!("  <wasm_file>     Path to mozart.wasm");
+        eprintln!("  <wasm_file>     Path to verovio.wasm");
         eprintln!("  <music_file>    Path to music data (MusicXML, ABC, MEI, Humdrum, PAE)");
         eprintln!("  [options_json]  Optional Verovio options JSON string or @file");
         eprintln!();

@@ -1,4 +1,0 @@
-@clef:G-2
-@keysig:
-@timesig:c
-@data:'4CDEF

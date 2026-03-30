@@ -1,4 +1,16 @@
-#let plugin = plugin("mozart.wasm")
+#let plugin = plugin("verovio.wasm")
+
+/// Serialize a Typst dictionary to a JSON options string for Verovio.
+/// Merges with default options (adjustPageHeight crops SVG to content).
+#let _serialize-options(options) = {
+  let defaults = (adjustPageHeight: true)
+  let merged = if options != none { defaults + options } else { defaults }
+  let pairs = merged.pairs().map(((k, v)) => {
+    let val = if type(v) == str { "\"" + v + "\"" } else if v == true { "true" } else if v == false { "false" } else { str(v) }
+    "\"" + k + "\":" + val
+  })
+  "{" + pairs.join(",") + "}"
+}
 
 /// Render music notation to an SVG image.
 ///
@@ -9,17 +21,7 @@
 ///           (e.g., `width`, `height`, `fit`, `alt`)
 #let render-music(data, options: none, page: 1, ..args) = {
   let data-bytes = bytes(data)
-  let options-str = if options != none {
-    // Convert Typst dict to JSON string for Verovio
-    let pairs = options.pairs().map(((k, v)) => {
-      let val = if type(v) == str { "\"" + v + "\"" } else { str(v) }
-      "\"" + k + "\":" + val
-    })
-    "{" + pairs.join(",") + "}"
-  } else {
-    ""
-  }
-  let options-bytes = bytes(options-str)
+  let options-bytes = bytes(_serialize-options(options))
 
   let svg-bytes = if page == 1 {
     plugin.render(data-bytes, options-bytes)
@@ -35,15 +37,5 @@
 /// - data: Music data as a string
 /// - options: Verovio options as a dictionary (optional)
 #let music-page-count(data, options: none) = {
-  let data-bytes = bytes(data)
-  let options-str = if options != none {
-    let pairs = options.pairs().map(((k, v)) => {
-      let val = if type(v) == str { "\"" + v + "\"" } else { str(v) }
-      "\"" + k + "\":" + val
-    })
-    "{" + pairs.join(",") + "}"
-  } else {
-    ""
-  }
-  int(str(plugin.page_count(data-bytes, bytes(options-str))))
+  int(str(plugin.page_count(bytes(data), bytes(_serialize-options(options)))))
 }
