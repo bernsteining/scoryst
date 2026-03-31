@@ -70,10 +70,9 @@ $(BUILD_DIR)/src/font_data.o: src/font_data.S src/fonts
 	@mkdir -p $(dir $@)
 	emcc $(CXXFLAGS) $(VEROVIO_INCLUDES) -c $< -o $@
 
-# Link without emcc's internal wasm-opt, then optimize with ours, then stub WASI
+# Link and stub WASI imports
 $(OUT): $(ALL_OBJ)
-	emcc -O0 $(LINK_FLAGS) $(VEROVIO_INCLUDES) -o $(OUT) $(ALL_OBJ)
-	wasm-opt -O3 $(OUT) -o $(OUT).opt && mv $(OUT).opt $(OUT)
+	emcc $(CXXFLAGS) $(LINK_FLAGS) $(VEROVIO_INCLUDES) -o $(OUT) $(ALL_OBJ)
 	wasi-stub $(OUT) -o $(OUT) --stub-module env,wasi_snapshot_preview1 -r 0
 
 wasm: $(OUT)

@@ -3,7 +3,7 @@
 /// Serialize a Typst dictionary to a JSON options string for Verovio.
 /// Merges with default options (adjustPageHeight crops SVG to content).
 #let _serialize-options(options) = {
-  let defaults = (adjustPageHeight: true)
+  let defaults = (adjustPageHeight: true, inputFrom: "auto")
   let merged = if options != none { defaults + options } else { defaults }
   let pairs = merged.pairs().map(((k, v)) => {
     let val = if type(v) == str { "\"" + v + "\"" } else if v == true { "true" } else if v == false { "false" } else { str(v) }

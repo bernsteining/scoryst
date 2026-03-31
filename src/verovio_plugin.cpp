@@ -16,6 +16,7 @@ extern "C" {
     bool vrvToolkit_loadData(void *toolkit, const char *data);
     const char *vrvToolkit_renderToSVG(void *toolkit, int page_no, bool xmlDeclaration);
     bool vrvToolkit_setOptions(void *toolkit, const char *options);
+    void vrvToolkit_resetOptions(void *toolkit);
     int vrvToolkit_getPageCount(void *toolkit);
     const char *vrvToolkit_fixSmuflText(void *toolkit, const char *svg);
 }

@@ -1,90 +1,134 @@
-# Verovio for Typst
+# Verovio — Music Engraving Plugin for Typst
 
-A Typst plugin that renders music notation via [Verovio](https://www.verovio.org).
-Supports MusicXML, MEI, ABC, Humdrum, and Plaine & Easie.
+A Typst plugin that renders music notation from multiple formats using
+[Verovio](https://www.verovio.org/), compiled to WebAssembly.
 
-## Building
+## Features
 
-The only dependency is Docker (or Podman).
-
-```sh
-git clone --recurse-submodules <repo-url>
-cd verovio
-make build
-```
-
-This will:
-1. Initialize the verovio submodule (sparse checkout, ~19M)
-2. Build the Docker image with emscripten + wasi-stub (cached after first run)
-3. Compile `pkg/verovio.wasm` inside the container
-
-### Building without Docker
-
-If you have emscripten and [wasi-stub](https://crates.io/crates/wasi-stub) installed locally:
-
-```sh
-make submodule
-make wasm
-```
-
-## Installation
-
-Install the package to your local Typst packages directory:
-
-```sh
-make install
-```
-
-This copies `verovio.wasm`, `verovio.typ`, and `typst.toml` to
-`~/.local/share/typst/packages/local/verovio/0.1.0/`.
+- **6 input formats**: ABC, MusicXML, MEI, Humdrum, Volpiano, DARMS
+- **5 music fonts**: Leipzig (default), Bravura, Gootville, Leland, Petaluma
+- **Full Verovio options**: scale, font, page layout, and all
+  [toolkit options](https://book.verovio.org/toolkit-reference/toolkit-options.html)
+- **Multi-page support**: render individual pages of long scores
+- **Tempo glyph fix**: metronome markings (♩ = 120) render correctly
+- **Binary font loading**: fonts are pre-compiled to a compact binary format
+  for instant initialization — no XML parsing at startup
 
 ## Usage
 
 ```typst
 #import "@local/verovio:0.1.0": render-music, music-page-count
 
-// Render ABC notation
-#render-music("X:1\nT:Scale\nK:C\nCDEF GABc|", width: 100%)
+// ABC notation (auto-detected)
+#render-music(read("tune.abc"), width: 100%)
 
-// Render from a file
+// MusicXML (auto-detected)
 #render-music(read("score.musicxml"), width: 100%)
 
-// Render a specific page
-#render-music(read("score.mei"), page: 2, width: 100%)
+// Volpiano (requires explicit format)
+#render-music(read("chant.txt"), options: (inputFrom: "volpiano"))
 
-// Get total page count
-#let pages = music-page-count(read("score.mei"))
-```
+// Change font
+#render-music(data, options: (font: "Petaluma"))
 
-### Options
-
-Pass Verovio options as a dictionary:
-
-```typst
-#render-music(
-  read("score.abc"),
-  options: (
-    scale: 50,
-    pageWidth: 2000,
-    font: "Leipzig",
-  ),
-  width: 100%,
-)
+// Multi-page
+#let data = read("score.musicxml")
+#let pages = music-page-count(data)
+#for p in range(1, pages + 1) {
+  render-music(data, page: p, width: 100%)
+}
 ```
 
 ### Supported formats
 
-| Format | Example |
-|--------|---------|
-| ABC | `read("tune.abc")` |
-| MusicXML | `read("score.musicxml")` |
-| MEI | `read("score.mei")` |
-| Humdrum | `read("score.krn")` |
-| Plaine & Easie | `read("incipit.pae")` |
-| Volpiano | `read("chant.txt")` |
-| CMME | `read("piece.xml")` |
-| DARMS | `read("score.txt")` |
-| EsAC | `read("melody.txt")` |
+| Format | Auto-detected | Example |
+|--------|:---:|---------|
+| ABC | ✓ | `render-music(read("tune.abc"))` |
+| MusicXML | ✓ | `render-music(read("score.musicxml"))` |
+| MEI | ✓ | `render-music(read("score.mei"))` |
+| Humdrum | ✓ | `render-music(read("score.krn"))` |
+| Volpiano | | `render-music(data, options: (inputFrom: "volpiano"))` |
+| DARMS | | `render-music(data, options: (inputFrom: "darms"))` |
+
+### API
+
+**`render-music(data, options: none, page: 1, ..args)`**
+
+Renders music notation to an SVG image. `data` is a string in any supported
+format. `..args` are forwarded to Typst's `image()` function (`width`,
+`height`, `fit`, `alt`).
+
+**`music-page-count(data, options: none)`**
+
+Returns the number of pages for the given music data.
+
+## Building
+
+### With Docker
+
+```sh
+make build
+```
+
+This initializes the submodule, builds the Docker image, compiles the WASM,
+and applies patches automatically.
+
+### Without Docker
+
+Requires [Emscripten](https://emscripten.org/) and
+[wasi-stub](https://crates.io/crates/wasi-stub).
+
+```sh
+make submodule       # init verovio submodule + apply patches
+make -j$(nproc) wasm # compile to WASM
+make install         # install to ~/.local/share/typst/packages/
+```
+
+### Regenerating binary fonts
+
+Fonts are pre-converted from Verovio's XML glyph data to a compact binary
+format. To regenerate after updating the Verovio submodule:
+
+```sh
+python3 scripts/fonts_to_binary.py
+```
+
+## Architecture
+
+### Verovio patches
+
+The plugin applies minimal patches to the Verovio C++ source
+(`scripts/verovio-typst.patch`), applied automatically by `make submodule`:
+
+| Patch | Why |
+|-------|-----|
+| `UseGlobalStyling() → false` | Typst's SVG renderer (resvg) has limited CSS support; forces inline styles |
+| `GetDoc()` public | Needed for resource access during binary font init |
+| `AddLoadedFont` / `AddTextFont` / `SetDefaultFont` | Public API for loading pre-parsed binary font data |
+| `SetAnchor(enum, int, int)` | Direct anchor setter for binary-loaded glyphs |
+| `InitFontsFromZip` | Fallback zip-based font loading (WASM has no filesystem) |
+| Skip missing CSS in `LoadFont` | CSS files stripped from zip (resvg can't use `@font-face`) |
+
+### SMuFL tempo glyph fix
+
+Verovio renders tempo markings (♩ = 120) using Private Use Area Unicode
+characters that require an embedded woff2 font. Since resvg can't load
+`@font-face` fonts, the plugin post-processes the SVG to replace PUA
+characters with standard Unicode musical symbols (♩ U+2669, ♪ U+266A).
+
+### Binary font format
+
+Each font is a flat binary blob (`src/fonts/*.bin`), generated by
+`scripts/fonts_to_binary.py` from Verovio's XML glyph data:
+
+```
+Header:  magic(4) | units_per_em(4) | glyph_count(4) | pool_offset(4)
+Glyphs:  [codepoint | bbox | anchors | path_offset | path_len] × N
+Pool:    concatenated SVG path strings
+```
+
+This replaces XML parsing of ~2600 glyph files at init time with direct
+memory reads, making font loading instant.
 
 ## License
 
