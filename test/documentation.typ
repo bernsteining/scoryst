@@ -52,6 +52,19 @@ spine structure with `**kern` encoding for pitches and durations.
 
 #pagebreak()
 
+= Music Fonts
+
+Five SMuFL-compliant music fonts are available.
+
+#let sample = read("scarborough-fair.abc")
+
+#for font in ("Leipzig", "Bravura", "Gootville", "Leland", "Petaluma") {
+  [== #font]
+  render-music(sample, options: (font: font, scale: 40), width: 100%)
+}
+
+#pagebreak()
+
 = Verovio Options
 
 Options can be passed as a dictionary. For example, scaling:
