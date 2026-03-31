@@ -23,7 +23,7 @@ ALL_SRC = $(PLUGIN_SRC) $(INIT_SRC) $(VEROVIO_SRC)
 
 # Object files mirroring source tree under BUILD_DIR
 ALL_OBJ = $(patsubst %.cpp,$(BUILD_DIR)/%.o,$(patsubst %.cc,$(BUILD_DIR)/%.o,$(ALL_SRC))) \
-          $(BUILD_DIR)/src/verovio_data.o
+          $(BUILD_DIR)/src/font_data.o
 
 VEROVIO_INCLUDES = -Isrc \
                    -I$(VEROVIO_DIR)/include \
@@ -65,7 +65,7 @@ $(BUILD_DIR)/%.o: %.cc
 	@mkdir -p $(dir $@)
 	emcc $(CXXFLAGS) $(VEROVIO_INCLUDES) -c $< -o $@
 
-$(BUILD_DIR)/src/verovio_data.o: src/verovio_data.S
+$(BUILD_DIR)/src/font_data.o: src/font_data.S src/fonts
 	@mkdir -p $(dir $@)
 	emcc $(CXXFLAGS) $(VEROVIO_INCLUDES) -c $< -o $@
 

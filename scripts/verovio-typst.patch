@@ -1,13 +1,32 @@
+diff --git a/include/vrv/glyph.h b/include/vrv/glyph.h
+index dc28607ae..97cc3d143 100644
+--- a/include/vrv/glyph.h
++++ b/include/vrv/glyph.h
+@@ -95,6 +95,8 @@ public:
+      * The string is turn into a SMuFLGlyphAnchor ("cutOutNE" => SMUFL_cutOutNE)
+      */
+     void SetAnchor(std::string anchorStr, double x, double y);
++    /** Set anchor directly with pre-scaled coordinates */
++    void SetAnchor(SMuFLGlyphAnchor id, int x, int y) { m_anchors[id] = Point(x, y); }
+ 
+     /**
+      * Check if the glyph has anchor provided.
 diff --git a/include/vrv/resources.h b/include/vrv/resources.h
-index f7006b900..222e775e1 100644
+index f7006b900..c3ca643e6 100644
 --- a/include/vrv/resources.h
 +++ b/include/vrv/resources.h
-@@ -69,6 +69,8 @@ public:
+@@ -69,6 +69,14 @@ public:
      ///@{
      /** Init the SMufL music and text fonts */
      bool InitFonts();
 +    /** Init fonts from a zip archive (no filesystem access) */
 +    bool InitFontsFromZip(ZipFileReader &zipFile);
++    /** Add a pre-loaded music font (for binary font loading) */
++    void AddLoadedFont(const std::string &name, GlyphTable &&table, bool isFallback);
++    /** Add a pre-loaded text font (for binary font loading) */
++    void AddTextFont(const StyleAttributes &style, GlyphTable &&table);
++    /** Set the default/current/fallback font names after loading */
++    void SetDefaultFont(const std::string &name);
      /**  Set the font to be used and loads it if necessary */
      bool SetFont(const std::string &fontName);
      /** Add custom (external) fonts */
@@ -39,10 +58,10 @@ index 6c846982c..e3f999020 100644
      Doc m_doc;
      DocSelection m_docSelection;
 diff --git a/src/resources.cpp b/src/resources.cpp
-index 680176f3e..4167d277f 100644
+index 680176f3e..73fcd7c3e 100644
 --- a/src/resources.cpp
 +++ b/src/resources.cpp
-@@ -95,6 +95,74 @@ bool Resources::InitFonts()
+@@ -95,6 +95,94 @@ bool Resources::InitFonts()
      return true;
  }
  
@@ -112,6 +131,26 @@ index 680176f3e..4167d277f 100644
 +
 +    m_currentStyle = k_defaultStyle;
 +    return true;
++}
++
++void Resources::AddLoadedFont(const std::string &name, GlyphTable &&table, bool isFallback)
++{
++    LoadedFont font(name, isFallback);
++    font.GetGlyphTableForModification() = std::move(table);
++    m_loadedFonts.insert(std::pair<std::string, LoadedFont>(name, std::move(font)));
++}
++
++void Resources::AddTextFont(const StyleAttributes &style, GlyphTable &&table)
++{
++    m_textFont[style] = std::move(table);
++}
++
++void Resources::SetDefaultFont(const std::string &name)
++{
++    m_defaultFontName = name;
++    m_currentFontName = name;
++    m_fallbackFontName = name;
++    m_currentStyle = { FONTWEIGHT_normal, FONTSTYLE_normal };
 +}
 +
  bool Resources::SetFont(const std::string &fontName)

@@ -12,7 +12,7 @@
 
 /* Verovio C API (from verovio/tools/c_wrapper.h) */
 extern "C" {
-    void *vrvToolkit_constructorFromEmbeddedZip(void);
+    void *vrvToolkit_constructorFromBinaryFonts(void);
     bool vrvToolkit_loadData(void *toolkit, const char *data);
     const char *vrvToolkit_renderToSVG(void *toolkit, int page_no, bool xmlDeclaration);
     bool vrvToolkit_setOptions(void *toolkit, const char *options);
@@ -40,7 +40,7 @@ static void *g_toolkit = nullptr;
 
 static void *get_toolkit() {
     if (!g_toolkit) {
-        g_toolkit = vrvToolkit_constructorFromEmbeddedZip();
+        g_toolkit = vrvToolkit_constructorFromBinaryFonts();
     }
     return g_toolkit;
 }
