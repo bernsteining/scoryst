@@ -16,10 +16,8 @@
 #include "vrv.h"
 #include "resources.h"
 #include "glyph.h"
-#include "pugi/pugixml.hpp"
-
 #include <cstring>
-#include <sstream>
+#include <string>
 
 /* Embedded binary font data (from src/font_data.S) */
 extern "C" {
@@ -165,51 +163,85 @@ static const char *smuflToUnicode(char32_t code)
     }
 }
 
+/**
+ * Fast string-based SVG post-processing: replace SMuFL PUA characters in
+ * <tspan font-family="FontName"> with Unicode equivalents. Avoids full XML
+ * parse/serialize — just finds and replaces the relevant substrings.
+ */
 static std::string fixSmuflTextGlyphs(const char *svg, void *toolkit)
 {
     Toolkit *tk = static_cast<Toolkit *>(toolkit);
     const Resources &res = tk->GetDoc().GetResources();
     std::string fontName = res.GetCurrentFont();
 
-    pugi::xml_document doc;
-    if (!doc.load_string(svg, pugi::parse_default | pugi::parse_ws_pcdata)) return svg;
-
+    std::string result(svg);
+    std::string needle = "font-family=\"" + fontName + "\"";
     bool modified = false;
-    std::string xpath = "//tspan[@font-family='" + fontName + "']";
-    for (const auto &match : doc.select_nodes(xpath.c_str())) {
-        pugi::xml_node tspan = match.node();
-        std::string text = tspan.text().get();
-        if (text.empty()) continue;
 
-        char32_t code = decodeFirstUTF8(text.c_str());
-        if (code < 0xE000 || code > 0xF8FF) continue;
+    size_t pos = 0;
+    while ((pos = result.find(needle, pos)) != std::string::npos) {
+        // Find the enclosing tspan: <tspan ... font-family="Font" font-size="NNNpx">CHAR</tspan>
+        // Look for the > that closes this tspan's opening tag
+        size_t tagClose = result.find('>', pos);
+        if (tagClose == std::string::npos) break;
+        tagClose++; // past >
+
+        // Read the character after >
+        char32_t code = decodeFirstUTF8(result.c_str() + tagClose);
+        if (code < 0xE000 || code > 0xF8FF) { pos = tagClose; continue; }
 
         const char *replacement = smuflToUnicode(code);
-        if (!replacement) continue;
+        if (!replacement) { pos = tagClose; continue; }
 
-        tspan.text().set(replacement);
-        tspan.remove_attribute("font-family");
+        // Find </tspan>
+        size_t tspanEnd = result.find("</tspan>", tagClose);
+        if (tspanEnd == std::string::npos) break;
 
-        pugi::xml_node textNode = tspan.parent();
-        while (textNode && std::string(textNode.name()) != "text")
-            textNode = textNode.parent();
-        if (textNode) {
-            for (auto sibling : textNode.select_nodes(".//tspan[@font-size]")) {
-                std::string sibSize = sibling.node().attribute("font-size").value();
-                if (sibling.node() != tspan && !sibSize.empty()) {
-                    tspan.attribute("font-size").set_value(sibSize.c_str());
-                    break;
+        // Replace the PUA character with the Unicode symbol
+        result.replace(tagClose, tspanEnd - tagClose, replacement);
+
+        // Remove font-family="FontName" and adjust font-size to match siblings
+        // Find the font-size in this tspan
+        size_t tspanStart = result.rfind("<tspan", pos);
+        if (tspanStart != std::string::npos) {
+            // Remove font-family attribute
+            size_t ffStart = result.find("font-family=", tspanStart);
+            if (ffStart != std::string::npos && ffStart < tagClose) {
+                size_t ffEnd = result.find('"', ffStart + 13); // past opening quote
+                if (ffEnd != std::string::npos) {
+                    ffEnd++; // past closing quote
+                    // Remove attribute including leading space
+                    size_t rmStart = (ffStart > 0 && result[ffStart-1] == ' ') ? ffStart - 1 : ffStart;
+                    result.erase(rmStart, ffEnd - rmStart);
+                }
+            }
+
+            // Find sibling tspan's font-size to match
+            size_t sibFS = result.find("font-size=", tagClose);
+            if (sibFS != std::string::npos) {
+                size_t sibQuote1 = result.find('"', sibFS + 10);
+                size_t sibQuote2 = result.find('"', sibQuote1 + 1);
+                if (sibQuote1 != std::string::npos && sibQuote2 != std::string::npos) {
+                    std::string sibSize = result.substr(sibQuote1 + 1, sibQuote2 - sibQuote1 - 1);
+                    // Update this tspan's font-size
+                    size_t myFS = result.find("font-size=", tspanStart);
+                    size_t myTagClose = result.find('>', tspanStart);
+                    if (myFS != std::string::npos && myFS < myTagClose) {
+                        size_t myQ1 = result.find('"', myFS + 10);
+                        size_t myQ2 = result.find('"', myQ1 + 1);
+                        if (myQ1 != std::string::npos && myQ2 != std::string::npos) {
+                            result.replace(myQ1 + 1, myQ2 - myQ1 - 1, sibSize);
+                        }
+                    }
                 }
             }
         }
+
         modified = true;
+        pos = 0; // restart since offsets shifted
     }
 
-    if (!modified) return svg;
-
-    std::ostringstream ss;
-    doc.save(ss, "   ", pugi::format_default | pugi::format_no_declaration);
-    return ss.str();
+    return modified ? result : std::string(svg);
 }
 
 static std::string g_fixedSvg;

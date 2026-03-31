@@ -11,6 +11,7 @@ CXXFLAGS = $(OPT) -DNDEBUG -std=c++20 -DPUGIXML_NO_EXCEPTIONS
 # All source files
 PLUGIN_SRC = src/verovio_plugin.cpp
 INIT_SRC = src/verovio_init.cpp
+# Exclude midi library — not used in our WASM plugin (saves 240KB source)
 VEROVIO_SRC = $(wildcard $(VEROVIO_DIR)/src/*.cpp) \
               $(wildcard $(VEROVIO_DIR)/src/hum/*.cpp) \
               $(VEROVIO_DIR)/src/pugi/pugixml.cpp \
@@ -69,11 +70,11 @@ $(BUILD_DIR)/src/font_data.o: src/font_data.S src/fonts
 	@mkdir -p $(dir $@)
 	emcc $(CXXFLAGS) $(VEROVIO_INCLUDES) -c $< -o $@
 
-# Link all objects into wasm, stub WASI imports, optimize
+# Link without emcc's internal wasm-opt, then optimize with ours, then stub WASI
 $(OUT): $(ALL_OBJ)
-	emcc $(CXXFLAGS) $(LINK_FLAGS) $(VEROVIO_INCLUDES) -o $(OUT) $(ALL_OBJ)
+	emcc -O0 $(LINK_FLAGS) $(VEROVIO_INCLUDES) -o $(OUT) $(ALL_OBJ)
+	wasm-opt -O3 $(OUT) -o $(OUT).opt && mv $(OUT).opt $(OUT)
 	wasi-stub $(OUT) -o $(OUT) --stub-module env,wasi_snapshot_preview1 -r 0
-	wasm-opt $(WASM_OPT_FLAGS) $(OUT) -o $(OUT).opt && mv $(OUT).opt $(OUT)
 
 wasm: $(OUT)
 
