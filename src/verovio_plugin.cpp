@@ -62,6 +62,8 @@ static void split_args(char *buf, int music_len, int options_len,
 
 static bool load_music(void *tk, const char *music_data, const char *options,
                        int options_len) {
+    // Reset options to defaults before each render to prevent state leaking
+    vrvToolkit_resetOptions(tk);
     if (options_len > 0) {
         vrvToolkit_setOptions(tk, options);
     }
