@@ -132,4 +132,6 @@ memory reads, making font loading instant.
 
 ## License
 
-MIT
+GPLv3 — Verovio is licensed under the
+[GNU General Public License v3](https://www.gnu.org/licenses/gpl-3.0.html).
+This plugin links Verovio statically, making it a derivative work under GPLv3.
