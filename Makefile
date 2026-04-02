@@ -6,13 +6,17 @@ BUILD_DIR = pkg/obj
 # Optimization: -Os balances size and speed; override with `make OPT=-O0` for fast dev builds
 OPT = -Os
 
-CXXFLAGS = $(OPT) -DNDEBUG -std=c++20 -DPUGIXML_NO_EXCEPTIONS
+CXXFLAGS = $(OPT) -DNDEBUG -std=c++20 -DPUGIXML_NO_EXCEPTIONS \
+           -DNO_DARMS_SUPPORT -DNO_RUNTIME
 
 # All source files
 PLUGIN_SRC = src/verovio_plugin.cpp
 INIT_SRC = src/verovio_init.cpp
-# Exclude midi library — not used in our WASM plugin (saves 240KB source)
-VEROVIO_SRC = $(wildcard $(VEROVIO_DIR)/src/*.cpp) \
+# Exclude unused source files: editor toolkits, CMME parser, feature extractor
+VEROVIO_EXCLUDE = editortoolkit.cpp editortoolkit_cmn.cpp editortoolkit_neume.cpp \
+                  editfunctor.cpp iocmme.cpp featureextractor.cpp
+VEROVIO_SRC = $(filter-out $(addprefix $(VEROVIO_DIR)/src/,$(VEROVIO_EXCLUDE)), \
+                $(wildcard $(VEROVIO_DIR)/src/*.cpp)) \
               $(wildcard $(VEROVIO_DIR)/src/hum/*.cpp) \
               $(VEROVIO_DIR)/src/pugi/pugixml.cpp \
               $(VEROVIO_DIR)/src/json/jsonxx.cc \
@@ -46,7 +50,10 @@ LINK_FLAGS = --no-entry \
              -s ALLOW_MEMORY_GROWTH=1 \
              -s STACK_SIZE=134217728 \
              -s ERROR_ON_UNDEFINED_SYMBOLS=0 \
-             -s EXPORTED_FUNCTIONS='["_render","_render_page","_page_count","_malloc","_free"]'
+             -s EXPORTED_FUNCTIONS='["_render","_render_page","_page_count","_malloc","_free"]' \
+             -s FILESYSTEM=0 \
+             -s DISABLE_EXCEPTION_CATCHING=1 \
+             -s ASSERTIONS=0
 
 WASM_OPT_FLAGS = -O3 --enable-simd --enable-bulk-memory --enable-sign-ext \
                  --enable-nontrapping-float-to-int --enable-mutable-globals --enable-multivalue \
