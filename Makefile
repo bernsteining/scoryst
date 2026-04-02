@@ -7,14 +7,14 @@ BUILD_DIR = pkg/obj
 OPT = -Os
 
 CXXFLAGS = $(OPT) -DNDEBUG -std=c++20 -DPUGIXML_NO_EXCEPTIONS \
-           -DNO_DARMS_SUPPORT -DNO_RUNTIME
+           -DNO_RUNTIME
 
 # All source files
 PLUGIN_SRC = src/verovio_plugin.cpp
 INIT_SRC = src/verovio_init.cpp
 # Exclude unused source files: editor toolkits, CMME parser, feature extractor
 VEROVIO_EXCLUDE = editortoolkit.cpp editortoolkit_cmn.cpp editortoolkit_neume.cpp \
-                  editfunctor.cpp iocmme.cpp featureextractor.cpp
+                  editfunctor.cpp featureextractor.cpp
 VEROVIO_SRC = $(filter-out $(addprefix $(VEROVIO_DIR)/src/,$(VEROVIO_EXCLUDE)), \
                 $(wildcard $(VEROVIO_DIR)/src/*.cpp)) \
               $(wildcard $(VEROVIO_DIR)/src/hum/*.cpp) \

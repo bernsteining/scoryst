@@ -81,7 +81,7 @@ EEFG|GFED|CCDE|D2C2|
 
 ```typst
 #render-music(
-  data,             // string: music data (ABC, MusicXML, MEI, Humdrum, Volpiano)
+  data,             // string: music data (ABC, MusicXML, MEI, Humdrum, Volpiano, CMME)
   options: none,    // dictionary: verovio options
   page: 1,          // int: page number to render
   ..args,           // forwarded to Typst's image() (width, height, fit, alt)
@@ -117,7 +117,7 @@ Options are passed as a Typst dictionary. They map directly to
   [`adjustPageWidth`], [`false`], [Crop SVG width to content],
   [`scale`], [`100`], [Scale factor (percent)],
   [`font`], [`"Leipzig"`], [Music font: Leipzig, Bravura, Gootville, Leland, Petaluma],
-  [`inputFrom`], [`"auto"`], [Format: auto, mei, musicxml, abc, humdrum, volpiano, darms],
+  [`inputFrom`], [`"auto"`], [Format: auto, mei, musicxml, abc, humdrum, volpiano, darms, cmme],
   [`pageWidth`], [`2100`], [Page width (MEI units)],
   [`pageHeight`], [`2970`], [Page height (MEI units)],
   [`pageMarginTop`], [`50`], [Top margin],
@@ -182,7 +182,7 @@ Five #link("https://www.smufl.org/")[SMuFL]-compliant music fonts are available.
 = Supported Input Formats
 
 Verovio auto-detects the input format for ABC, MusicXML, MEI, and Humdrum.
-For Volpiano, pass `inputFrom` explicitly.
+For Volpiano, DARMS, and CMME, pass `inputFrom` explicitly.
 
 All the files used in the examples are available in the project's #link("https://github.com/bernsteining/verovio")[Github].
 
@@ -211,6 +211,17 @@ Requires `inputFrom: "volpiano"`.
 #render-music("1---g--hij---hgf--g--hg---k--lk--k7---hG--f---h--k--lk---l--m--l---k--lm---kj7--hg--kl---g--gh--k---jk---h---gf--h--hjh7---g--f--g7---3", options: (inputFrom: "volpiano"))
 ```
 
+== CMME
+
+#link("https://www.cmme.org")[CMME project]
+· #link("https://github.com/tdumitrescu/cmme-music")[Download CMME files]
+
+CMME is an XML format for mensural notation (medieval and Renaissance music).
+Requires `inputFrom: "cmme"`.
+
+```example
+#render-music(read("cmme.xml"), options: (inputFrom: "cmme"))
+```
 
 #pagebreak()
 
@@ -253,8 +264,9 @@ Humdrum uses a tab-separated spine structure with `**kern` encoding
 for pitches and durations. Widely used in computational musicology.
 
 
-```typst 
+```typst
 #render-music(read("sample-humdrum.krn"))
 ```
 
 #render-music(read("sample-humdrum.krn"))
+

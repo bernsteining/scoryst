@@ -5,7 +5,7 @@ A Typst plugin that renders music notation from multiple formats using
 
 ## Features
 
-- **6 input formats**: ABC, MusicXML, MEI, Humdrum, Volpiano, DARMS
+- **6 input formats**: ABC, MusicXML, MEI, Humdrum, Volpiano, CMME
 - **5 music fonts**: Leipzig (default), Bravura, Gootville, Leland, Petaluma
 - **Full Verovio options**: scale, font, page layout, and all
   [toolkit options](https://book.verovio.org/toolkit-reference/toolkit-options.html)
@@ -48,7 +48,7 @@ A Typst plugin that renders music notation from multiple formats using
 | MEI | ✓ | `render-music(read("score.mei"))` |
 | Humdrum | ✓ | `render-music(read("score.krn"))` |
 | Volpiano | | `render-music(data, options: (inputFrom: "volpiano"))` |
-| DARMS | | `render-music(data, options: (inputFrom: "darms"))` |
+| CMME | | `render-music(data, options: (inputFrom: "cmme"))` |
 
 ### API
 
