@@ -10,9 +10,7 @@ A Typst plugin that renders music notation from multiple formats using
 - **Full Verovio options**: scale, font, page layout, and all
   [toolkit options](https://book.verovio.org/toolkit-reference/toolkit-options.html)
 - **Multi-page support**: render individual pages of long scores
-- **Tempo glyph fix**: metronome markings (♩ = 120) render correctly
-- **Binary font loading**: fonts are pre-compiled to a compact binary format
-  for instant initialization — no XML parsing at startup
+- **Binary font loading**: fonts pre-compiled to binary for instant init
 
 ## Usage
 
@@ -64,17 +62,6 @@ Returns the number of pages for the given music data.
 
 ## Building
 
-### With Docker
-
-```sh
-make build
-```
-
-This initializes the submodule, builds the Docker image, compiles the WASM,
-and applies patches automatically.
-
-### Without Docker
-
 Requires [Emscripten](https://emscripten.org/) and
 [wasi-stub](https://crates.io/crates/wasi-stub).
 
@@ -82,6 +69,12 @@ Requires [Emscripten](https://emscripten.org/) and
 make submodule       # init verovio submodule + apply patches
 make -j$(nproc) wasm # compile to WASM
 make install         # install to ~/.local/share/typst/packages/
+```
+
+### Docker build
+
+```sh
+make build    # submodule + docker image + compile + install
 ```
 
 ### Regenerating binary fonts
@@ -106,15 +99,7 @@ The plugin applies minimal patches to the Verovio C++ source
 | `GetDoc()` public | Needed for resource access during binary font init |
 | `AddLoadedFont` / `AddTextFont` / `SetDefaultFont` | Public API for loading pre-parsed binary font data |
 | `SetAnchor(enum, int, int)` | Direct anchor setter for binary-loaded glyphs |
-| `InitFontsFromZip` | Fallback zip-based font loading (WASM has no filesystem) |
-| Skip missing CSS in `LoadFont` | CSS files stripped from zip (resvg can't use `@font-face`) |
-
-### SMuFL tempo glyph fix
-
-Verovio renders tempo markings (♩ = 120) using Private Use Area Unicode
-characters that require an embedded woff2 font. Since resvg can't load
-`@font-face` fonts, the plugin post-processes the SVG to replace PUA
-characters with standard Unicode musical symbols (♩ U+2669, ♪ U+266A).
+| Skip missing CSS in `LoadFont` | CSS files stripped (resvg can't use `@font-face`) |
 
 ### Binary font format
 
@@ -129,6 +114,20 @@ Pool:    concatenated SVG path strings
 
 This replaces XML parsing of ~2600 glyph files at init time with direct
 memory reads, making font loading instant.
+
+### SMuFL tempo glyph fix
+
+Verovio renders tempo markings (♩ = 120) using Private Use Area Unicode
+characters that require an embedded woff2 font. Since resvg can't load
+`@font-face` fonts, the plugin post-processes the SVG to replace PUA
+characters with standard Unicode musical symbols (♩ U+2669, ♪ U+266A).
+
+## Known limitations
+
+- **CMME performance**: CMME (mensural notation) rendering is significantly
+  slower than other formats due to the complex mensural layout algorithm.
+- **PAE unsupported**: Plaine & Easie Code is disabled — its parser relies on
+  wasi syscalls that are stubbed in the WASM environment.
 
 ## License
 

@@ -13,6 +13,7 @@
 /* Verovio C API (from verovio/tools/c_wrapper.h) */
 extern "C" {
     void *vrvToolkit_constructorFromBinaryFonts(void);
+    void vrvToolkit_destructor(void *toolkit);
     bool vrvToolkit_loadData(void *toolkit, const char *data);
     const char *vrvToolkit_renderToSVG(void *toolkit, int page_no, bool xmlDeclaration);
     bool vrvToolkit_setOptions(void *toolkit, const char *options);
@@ -36,13 +37,15 @@ static void send_result(const char *s) {
     wasm_minimal_protocol_send_result_to_host(s, strlen(s));
 }
 
-/* Global toolkit instance (lazy-initialized) */
+/* Fresh toolkit per render — eliminates state leaking between renders.
+ * Binary font loading makes construction instant (no XML parsing). */
 static void *g_toolkit = nullptr;
 
 static void *get_toolkit() {
-    if (!g_toolkit) {
-        g_toolkit = vrvToolkit_constructorFromBinaryFonts();
+    if (g_toolkit) {
+        vrvToolkit_destructor(g_toolkit);
     }
+    g_toolkit = vrvToolkit_constructorFromBinaryFonts();
     return g_toolkit;
 }
 
@@ -62,8 +65,6 @@ static void split_args(char *buf, int music_len, int options_len,
 
 static bool load_music(void *tk, const char *music_data, const char *options,
                        int options_len) {
-    // Reset options to defaults before each render to prevent state leaking
-    vrvToolkit_resetOptions(tk);
     if (options_len > 0) {
         vrvToolkit_setOptions(tk, options);
     }

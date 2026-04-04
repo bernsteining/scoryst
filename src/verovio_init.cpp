@@ -291,3 +291,9 @@ void emscripten_notify_memory_growth(int) {}
 long __syscall_getdents64(long, long, long) { return 0; }
 
 } // extern "C"
+
+// Stub for localtime - wasi-stub doesn't implement clock_time_get properly
+static struct tm g_stub_tm = {0, 0, 0, 1, 0, 126, 0, 0, 0}; // 2026-01-01 00:00:00
+extern "C" struct tm* localtime(const time_t *t) {
+    return &g_stub_tm;
+}

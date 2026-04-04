@@ -95,8 +95,16 @@ EEFG|GFED|CCDE|D2C2|
 ```
 
 Returns the number of pages for the given music data and options.
+Useful to loop over pages of a multi-page score:
 
-Useful to loop over pages of a multi-page scores.
+```typst
+#let data = read("score.musicxml")
+#let pages = music-page-count(data)
+#for p in range(1, pages + 1) {
+  render-music(data, page: p, width: 100%)
+  pagebreak()
+}
+```
 
 #pagebreak()
 
@@ -117,7 +125,7 @@ Options are passed as a Typst dictionary. They map directly to
   [`adjustPageWidth`], [`false`], [Crop SVG width to content],
   [`scale`], [`100`], [Scale factor (percent)],
   [`font`], [`"Leipzig"`], [Music font: Leipzig, Bravura, Gootville, Leland, Petaluma],
-  [`inputFrom`], [`"auto"`], [Format: auto, mei, musicxml, abc, humdrum, volpiano, darms, cmme],
+  [`inputFrom`], [`"auto"`], [Format: auto, mei, musicxml, abc, humdrum, volpiano, cmme],
   [`pageWidth`], [`2100`], [Page width (MEI units)],
   [`pageHeight`], [`2970`], [Page height (MEI units)],
   [`pageMarginTop`], [`50`], [Top margin],
@@ -182,7 +190,7 @@ Five #link("https://www.smufl.org/")[SMuFL]-compliant music fonts are available.
 = Supported Input Formats
 
 Verovio auto-detects the input format for ABC, MusicXML, MEI, and Humdrum.
-For Volpiano, DARMS, and CMME, pass `inputFrom` explicitly.
+For Volpiano and CMME, pass `inputFrom` explicitly.
 
 All the files used in the examples are available in the project's #link("https://github.com/bernsteining/verovio")[Github].
 
@@ -197,31 +205,6 @@ Chord symbols are supported.
 ````example
 #render-music(read("bach-prelude-cmaj.abc"))
 ````
-
-== Volpiano
-
-#link("https://cantus.uwaterloo.ca/description#volpiano")[Volpiano specification]
-· #link("https://cantus.uwaterloo.ca/")[CANTUS database]
-
-Volpiano is a text encoding for medieval chant notation, used by the
-CANTUS database. Here is _Veni Creator Spiritus_, the famous Pentecost hymn.
-Requires `inputFrom: "volpiano"`.
-
-```example
-#render-music("1---g--hij---hgf--g--hg---k--lk--k7---hG--f---h--k--lk---l--m--l---k--lm---kj7--hg--kl---g--gh--k---jk---h---gf--h--hjh7---g--f--g7---3", options: (inputFrom: "volpiano"))
-```
-
-== CMME
-
-#link("https://www.cmme.org")[CMME project]
-· #link("https://github.com/tdumitrescu/cmme-music")[Download CMME files]
-
-CMME is an XML format for mensural notation (medieval and Renaissance music).
-Requires `inputFrom: "cmme"`.
-
-```example
-#render-music(read("cmme.xml"), options: (inputFrom: "cmme"))
-```
 
 #pagebreak()
 
@@ -247,11 +230,9 @@ It supports grand staff, multiple voices, dynamics, and full score layout.
 MEI is a rich XML-based format used in musicology, supporting lyrics,
 polyphonic textures, fermatas, and detailed editorial markup.
 
-```typst 
+```example
 #render-music(read("schubert.mei"))
 ```
-
-#render-music(read("schubert.mei"))
 
 #pagebreak()
 
@@ -263,10 +244,34 @@ polyphonic textures, fermatas, and detailed editorial markup.
 Humdrum uses a tab-separated spine structure with `**kern` encoding
 for pitches and durations. Widely used in computational musicology.
 
-
-```typst
+```example
 #render-music(read("sample-humdrum.krn"))
 ```
 
-#render-music(read("sample-humdrum.krn"))
+#pagebreak()
+
+== Volpiano
+
+#link("https://cantus.uwaterloo.ca/description#volpiano")[Volpiano specification]
+· #link("https://cantus.uwaterloo.ca/")[CANTUS database]
+
+Volpiano is a text encoding for medieval chant notation, used by the
+CANTUS database. Here is _Veni Creator Spiritus_, the famous Pentecost hymn.
+Requires `inputFrom: "volpiano"`.
+
+```example
+#render-music("1---g--hij---hgf--g--hg---k--lk--k7---hG--f---h--k--lk---l--m--l---k--lm---kj7--hg--kl---g--gh--k---jk---h---gf--h--hjh7---g--f--g7---3", options: (inputFrom: "volpiano"))
+```
+
+== CMME
+
+#link("https://www.cmme.org")[CMME project]
+· #link("https://github.com/tdumitrescu/cmme-music")[Download CMME files]
+
+CMME is an XML format for mensural notation (medieval and Renaissance music).
+Requires `inputFrom: "cmme"`.
+
+```example
+#render-music(read("cmme.xml"), options: (inputFrom: "cmme"))
+```
 

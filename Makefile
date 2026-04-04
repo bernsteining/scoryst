@@ -3,11 +3,11 @@ DOCKER_IMAGE = verovio-builder
 OUT = pkg/verovio.wasm
 BUILD_DIR = pkg/obj
 
-# Optimization: -Os balances size and speed; override with `make OPT=-O0` for fast dev builds
+# Optimization: override with `make OPT=-O0` for fast dev builds
 OPT = -Os
 
 CXXFLAGS = $(OPT) -DNDEBUG -std=c++20 -DPUGIXML_NO_EXCEPTIONS \
-           -DNO_RUNTIME
+           -DNO_PAE_SUPPORT -DNO_RUNTIME
 
 # All source files
 PLUGIN_SRC = src/verovio_plugin.cpp
