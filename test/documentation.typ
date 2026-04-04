@@ -23,7 +23,7 @@
   #text(size: 16pt, fill: gray)[Music engraving in Typst]
 
   #box(render-music(
-    "X:1\nM:\nK:C\nE2G2|]",
+    "X:1\nM:\nK:C\nG1B|",
     options:(font:"Leipzig", adjustPageWidth: true),
     width: 70%,
   ))
@@ -97,15 +97,6 @@ EEFG|GFED|CCDE|D2C2|
 Returns the number of pages for the given music data and options.
 Useful to loop over pages of a multi-page score:
 
-```typst
-#let data = read("score.musicxml")
-#let pages = music-page-count(data)
-#for p in range(1, pages + 1) {
-  render-music(data, page: p, width: 100%)
-  pagebreak()
-}
-```
-
 #pagebreak()
 
 = Verovio Options
@@ -113,7 +104,7 @@ Useful to loop over pages of a multi-page score:
 Options are passed as a Typst dictionary. They map directly to
 #link("https://book.verovio.org/toolkit-reference/toolkit-options.html")[Verovio's toolkit options].
 
-#set text(size: 9pt)
+#set text(size: 13pt)
 
 #align(center, table(
   columns: (auto, auto, auto),
@@ -193,6 +184,30 @@ Verovio auto-detects the input format for ABC, MusicXML, MEI, and Humdrum.
 For Volpiano and CMME, pass `inputFrom` explicitly.
 
 All the files used in the examples are available in the project's #link("https://github.com/bernsteining/verovio")[Github].
+
+=== Exporting from notation software
+
+If you're working with any of these scoring software this table sums up each supported export format with their documentation linked.
+
+#set text(size: 9pt)
+#table(
+  columns: (auto, auto, auto, auto, auto),
+  align: (left, center, center, center, center),
+  table.header([*Software*], [*MusicXML*], [*MEI*], [*ABC*], [*Humdrum*]),
+  [#link("https://musescore.org/en/handbook/4/file-export")[MuseScore]], [✓], [✓], [], [],
+  [#link("https://usermanuals.finalemusic.com/FinaleMac/Content/Finale/menu-file.htm")[Finale]], [✓], [], [], [],
+  [#link("https://resources.avid.com/SupportFiles/Sibelius/2024.12/en-US/Content/Sibelius/Exporting_MusicXML.htm")[Sibelius]], [✓], [], [], [],
+  [#link("https://www.steinberg.help/r/dorico-pro/5.1/en/dorico/topics/project_file_handling/project_file_handling_musicxml_unpitched_percussion_r.html")[Dorico]], [✓], [], [], [],
+  [#link("https://lilypond.org/doc/v2.24/Documentation/usage/invoking-musicxml2ly")[LilyPond]], [✓], [], [], [],
+  [#link("https://help.flat.io/en/music-notation-software/print-export/")[Flat.io]], [✓], [], [], [],
+  [#link("https://www.noteflight.com/guide#exportScore")[Noteflight]], [✓], [], [], [],
+  [#link("https://abcnotation.com/wiki/abc:standard:v2.1")[ABC tools]], [✓], [], [✓], [],
+  [#link("https://extras.humdrum.org/man/")[Humdrum tools]], [✓], [✓], [✓], [✓],
+  [#link("https://music-encoding.org/resources/tools.html")[MEI tools]], [✓], [✓], [], [],
+)
+#set text(size: 11pt)
+
+MusicXML is the universal interchange format — virtually all notation software can export it. For the best results, export as uncompressed MusicXML (`.musicxml` or `.xml`, not `.mxl`).
 
 == ABC Notation
 
