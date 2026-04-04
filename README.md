@@ -1,8 +1,6 @@
-<p align="center">
-  <img src="test/logo.svg" alt="Verovio" width="200">
-</p>
+![logo](https://github.com/bernsteining/verovio/blob/v0.1.0/test/logo.svg)
 
-<h1 align="center">Verovio — Music Engraving Plugin for Typst</h1>
+# Verovio - Music Engraving Plugin for Typst
 
 A Typst plugin that renders music notation from multiple formats using
 [Verovio](https://www.verovio.org/), compiled to WebAssembly.
