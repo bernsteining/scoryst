@@ -16,10 +16,12 @@ A Typst plugin that renders music notation from multiple formats using
 - **Multi-page support**: render individual pages of long scores
 - **Binary font loading**: fonts pre-compiled to binary for instant init
 
+Check the [documentation](https://github.com/bernsteining/verovio/blob/v0.1.0/test/documentation.pdf) for a full demonstration with examples.
+
 ## Usage
 
 ```typst
-#import "@local/verovio:0.1.0": render-music, music-page-count
+#import "@preview/verovio:0.1.0": render-music, music-page-count
 
 // ABC notation (auto-detected)
 #render-music(read("scarborough-fair.abc"), width: 100%)
@@ -43,17 +45,6 @@ A Typst plugin that renders music notation from multiple formats using
   render-music(data, page: p, width: 100%)
 }
 ```
-
-### Supported formats
-
-| Format | Auto-detected | Example |
-|--------|:---:|---------|
-| ABC | ✓ | `render-music(read("scarborough-fair.abc"))` |
-| MusicXML | ✓ | `render-music(read("adagio.xml"))` |
-| MEI | ✓ | `render-music(read("schubert.mei"))` |
-| Humdrum | ✓ | `render-music(read("sample-humdrum.krn"))` |
-| Volpiano | | `render-music(data, options: (inputFrom: "volpiano"))` |
-| CMME | | `render-music(read("cmme.xml"), options: (inputFrom: "cmme"))` |
 
 ### API
 
@@ -111,6 +102,4 @@ memory reads, making font loading instant.
 
 ## License
 
-GPLv3 — Verovio is licensed under the
-[GNU General Public License v3](https://www.gnu.org/licenses/gpl-3.0.html).
-This plugin links Verovio statically, making it a derivative work under GPLv3.
+LGPLv3 - [Verovio's licensing](https://book.verovio.org/introduction/licensing.html)

@@ -1,4 +1,4 @@
-#import "@local/verovio:0.1.0": render-music, music-page-count
+#import "../pkg/verovio.typ": render-music, music-page-count
 #import "@preview/zebraw:0.6.1": *
 #set page(width: 210mm, height: 297mm, margin: 15mm)
 #set text(size: 11pt)
@@ -55,14 +55,14 @@ input formats directly into SVG embedded in your document.
 Render inline ABC notation:
 
 ````example
-#import "@local/verovio:0.1.0": render-music
+#import "../pkg/verovio.typ": render-music
 #render-music("X:1\nM:4/4\nK:C\nCDEF|GABc|")
 ````
 
 Or define a show rule to render ABC code blocks automatically:
 
 ````example
-#import "@local/verovio:0.1.0": render-music
+#import "../pkg/verovio.typ": render-music
 #show raw.where(lang: "abc"): it => render-music(it.text)
 
 ```abc
