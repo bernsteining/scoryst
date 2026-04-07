@@ -1,5 +1,5 @@
 /**
- * verovio_plugin — Typst plugin for music notation rendering via Verovio.
+ * scoryst_plugin — Typst plugin for music notation rendering via Verovio.
  *
  * Takes MusicXML (or other formats Verovio supports) as input,
  * returns SVG as output using the Typst wasm-minimal-protocol.

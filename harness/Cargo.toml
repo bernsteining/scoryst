@@ -1,5 +1,5 @@
 [package]
-name = "verovio-harness"
+name = "scoryst-harness"
 version = "0.1.0"
 edition = "2021"
 

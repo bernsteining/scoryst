@@ -1,6 +1,6 @@
 VEROVIO_DIR = verovio
-DOCKER_IMAGE = verovio-builder
-OUT = pkg/verovio.wasm
+DOCKER_IMAGE = scoryst-builder
+OUT = pkg/scoryst.wasm
 BUILD_DIR = pkg/obj
 
 # Optimization: override with `make OPT=-O0` for fast dev builds
@@ -10,8 +10,8 @@ CXXFLAGS = $(OPT) -DNDEBUG -std=c++20 -DPUGIXML_NO_EXCEPTIONS \
            -DNO_PAE_SUPPORT -DNO_RUNTIME
 
 # All source files
-PLUGIN_SRC = src/verovio_plugin.cpp
-INIT_SRC = src/verovio_init.cpp
+PLUGIN_SRC = src/scoryst_plugin.cpp
+INIT_SRC = src/scoryst_init.cpp
 # Exclude unused source files: editor toolkits, CMME parser, feature extractor
 VEROVIO_EXCLUDE = editortoolkit.cpp editortoolkit_cmn.cpp editortoolkit_neume.cpp \
                   editfunctor.cpp featureextractor.cpp
@@ -100,9 +100,9 @@ build: submodule docker
 	docker run --rm -v $(CURDIR):/src $(DOCKER_IMAGE) make -j$$(nproc) wasm
 
 install: wasm
-	mkdir -p ~/.local/share/typst/packages/local/verovio/0.1.0
-	cp pkg/verovio.wasm pkg/verovio.typ pkg/typst.toml \
-		~/.local/share/typst/packages/local/verovio/0.1.0/
+	mkdir -p ~/.local/share/typst/packages/local/scoryst/0.1.0
+	cp pkg/scoryst.wasm pkg/scoryst.typ pkg/typst.toml \
+		~/.local/share/typst/packages/local/scoryst/0.1.0/
 
 clean:
 	rm -rf $(OUT) $(OUT).opt $(BUILD_DIR)
