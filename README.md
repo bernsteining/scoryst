@@ -1,6 +1,6 @@
 ![logo](https://github.com/bernsteining/scoryst/blob/v0.1.0/test/logo.svg)
 
-# Scorst - Music Engraving Plugin for Typst
+# Scoryst - Music Engraving Plugin for Typst
 
 A Typst plugin that renders music notation from multiple formats using
 [Verovio](https://www.verovio.org/), compiled to WebAssembly.
