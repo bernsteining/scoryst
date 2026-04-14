@@ -62,9 +62,9 @@ struct BinGlyph {
     uint32_t path_offset, path_length;
 };
 
-static const SMuFLGlyphAnchor ANCHOR_IDS[6] = {
-    SMUFL_stemDownNW, SMUFL_stemUpSE,
-    SMUFL_cutOutNE, SMUFL_cutOutNW, SMUFL_cutOutSE, SMUFL_cutOutSW
+static const char *ANCHOR_IDS[6] = {
+    "stemDownNW", "stemUpSE",
+    "cutOutNE", "cutOutNW", "cutOutSE", "cutOutSW"
 };
 
 static bool loadMusicFont(Resources &res, const char *fontName,
@@ -97,7 +97,7 @@ static bool loadMusicFont(Resources &res, const char *fontName,
         // Anchors
         for (int a = 0; a < 6; a++) {
             if (bg.anchor_x[a] != 0 || bg.anchor_y[a] != 0) {
-                glyph.SetAnchor(ANCHOR_IDS[a], bg.anchor_x[a], bg.anchor_y[a]);
+                glyph.SetAnchor(ANCHOR_IDS[a], bg.anchor_x[a] * 4.0 / upm, bg.anchor_y[a] * 4.0 / upm);
             }
         }
 
