@@ -1,16 +1,3 @@
-diff --git a/include/vrv/glyph.h b/include/vrv/glyph.h
-index dc28607ae..97cc3d143 100644
---- a/include/vrv/glyph.h
-+++ b/include/vrv/glyph.h
-@@ -95,6 +95,8 @@ public:
-      * The string is turn into a SMuFLGlyphAnchor ("cutOutNE" => SMUFL_cutOutNE)
-      */
-     void SetAnchor(std::string anchorStr, double x, double y);
-+    /** Set anchor directly with pre-scaled coordinates */
-+    void SetAnchor(SMuFLGlyphAnchor id, int x, int y) { m_anchors[id] = Point(x, y); }
- 
-     /**
-      * Check if the glyph has anchor provided.
 diff --git a/include/vrv/resources.h b/include/vrv/resources.h
 index f7006b900..c3ca643e6 100644
 --- a/include/vrv/resources.h
