@@ -11,7 +11,7 @@ Binary format per font file (FontName.bin):
     uint32  codepoint
     int32   x, y, w, h          (bbox, 10x scaled)
     int32   horiz_adv_x          (10x scaled)
-    int32   anchor_x[6], anchor_y[6]  (0 if absent; scaled by upm/4)
+    int32   anchor_x[6], anchor_y[6]  (0 if absent; scaled by upm*10/4, matching Glyph::m_unitsPerEm)
     uint32  path_offset           (into string pool)
     uint32  path_length
   String pool:
@@ -67,8 +67,10 @@ def convert_font(data_dir, font_name, output_path, is_text_font=False):
                 idx = ANCHOR_NAMES.index(name)
                 ax = float(a.attrib.get("x", "0"))
                 ay = float(a.attrib.get("y", "0"))
-                anchor_x[idx] = int(round(ax * upm / 4))
-                anchor_y[idx] = int(round(ay * upm / 4))
+                # Glyph ctor stores m_unitsPerEm = upm*10, so m_anchors expects
+                # coordinates pre-scaled by upm*10/4 (staff-space * upm*10/4).
+                anchor_x[idx] = int(round(ax * upm * 10 / 4))
+                anchor_y[idx] = int(round(ay * upm * 10 / 4))
 
         # SVG path data
         path_offset = 0

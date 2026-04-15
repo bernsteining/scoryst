@@ -1,13 +1,13 @@
 #!/bin/bash
 # Iteratively find the minimal set of .o files needed to link.
 # Uses wasm-nm to find which .o defines each missing symbol.
-cd /home/lisbeth/documents/prog/perso/typst/verovio
+cd /src 2>/dev/null || cd /home/lisbeth/documents/prog/perso/typst/verovio
 
 FLAGS="-O3 -DNDEBUG -std=c++20"
 INCLUDES="-Isrc -Iverovio/include -Iverovio/include/vrv -Iverovio/include/hum -Iverovio/include/json -Iverovio/include/midi -Iverovio/include/pugi -Iverovio/include/zip -Iverovio/include/crc -Iverovio/include/tuning-library -Iverovio/libmei/dist -Iverovio/libmei/addons -Iverovio/tools"
 LINK="--no-entry -s WASM=1 -s INITIAL_MEMORY=268435456 -s ALLOW_MEMORY_GROWTH=1 -s STACK_SIZE=134217728 -s ERROR_ON_UNDEFINED_SYMBOLS=1 -s EXPORTED_FUNCTIONS=[_render,_render_page,_page_count,_malloc,_free]"
 
-OBJS="pkg/obj/src/verovio_plugin.o pkg/obj/src/verovio_init.o pkg/obj/src/verovio_data.o"
+OBJS="pkg/obj/src/scoryst_plugin.o pkg/obj/src/scoryst_init.o pkg/obj/src/verovio_data.o"
 ALL_O=($(find pkg/obj/verovio -name '*.o' | sort))
 
 # Build a symbol -> file index using wasm-nm (or llvm-nm)

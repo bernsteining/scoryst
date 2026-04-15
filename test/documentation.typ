@@ -1,4 +1,4 @@
-#import "../pkg/verovio.typ": render-music, music-page-count
+#import "../pkg/scoryst.typ": render-music, music-page-count
 #import "@preview/zebraw:0.6.1": *
 #set page(width: 210mm, height: 297mm, margin: 15mm)
 #set text(size: 11pt)
@@ -17,7 +17,7 @@
 // Front page
 #set page(numbering: none)
 #align(center + horizon)[
-  #text(size: 32pt, weight: "bold", "Verovio")
+  #text(size: 32pt, weight: "bold", "Scoryst")
 
   #v(1.5em)
   #text(size: 16pt, fill: gray)[Music engraving in Typst]
@@ -29,7 +29,7 @@
   ))
   #v(1.5em)
 
- #link("https://github.com/bernsteining/verovio")[#text(size: 16pt, fill: blue)[github.com/bernsteining/verovio]] · #link("https://typst.app/universe/package/verovio")[#text(size: 16pt, fill: blue)[typst.app/universe/package/verovio]]
+ #link("https://github.com/bernsteining/scoryst")[#text(size: 16pt, fill: blue)[github.com/bernsteining/scoryst]] · #link("https://typst.app/universe/package/scoryst")[#text(size: 16pt, fill: blue)[typst.app/universe/package/scoryst]]
 ] 
   
 #v(1fr)
@@ -41,13 +41,13 @@
 #counter(page).update(1)
 
 #align(center)[
-  #text(size: 20pt, weight: "bold")[Verovio — Music Engraving Plugin for Typst]
+  #text(size: 20pt, weight: "bold")[Scoryst — Music Engraving Plugin for Typst]
 ]
 
 #v(1em)
 
-Verovio is a music notation engraving library. This Typst
-plugin wraps #link("https://www.verovio.org/index.xhtml")[Verovio] as a WebAssembly module, rendering music from multiple
+Scoryst is a music notation engraving plugin for Typst. It
+wraps #link("https://www.verovio.org/index.xhtml")[Verovio] as a WebAssembly module, rendering music from multiple
 input formats directly into SVG embedded in your document.
 
 = Quick Start
@@ -55,14 +55,14 @@ input formats directly into SVG embedded in your document.
 Render inline ABC notation:
 
 ````example
-#import "../pkg/verovio.typ": render-music
+#import "../pkg/scoryst.typ": render-music
 #render-music("X:1\nM:4/4\nK:C\nCDEF|GABc|")
 ````
 
 Or define a show rule to render ABC code blocks automatically:
 
 ````example
-#import "../pkg/verovio.typ": render-music
+#import "../pkg/scoryst.typ": render-music
 #show raw.where(lang: "abc"): it => render-music(it.text)
 
 ```abc
@@ -183,7 +183,7 @@ Five #link("https://www.smufl.org/")[SMuFL]-compliant music fonts are available.
 Verovio auto-detects the input format for ABC, MusicXML, MEI, and Humdrum.
 For Volpiano and CMME, pass `inputFrom` explicitly.
 
-All the files used in the examples are available in the project's #link("https://github.com/bernsteining/verovio")[Github].
+All the files used in the examples are available in the project's #link("https://github.com/bernsteining/scoryst")[Github].
 
 === Exporting from notation software
 
