@@ -19,7 +19,7 @@ Check the [documentation](https://github.com/bernsteining/scoryst/blob/v0.1.1/te
 ## Usage
 
 ```typst
-#import "@preview/scoryst:0.1.0": render-music, music-page-count
+#import "@preview/scoryst:0.1.1": render-music, music-page-count
 
 // ABC notation (auto-detected)
 #render-music(read("scarborough-fair.abc"), width: 100%)

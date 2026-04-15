@@ -60,7 +60,11 @@ WASM_OPT_FLAGS = -O3 --enable-simd --enable-bulk-memory --enable-sign-ext \
                  --traps-never-happen --fast-math --closed-world --directize \
                  --inline-functions-with-loops --converge
 
-.PHONY: all clean submodule docker build wasm dev install
+# Version is the single source of truth in pkg/typst.toml; derive it here
+# so install and bump stay consistent.
+VERSION := $(shell sed -n 's/^version = "\(.*\)"/\1/p' pkg/typst.toml)
+
+.PHONY: all clean submodule docker build wasm dev install bump
 
 all: wasm
 
@@ -100,9 +104,17 @@ build: submodule docker
 	docker run --rm -v $(CURDIR):/src $(DOCKER_IMAGE) make -j$$(nproc) wasm
 
 install: wasm
-	mkdir -p ~/.local/share/typst/packages/local/scoryst/0.1.0
+	mkdir -p ~/.local/share/typst/packages/local/scoryst/$(VERSION)
 	cp pkg/scoryst.wasm pkg/scoryst.typ pkg/typst.toml \
-		~/.local/share/typst/packages/local/scoryst/0.1.0/
+		~/.local/share/typst/packages/local/scoryst/$(VERSION)/
+
+# Bump the version everywhere (pkg/typst.toml, README.md). Usage: make bump V=0.1.2
+bump:
+	@[ -n "$(V)" ] || (echo "usage: make bump V=X.Y.Z"; exit 1)
+	@OLD=$$(sed -n 's/^version = "\(.*\)"/\1/p' pkg/typst.toml); \
+	  sed -i "s/^version = \"$$OLD\"/version = \"$(V)\"/" pkg/typst.toml; \
+	  sed -i "s|scoryst:$$OLD|scoryst:$(V)|g" README.md; \
+	  echo "bumped $$OLD -> $(V) in pkg/typst.toml and README.md"
 
 clean:
 	rm -rf $(OUT) $(OUT).opt $(BUILD_DIR)
