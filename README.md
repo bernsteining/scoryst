@@ -1,4 +1,4 @@
-![logo](https://github.com/bernsteining/scoryst/blob/v0.1.0/test/logo.svg)
+![logo](https://github.com/bernsteining/scoryst/blob/v0.1.1/test/logo.svg)
 
 # Scoryst - Music Engraving Plugin for Typst
 
@@ -14,7 +14,7 @@ A Typst plugin that renders music notation from multiple formats using
 - **Multi-page support**: render individual pages of long scores
 - **Binary font loading**: fonts pre-compiled to binary for instant init
 
-Check the [documentation](https://github.com/bernsteining/scoryst/blob/v0.1.0/test/documentation.pdf) for a full demonstration with examples.
+Check the [documentation](https://github.com/bernsteining/scoryst/blob/v0.1.1/test/documentation.pdf) for a full demonstration with examples.
 
 ## Usage
 
