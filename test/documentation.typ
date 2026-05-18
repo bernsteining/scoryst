@@ -30,7 +30,10 @@
   #v(1.5em)
 
  #link("https://github.com/bernsteining/scoryst")[#text(size: 16pt, fill: blue)[github.com/bernsteining/scoryst]] · #link("https://typst.app/universe/package/scoryst")[#text(size: 16pt, fill: blue)[typst.app/universe/package/scoryst]]
-] 
+
+  #v(1em)
+  #text(size: 12pt, fill: gray)[v0.1.2 — 2026-05-18]
+]
   
 #v(1fr)
 
