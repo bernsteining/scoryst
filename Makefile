@@ -7,7 +7,7 @@ BUILD_DIR = pkg/obj
 OPT = -Os
 
 CXXFLAGS = $(OPT) -DNDEBUG -std=c++20 -DPUGIXML_NO_EXCEPTIONS \
-           -DNO_PAE_SUPPORT -DNO_RUNTIME
+           -DNO_RUNTIME
 
 # All source files
 PLUGIN_SRC = src/scoryst_plugin.cpp
@@ -46,9 +46,9 @@ VEROVIO_INCLUDES = -Isrc \
 
 LINK_FLAGS = --no-entry \
              -s WASM=1 \
-             -s INITIAL_MEMORY=536870912 \
+             -s INITIAL_MEMORY=16777216 \
              -s ALLOW_MEMORY_GROWTH=1 \
-             -s STACK_SIZE=134217728 \
+             -s STACK_SIZE=2097152 \
              -s ERROR_ON_UNDEFINED_SYMBOLS=0 \
              -s EXPORTED_FUNCTIONS='["_render","_render_page","_page_count","_malloc","_free"]' \
              -s FILESYSTEM=0 \
@@ -57,7 +57,7 @@ LINK_FLAGS = --no-entry \
 
 WASM_OPT_FLAGS = -O3 --enable-simd --enable-bulk-memory --enable-sign-ext \
                  --enable-nontrapping-float-to-int --enable-mutable-globals --enable-multivalue \
-                 --traps-never-happen --fast-math --closed-world --directize \
+                 --fast-math --closed-world --directize \
                  --inline-functions-with-loops --converge
 
 # Version is the single source of truth in pkg/typst.toml; derive it here
@@ -85,6 +85,7 @@ $(BUILD_DIR)/src/font_data.o: src/font_data.S src/fonts
 $(OUT): $(ALL_OBJ)
 	emcc $(CXXFLAGS) $(LINK_FLAGS) $(VEROVIO_INCLUDES) -o $(OUT) $(ALL_OBJ)
 	wasi-stub $(OUT) -o $(OUT) --stub-module env,wasi_snapshot_preview1 -r 0
+	wasm-opt $(WASM_OPT_FLAGS) $(OUT) -o $(OUT)
 
 wasm: $(OUT)
 
