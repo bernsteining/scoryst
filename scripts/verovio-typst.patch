@@ -15,7 +15,17 @@ diff --git a/include/vrv/resources.h b/include/vrv/resources.h
 index f7006b900..c3ca643e6 100644
 --- a/include/vrv/resources.h
 +++ b/include/vrv/resources.h
-@@ -69,6 +69,12 @@ public:
+@@ -61,7 +61,8 @@ public:
+      */
+     void UseLiberationTextFont(bool useLiberation) { m_useLiberation = useLiberation; }
+     bool UseLiberationTextFont() const { return m_useLiberation; }
+-    std::string GetTextFont() const { return ((m_useLiberation) ? "Liberation" : "Times"); }
++    // Typst's resvg can't resolve "Times"; use Liberation Serif (metric-compatible) to avoid monospace fallback
++    std::string GetTextFont() const { return "Liberation Serif"; }
+
+     /**
+      * Font initialization
+@@ -69,6 +70,12 @@ public:
      ///@{
      /** Init the SMufL music and text fonts */
      bool InitFonts();
