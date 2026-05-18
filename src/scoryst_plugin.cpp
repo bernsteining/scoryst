@@ -20,6 +20,9 @@ extern "C" {
     void vrvToolkit_resetOptions(void *toolkit);
     int vrvToolkit_getPageCount(void *toolkit);
     const char *vrvToolkit_fixSmuflText(void *toolkit, const char *svg);
+    const char *vrvToolkit_getLog(void *toolkit);
+    void enableLog(int level);
+    void enableLogToBuffer(bool value);
 }
 
 /* Typst wasm-minimal-protocol imports */
@@ -37,6 +40,23 @@ static void send_result(const char *s) {
     wasm_minimal_protocol_send_result_to_host(s, strlen(s));
 }
 
+static void send_error(const char *prefix, void *tk) {
+    const char *log = vrvToolkit_getLog(tk);
+    if (log && log[0]) {
+        size_t plen = strlen(prefix);
+        size_t llen = strlen(log);
+        char *msg = (char *)malloc(plen + llen + 1);
+        if (msg) {
+            memcpy(msg, prefix, plen);
+            memcpy(msg + plen, log, llen + 1);
+            send_result(msg);
+            free(msg);
+            return;
+        }
+    }
+    send_result(prefix);
+}
+
 /* Fresh toolkit per render — eliminates state leaking between renders.
  * Binary font loading makes construction instant (no XML parsing). */
 static void *g_toolkit = nullptr;
@@ -46,6 +66,8 @@ static void *get_toolkit() {
         vrvToolkit_destructor(g_toolkit);
     }
     g_toolkit = vrvToolkit_constructorFromBinaryFonts();
+    enableLog(2);
+    enableLogToBuffer(true);
     return g_toolkit;
 }
 
@@ -70,7 +92,7 @@ static bool load_music(void *tk, const char *music_data, const char *options,
     }
 
     if (!vrvToolkit_loadData(tk, music_data)) {
-        send_result("verovio failed to load music data");
+        send_error("verovio failed to load music data: ", tk);
         return false;
     }
 
