@@ -19,7 +19,7 @@
 /// - page: Page number to render (default: 1)
 /// - ..args: Additional arguments forwarded to Typst's `image` function
 ///           (e.g., `width`, `height`, `fit`, `alt`)
-#let render-music(data, options: none, page: 1, ..args) = {
+#let score(data, options: none, page: 1, ..args) = {
   let data-bytes = bytes(data)
   let options-bytes = bytes(_serialize-options(options))
 
@@ -36,6 +36,10 @@
 ///
 /// - data: Music data as a string
 /// - options: Verovio options as a dictionary (optional)
-#let music-page-count(data, options: none) = {
+#let pages(data, options: none) = {
   int(str(plugin.page_count(bytes(data), bytes(_serialize-options(options)))))
 }
+
+// Deprecated aliases for backward compatibility
+#let render-music(data, options: none, page: 1, ..args) = score(data, options: options, page: page, ..args)
+#let music-page-count(data, options: none) = pages(data, options: options)

@@ -1,11 +1,11 @@
-#import "../pkg/scoryst.typ": render-music, music-page-count
+#import "../pkg/scoryst.typ": score, pages
 #import "@preview/zebraw:0.6.1": *
 #set page(width: 210mm, height: 297mm, margin: 15mm)
 #set text(size: 11pt)
 #show link: it => underline(text(fill: rgb("#1a5fb4"), it))
 
 // Example helper: shows code then rendered output with minimal spacing
-#let doc-scope = (render-music: render-music, music-page-count: music-page-count, read: read)
+#let doc-scope = (score: score, pages: pages, read: read)
 #show raw.where(lang: "example"): it => {
   let code = it.text
   zebraw(numbering: false, raw(block: true, lang: "typst", code))
@@ -22,7 +22,7 @@
   #v(1.5em)
   #text(size: 16pt, fill: gray)[Music engraving in Typst]
 
-  #box(render-music(
+  #box(score(
     "X:1\nM:\nK:C\nG1B|",
     options:(font:"Leipzig", adjustPageWidth: true),
     width: 70%,
@@ -55,15 +55,15 @@ input formats directly into SVG embedded in your document.
 Render inline ABC notation:
 
 ````example
-#import "../pkg/scoryst.typ": render-music
-#render-music("X:1\nM:4/4\nK:C\nCDEF|GABc|")
+#import "../pkg/scoryst.typ": score
+#score("X:1\nM:4/4\nK:C\nCDEF|GABc|")
 ````
 
 Or define a show rule to render ABC code blocks automatically:
 
 ````example
-#import "../pkg/scoryst.typ": render-music
-#show raw.where(lang: "abc"): it => render-music(it.text)
+#import "../pkg/scoryst.typ": score
+#show raw.where(lang: "abc"): it => score(it.text)
 
 ```abc
 X:1
@@ -77,25 +77,25 @@ EEFG|GFED|CCDE|D2C2|
 
 = API Reference
 
-== `render-music`
+== `score`
 
 ```typst
-#render-music(
-  data,             // string: music data (ABC, MusicXML, MEI, Humdrum, Volpiano, CMME)
+#score(
+  data,             // string: music (ABC, MusicXML, MEI, Humdrum, EsAC, PAE, Volpiano, CMME)
   options: none,    // dictionary: verovio options
   page: 1,          // int: page number to render
   ..args,           // forwarded to Typst's image() (width, height, fit, alt)
 )
 ```
 
-== `music-page-count`
+== `pages`
 
 ```typst
-#let n = music-page-count(data, options: none)
+#let n = pages(data, options: none)
 ```
 
 Returns the number of pages for the given music data and options.
-Useful to loop over pages of a multi-page score:
+Useful to loop over pages of a multi-page score.
 
 #pagebreak()
 
@@ -116,7 +116,7 @@ Options are passed as a Typst dictionary. They map directly to
   [`adjustPageWidth`], [`false`], [Crop SVG width to content],
   [`scale`], [`100`], [Scale factor (percent)],
   [`font`], [`"Leipzig"`], [Music font: Leipzig, Bravura, Gootville, Leland, Petaluma],
-  [`inputFrom`], [`"auto"`], [Format: auto, mei, musicxml, abc, humdrum, volpiano, cmme],
+  [`inputFrom`], [`"auto"`], [Format: auto, mei, musicxml, abc, humdrum, esac, pae, volpiano, cmme],
   [`pageWidth`], [`2100`], [Page width (MEI units)],
   [`pageHeight`], [`2970`], [Page height (MEI units)],
   [`pageMarginTop`], [`50`], [Top margin],
@@ -162,7 +162,7 @@ Five #link("https://www.smufl.org/")[SMuFL]-compliant music fonts are available.
 `font` option:
 
 ```typst
-#render-music(data, options: (font: "Petaluma"))
+#score(data, options: (font: "Petaluma"))
 ```
 
 #let font-sample = "X:1\nM:4/4\nL:1/8\nK:Bb\n(D2 EF) G>A|_B2 ^c2 d2 z2|{/A}G6 !trill!F2|]"
@@ -171,7 +171,7 @@ Five #link("https://www.smufl.org/")[SMuFL]-compliant music fonts are available.
   #let cells = ()
   #for name in ("Petaluma", "Leland", "Gootville", "Bravura", "Leipzig") {
     cells.push(align(left + horizon, strong(name)))
-    cells.push(render-music(font-sample, options: (font: name, adjustPageWidth: true), height: 10em))
+    cells.push(score(font-sample, options: (font: name, adjustPageWidth: true), height: 10em))
   }
   #grid(columns: (auto, 1fr), row-gutter: 0.5em, column-gutter: 1em, ..cells)
 ]
@@ -180,8 +180,8 @@ Five #link("https://www.smufl.org/")[SMuFL]-compliant music fonts are available.
 
 = Supported Input Formats
 
-Verovio auto-detects the input format for ABC, MusicXML, MEI, and Humdrum.
-For Volpiano and CMME, pass `inputFrom` explicitly.
+Verovio auto-detects the input format for ABC, MusicXML, MEI, Humdrum, and EsAC.
+For PAE, Volpiano, and CMME, pass `inputFrom` explicitly.
 
 All the files used in the examples are available in the project's #link("https://github.com/bernsteining/scoryst")[Github].
 
@@ -218,7 +218,7 @@ ABC is a compact text-based format popular for folk and classical melodies.
 Chord symbols are supported.
 
 ````example
-#render-music(read("bach-prelude-cmaj.abc"))
+#score(read("bach-prelude-cmaj.abc"))
 ````
 
 #pagebreak()
@@ -232,7 +232,7 @@ MusicXML is the standard interchange format for notation software.
 It supports grand staff, multiple voices, dynamics, and full score layout.
 
 ```example
-#render-music(read("adagio.xml"))
+#score(read("adagio.xml"))
 ```
 
 #pagebreak()
@@ -246,7 +246,7 @@ MEI is a rich XML-based format used in musicology, supporting lyrics,
 polyphonic textures, fermatas, and detailed editorial markup.
 
 ```example
-#render-music(read("schubert.mei"))
+#score(read("schubert.mei"))
 ```
 
 #pagebreak()
@@ -260,8 +260,41 @@ Humdrum uses a tab-separated spine structure with `**kern` encoding
 for pitches and durations. Widely used in computational musicology.
 
 ```example
-#render-music(read("sample-humdrum.krn"))
+#score(read("sample-humdrum.krn"))
 ```
+
+#pagebreak()
+
+== EsAC (Essen Associative Code)
+
+#link("https://www.esac-data.org/")[EsAC data]
+· #link("https://kern.ccarh.org/cgi-bin/browse?l=/essen")[Essen Folksong Collection]
+
+EsAC is a text format used by the Essen Folksong Collection to encode
+melodies as scale degrees relative to a tonic. It stores metadata (title,
+region, key) and melody data in labeled fields. Here is _Das Hildebrandslied_,
+a German folk ballad. EsAC is auto-detected by Verovio.
+
+```example
+#score(read("hildebrandslied.esac"))
+```
+
+== Plaine & Easie Code (PAE)
+
+#link("https://www.iaml.info/plaine-easie-code")[Plaine & Easie specification]
+· #link("https://rism.info")[RISM catalogue]
+
+Plaine & Easie Code is a compact text notation used by #link("https://rism.info")[RISM] to catalogue
+musical incipits — the opening bars of a piece. It encodes clef, key signature,
+time signature, and note data as key-value pairs.
+Requires `inputFrom: "pae"`.
+
+````example
+#score(
+  "@clef:G-2\n@keysig:xF\n@timesig:3/8\n@data:=25//$xFCG @c 2-4.-'8E/{6AGFE}{8A''C}'B''4D{6C'B}/{''DC'BA}{''8EA}",
+  options: (inputFrom: "pae"),
+)
+````
 
 #pagebreak()
 
@@ -275,7 +308,7 @@ CANTUS database. Here is _Veni Creator Spiritus_, the famous Pentecost hymn.
 Requires `inputFrom: "volpiano"`.
 
 ```example
-#render-music("1---g--hij---hgf--g--hg---k--lk--k7---hG--f---h--k--lk---l--m--l---k--lm---kj7--hg--kl---g--gh--k---jk---h---gf--h--hjh7---g--f--g7---3", options: (inputFrom: "volpiano"))
+#score("1---g--h-ij---hgf--g--hg---k--lk--k7---hG--f---h--k--lk---l--m--l---k--lm---kj7--hg--kl---g--gh--k---jk---h---gf--h--hjh7---g--f--g7---3", options: (inputFrom: "volpiano"))
 ```
 
 == CMME
@@ -287,6 +320,6 @@ CMME is an XML format for mensural notation (medieval and Renaissance music).
 Requires `inputFrom: "cmme"`.
 
 ```example
-#render-music(read("cmme.xml"), options: (inputFrom: "cmme"))
+#score(read("cmme.xml"), options: (inputFrom: "cmme"))
 ```
 
