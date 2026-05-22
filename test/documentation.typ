@@ -24,7 +24,7 @@
 
   #box(score(
     "X:1\nM:\nK:C\nG1B|",
-    options:(font:"Leipzig", adjustPageWidth: true),
+    options:(font:"Leipzig", adjust-page-width: true),
     width: 70%,
   ))
   #v(1.5em)
@@ -106,6 +106,7 @@ Useful to loop over pages of a multi-page score.
 
 Options are passed as a Typst dictionary. They map directly to
 #link("https://book.verovio.org/toolkit-reference/toolkit-options.html")[Verovio's toolkit options].
+Both kebab-case and camelCase keys are accepted (e.g. `adjust-page-height` or `adjustPageHeight`).
 
 #set text(size: 13pt)
 
@@ -115,17 +116,17 @@ Options are passed as a Typst dictionary. They map directly to
   table.header(
     table.cell(colspan: 3, align: left, strong[Common]),
   ),
-  [`adjustPageHeight`], [`true`], [Crop SVG height to content],
-  [`adjustPageWidth`], [`false`], [Crop SVG width to content],
+  [`adjust-page-height`], [`true`], [Crop SVG height to content],
+  [`adjust-page-width`], [`false`], [Crop SVG width to content],
   [`scale`], [`100`], [Scale factor (percent)],
   [`font`], [`"Leipzig"`], [Music font: Leipzig, Bravura, Gootville, Leland, Petaluma],
-  [`inputFrom`], [`"auto"`], [Format: auto, mei, musicxml, abc, humdrum, esac, pae, volpiano, cmme],
-  [`pageWidth`], [`2100`], [Page width (MEI units)],
-  [`pageHeight`], [`2970`], [Page height (MEI units)],
-  [`pageMarginTop`], [`50`], [Top margin],
-  [`pageMarginBottom`], [`50`], [Bottom margin],
-  [`pageMarginLeft`], [`50`], [Left margin],
-  [`pageMarginRight`], [`50`], [Right margin],
+  [`input-from`], [`"auto"`], [Format: auto, mei, musicxml, abc, humdrum, esac, pae, volpiano, cmme],
+  [`page-width`], [`2100`], [Page width (MEI units)],
+  [`page-height`], [`2970`], [Page height (MEI units)],
+  [`page-margin-top`], [`50`], [Top margin],
+  [`page-margin-bottom`], [`50`], [Bottom margin],
+  [`page-margin-left`], [`50`], [Left margin],
+  [`page-margin-right`], [`50`], [Right margin],
   [`landscape`], [`false`], [Landscape orientation],
   [`breaks`], [`"auto"`], [Line breaks: auto, line, encoded, none],
   [`condense`], [`"auto"`], [Condense: auto, none, encoded],
@@ -133,22 +134,22 @@ Options are passed as a Typst dictionary. They map directly to
   [`header`], [`"auto"`], [Header: auto, none, encoded],
   [`footer`], [`"auto"`], [Footer: auto, none, encoded],
   table.cell(colspan: 3, align: left, strong[Layout]),
-  [`spacingStaff`], [`12`], [Spacing between staves],
-  [`spacingSystem`], [`12`], [Spacing between systems],
-  [`spacingLinear`], [`0.25`], [Linear spacing factor],
-  [`spacingNonLinear`], [`0.6`], [Non-linear spacing factor],
+  [`spacing-staff`], [`12`], [Spacing between staves],
+  [`spacing-system`], [`12`], [Spacing between systems],
+  [`spacing-linear`], [`0.25`], [Linear spacing factor],
+  [`spacing-non-linear`], [`0.6`], [Non-linear spacing factor],
   [`unit`], [`9`], [Base unit size (half staff space)],
-  [`stemWidth`], [`0.2`], [Stem width],
-  [`barLineWidth`], [`0.3`], [Bar line width],
-  [`staffLineWidth`], [`0.15`], [Staff line width],
-  [`lyricSize`], [`4.5`], [Lyrics font size],
-  [`hairpinSize`], [`3.0`], [Hairpin height],
+  [`stem-width`], [`0.2`], [Stem width],
+  [`bar-line-width`], [`0.3`], [Bar line width],
+  [`staff-line-width`], [`0.15`], [Staff line width],
+  [`lyric-size`], [`4.5`], [Lyrics font size],
+  [`hairpin-size`], [`3.0`], [Hairpin height],
   table.cell(colspan: 3, align: left, strong[SVG Output]),
-  [`svgViewBox`], [`false`], [Use viewBox instead of width/height],
-  [`svgRemoveXlink`], [`false`], [Use href instead of xlink:href],
-  [`svgBoundingBoxes`], [`false`], [Add bounding box rects (debug)],
-  [`removeIds`], [`false`], [Strip element IDs from SVG],
-  [`smuflTextFont`], [`"embedded"`], [SMuFL text font: embedded, linked, none],
+  [`svg-view-box`], [`false`], [Use viewBox instead of width/height],
+  [`svg-remove-xlink`], [`false`], [Use href instead of xlink:href],
+  [`svg-bounding-boxes`], [`false`], [Add bounding box rects (debug)],
+  [`remove-ids`], [`false`], [Strip element IDs from SVG],
+  [`smufl-text-font`], [`"embedded"`], [SMuFL text font: embedded, linked, none],
 )
 )
 
@@ -174,7 +175,7 @@ Five #link("https://www.smufl.org/")[SMuFL]-compliant music fonts are available.
   #let cells = ()
   #for name in ("Petaluma", "Leland", "Gootville", "Bravura", "Leipzig") {
     cells.push(align(left + horizon, strong(name)))
-    cells.push(score(font-sample, options: (font: name, adjustPageWidth: true), height: 10em))
+    cells.push(score(font-sample, options: (font: name, adjust-page-width: true), height: 10em))
   }
   #grid(columns: (auto, 1fr), row-gutter: 0.5em, column-gutter: 1em, ..cells)
 ]
@@ -184,7 +185,7 @@ Five #link("https://www.smufl.org/")[SMuFL]-compliant music fonts are available.
 = Supported Input Formats
 
 Verovio auto-detects the input format for ABC, MusicXML, MEI, Humdrum, and EsAC.
-For PAE, Volpiano, and CMME, pass `inputFrom` explicitly.
+For PAE, Volpiano, and CMME, pass `input-from` explicitly.
 
 All the files used in the examples are available in the project's #link("https://github.com/bernsteining/scoryst")[Github].
 
@@ -290,12 +291,12 @@ a German folk ballad. EsAC is auto-detected by Verovio.
 Plaine & Easie Code is a compact text notation used by #link("https://rism.info")[RISM] to catalogue
 musical incipits — the opening bars of a piece. It encodes clef, key signature,
 time signature, and note data as key-value pairs.
-Requires `inputFrom: "pae"`.
+Requires `input-from: "pae"`.
 
 ````example
 #score(
   "@clef:G-2\n@keysig:xF\n@timesig:3/8\n@data:=25//$xFCG @c 2-4.-'8E/{6AGFE}{8A''C}'B''4D{6C'B}/{''DC'BA}{''8EA}",
-  options: (inputFrom: "pae"),
+  options: (input-from: "pae"),
 )
 ````
 
@@ -308,10 +309,10 @@ Requires `inputFrom: "pae"`.
 
 Volpiano is a text encoding for medieval chant notation, used by the
 CANTUS database. Here is _Veni Creator Spiritus_, the famous Pentecost hymn.
-Requires `inputFrom: "volpiano"`.
+Requires `input-from: "volpiano"`.
 
 ```example
-#score("1---g--h-ij---hgf--g--hg---k--lk--k7---hG--f---h--k--lk---l--m--l---k--lm---kj7--hg--kl---g--gh--k---jk---h---gf--h--hjh7---g--f--g7---3", options: (inputFrom: "volpiano"))
+#score("1---g--h-ij---hgf--g--hg---k--lk--k7---hG--f---h--k--lk---l--m--l---k--lm---kj7--hg--kl---g--gh--k---jk---h---gf--h--hjh7---g--f--g7---3", options: (input-from: "volpiano"))
 ```
 
 == CMME
@@ -320,9 +321,9 @@ Requires `inputFrom: "volpiano"`.
 · #link("https://github.com/tdumitrescu/cmme-music")[Download CMME files]
 
 CMME is an XML format for mensural notation (medieval and Renaissance music).
-Requires `inputFrom: "cmme"`.
+Requires `input-from: "cmme"`.
 
 ```example
-#score(read("cmme.xml"), options: (inputFrom: "cmme"))
+#score(read("cmme.xml"), options: (input-from: "cmme"))
 ```
 
