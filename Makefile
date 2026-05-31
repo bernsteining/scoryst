@@ -1,3 +1,5 @@
+MAKEFLAGS += -j$(shell nproc)
+
 VEROVIO_DIR = verovio
 DOCKER_IMAGE = scoryst-builder
 OUT = pkg/scoryst.wasm
