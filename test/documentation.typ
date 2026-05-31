@@ -108,14 +108,11 @@ Options are passed as a Typst dictionary. They map directly to
 #link("https://book.verovio.org/toolkit-reference/toolkit-options.html")[Verovio's toolkit options].
 Both kebab-case and camelCase keys are accepted (e.g. `adjust-page-height` or `adjustPageHeight`).
 
-#set text(size: 13pt)
+#set text(size: 10.5pt)
 
 #align(center, table(
   columns: (auto, auto, auto),
   align: (left, left, left),
-  table.header(
-    table.cell(colspan: 3, align: left, strong[Common]),
-  ),
   [`adjust-page-height`], [`true`], [Crop SVG height to content],
   [`adjust-page-width`], [`false`], [Crop SVG width to content],
   [`scale`], [`100`], [Scale factor (percent)],
@@ -133,7 +130,6 @@ Both kebab-case and camelCase keys are accepted (e.g. `adjust-page-height` or `a
   [`transpose`], [`""`], [Transpose (e.g. "M2" for major second up)],
   [`header`], [`"auto"`], [Header: auto, none, encoded],
   [`footer`], [`"auto"`], [Footer: auto, none, encoded],
-  table.cell(colspan: 3, align: left, strong[Layout]),
   [`spacing-staff`], [`12`], [Spacing between staves],
   [`spacing-system`], [`12`], [Spacing between systems],
   [`spacing-linear`], [`0.25`], [Linear spacing factor],
@@ -144,12 +140,19 @@ Both kebab-case and camelCase keys are accepted (e.g. `adjust-page-height` or `a
   [`staff-line-width`], [`0.15`], [Staff line width],
   [`lyric-size`], [`4.5`], [Lyrics font size],
   [`hairpin-size`], [`3.0`], [Hairpin height],
-  table.cell(colspan: 3, align: left, strong[SVG Output]),
   [`svg-view-box`], [`false`], [Use viewBox instead of width/height],
   [`svg-remove-xlink`], [`false`], [Use href instead of xlink:href],
   [`svg-bounding-boxes`], [`false`], [Add bounding box rects (debug)],
   [`remove-ids`], [`false`], [Strip element IDs from SVG],
   [`smufl-text-font`], [`"embedded"`], [SMuFL text font: embedded, linked, none],
+  [`pedal-style`], [`"auto"`], [Pedal marking style: auto, line, pedstar, altpedstar],
+  [`font-fallback`], [`"Leipzig"`], [Music font fallback for missing glyphs: Leipzig, Bravura],
+  [`lyric-elision`], [`"regular"`], [Lyric elision width: regular, narrow, wide, unicode],
+  [`multi-rest-style`], [`"auto"`], [Multi-measure rest style: auto, default, block, symbols],
+  [`system-divider`], [`"none"`], [System divider display: none, auto, left, left-right],
+  [`duration-equivalence`], [`"brevis"`], [Mensural duration equivalence: brevis, semibrevis, minima],
+  [`ligature-oblique`], [`"auto"`], [Ligature oblique shape: auto, straight, curved],
+  [`mensural-responsive-view`], [`"none"`], [Mensural responsive view: none, auto, selection],
 )
 )
 
