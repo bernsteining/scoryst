@@ -151,6 +151,15 @@ int render_page(int music_len, int options_len, int page_str_len) {
 
     if (!load_music(tk, music_data, options, options_len)) { free(buf); return 1; }
 
+    int total_pages = vrvToolkit_getPageCount(tk);
+    if (page > total_pages) {
+        char msg[64];
+        snprintf(msg, sizeof(msg), "page %d out of range (score has %d page%s)", page, total_pages, total_pages == 1 ? "" : "s");
+        send_result(msg);
+        free(buf);
+        return 1;
+    }
+
     const char *svg = vrvToolkit_renderToSVG(tk, page, false);
     if (!svg) { send_result("verovio failed to render SVG"); free(buf); return 1; }
 
