@@ -1,3 +1,8 @@
 pkg/obj/
 pkg/*.o
 harness/target/
+test/_*
+test/bla.*
+test/issue6*
+test/fuzz_mei.py
+test/__pycache__/

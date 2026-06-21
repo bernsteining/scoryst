@@ -32,7 +32,7 @@
  #link("https://github.com/bernsteining/scoryst")[#text(size: 16pt, fill: blue)[github.com/bernsteining/scoryst]] · #link("https://typst.app/universe/package/scoryst")[#text(size: 16pt, fill: blue)[typst.app/universe/package/scoryst]]
 
   #v(1em)
-  #text(size: 12pt, fill: gray)[v0.1.2 — 2026-05-18]
+  #text(size: 12pt, fill: gray)[v0.1.3 — 2026-06-21]
 ]
   
 #v(1fr)
@@ -225,7 +225,7 @@ ABC is a compact text-based format popular for folk and classical melodies.
 Chord symbols are supported.
 
 ````example
-#score(read("bach-prelude-cmaj.abc"))
+#score(read("examples/bach-prelude-cmaj.abc"))
 ````
 
 #pagebreak()
@@ -239,7 +239,7 @@ MusicXML is the standard interchange format for notation software.
 It supports grand staff, multiple voices, dynamics, and full score layout.
 
 ```example
-#score(read("adagio.xml"))
+#score(read("examples/adagio.xml"))
 ```
 
 #pagebreak()
@@ -253,7 +253,7 @@ MEI is a rich XML-based format used in musicology, supporting lyrics,
 polyphonic textures, fermatas, and detailed editorial markup.
 
 ```example
-#score(read("schubert.mei"))
+#score(read("examples/schubert.mei"))
 ```
 
 #pagebreak()
@@ -267,7 +267,7 @@ Humdrum uses a tab-separated spine structure with `**kern` encoding
 for pitches and durations. Widely used in computational musicology.
 
 ```example
-#score(read("sample-humdrum.krn"))
+#score(read("examples/sample-humdrum.krn"))
 ```
 
 #pagebreak()
@@ -283,7 +283,7 @@ region, key) and melody data in labeled fields. Here is _Das Hildebrandslied_,
 a German folk ballad. EsAC is auto-detected by Verovio.
 
 ```example
-#score(read("hildebrandslied.esac"))
+#score(read("examples/hildebrandslied.esac"))
 ```
 
 == Plaine & Easie Code (PAE)
@@ -327,6 +327,6 @@ CMME is an XML format for mensural notation (medieval and Renaissance music).
 Requires `input-from: "cmme"`.
 
 ```example
-#score(read("cmme.xml"), options: (input-from: "cmme"))
+#score(read("examples/cmme.xml"), options: (input-from: "cmme"))
 ```
 

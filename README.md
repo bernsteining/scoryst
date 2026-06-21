@@ -21,7 +21,7 @@ Check the [documentation](https://github.com/bernsteining/scoryst/blob/master/te
 Some formats are too verbose to write inline here, so only compact formats are written inline here.
 
 ```typst
-#import "@preview/scoryst:0.1.2": score, pages
+#import "@preview/scoryst:0.1.3": score, pages
 
 // ABC notation (auto-detected)
 #score("X:1\nM:4/4\nK:C\nCDEF|GABc|")
