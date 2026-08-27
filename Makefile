@@ -90,9 +90,12 @@ $(BUILD_DIR)/src/font_data.o: src/font_data.S src/fonts
 	@mkdir -p $(dir $@)
 	emcc $(CXXFLAGS) $(VEROVIO_INCLUDES) -c $< -o $@
 
-# Link and stub WASI imports
+# Link and stub WASI imports.
+# Link with em++ (not emcc): recent emscripten links object-only inputs as C,
+# which drops the C++ runtime (libc++abi typeinfo/vtables) and fails with
+# undefined RTTI symbols. em++ always links as C++.
 $(OUT): $(ALL_OBJ)
-	emcc $(CXXFLAGS) $(LINK_FLAGS) $(VEROVIO_INCLUDES) -o $(OUT) $(ALL_OBJ)
+	em++ $(CXXFLAGS) $(LINK_FLAGS) $(VEROVIO_INCLUDES) -o $(OUT) $(ALL_OBJ)
 	wasi-stub $(OUT) -o $(OUT) --stub-module env,wasi_snapshot_preview1 -r 0
 	wasm-opt $(WASM_OPT_FLAGS) $(OUT) -o $(OUT)
 
