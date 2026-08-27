@@ -8,15 +8,22 @@ BUILD_DIR = pkg/obj
 # Optimization: override with `make OPT=-O0` for fast dev builds
 OPT = -Os
 
+# NO_EDIT_SUPPORT: strip Verovio's editor toolkits (rendering-only build).
+# Verovio 6.3.0 wires the editor toolkits directly into toolkit.cpp and
+# editortoolkit_shared.cpp; this macro compiles those code paths out. The one
+# unguarded editor source (editortoolkit_neume.cpp) is dropped via VEROVIO_EXCLUDE.
 CXXFLAGS = $(OPT) -DNDEBUG -std=c++20 -DPUGIXML_NO_EXCEPTIONS \
-           -DNO_RUNTIME
+           -DNO_RUNTIME -DNO_EDIT_SUPPORT
 
 # All source files
 PLUGIN_SRC = src/scoryst_plugin.cpp
 INIT_SRC = src/scoryst_init.cpp
-# Exclude unused source files: editor toolkits, CMME parser, feature extractor
+# Exclude unused source files: editor toolkits, feature extractor.
+# editortoolkit_shared.cpp is excluded because its constructor references
+# edit-only members that are unavailable under -DNO_EDIT_SUPPORT (see CXXFLAGS);
+# nothing in a rendering-only build references its symbols.
 VEROVIO_EXCLUDE = editortoolkit.cpp editortoolkit_cmn.cpp editortoolkit_neume.cpp \
-                  editfunctor.cpp featureextractor.cpp
+                  editortoolkit_shared.cpp editfunctor.cpp featureextractor.cpp
 VEROVIO_SRC = $(filter-out $(addprefix $(VEROVIO_DIR)/src/,$(VEROVIO_EXCLUDE)), \
                 $(wildcard $(VEROVIO_DIR)/src/*.cpp)) \
               $(wildcard $(VEROVIO_DIR)/src/hum/*.cpp) \

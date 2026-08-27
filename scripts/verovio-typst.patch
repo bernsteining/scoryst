@@ -1,5 +1,5 @@
 diff --git a/include/hum/humlib.h b/include/hum/humlib.h
-index f65c51831..931b8cf2b 100644
+index a63631597..4aed5e9e9 100644
 --- a/include/hum/humlib.h
 +++ b/include/hum/humlib.h
 @@ -691,7 +691,6 @@ class HumRegex {
@@ -10,7 +10,7 @@ index f65c51831..931b8cf2b 100644
  	private:
  
  		// m_regex: stores the regular expression to use as a default.
-@@ -5640,7 +5639,7 @@ int main(int argc, char** argv) {                      \
+@@ -5650,7 +5649,7 @@ int main(int argc, char** argv) {                      \
  	if (interface.getArgCount() > 0) {                  \
  		ifstream input(interface.getArgument(1));        \
  		if (!input) {                                    \
@@ -283,10 +283,10 @@ index 46b5eb472..306f501d1 100644
      const BeamSpanSegment *GetSegmentForSystem(const System *system) const;
      ///@}
 diff --git a/include/vrv/editortoolkit_neume.h b/include/vrv/editortoolkit_neume.h
-index 0f52d558f..abd34afdd 100644
+index 6d49cec7f..efdb517ae 100644
 --- a/include/vrv/editortoolkit_neume.h
 +++ b/include/vrv/editortoolkit_neume.h
-@@ -214,8 +214,8 @@ struct StaffSort {
+@@ -213,8 +213,8 @@ struct StaffSort {
              std::string typeB = staffB->GetType();
  
              if (staffA->GetType().find("column") == 0 && staffB->GetType().find("column") == 0) {
@@ -324,7 +324,7 @@ index 61088f0f3..5900f56bb 100644
  //----------------------------------------------------------------------------
  
 diff --git a/include/vrv/object.h b/include/vrv/object.h
-index 49d2f002c..70ee2c84d 100644
+index 85ab60997..1c30671a7 100644
 --- a/include/vrv/object.h
 +++ b/include/vrv/object.h
 @@ -8,6 +8,7 @@
@@ -335,7 +335,7 @@ index 49d2f002c..70ee2c84d 100644
  #include <cstdlib>
  #include <functional>
  #include <iterator>
-@@ -147,16 +148,10 @@ public:
+@@ -151,16 +152,10 @@ public:
       * @name Methods for registering a MEI att class and for registering interfaces regrouping MEI att classes.
       */
      ///@{
@@ -355,7 +355,7 @@ index 49d2f002c..70ee2c84d 100644
      ///@}
  
      /**
-@@ -851,15 +846,8 @@ private:
+@@ -860,15 +855,8 @@ private:
      mutable ClassId m_iteratorElementType;
      ///@}
  
@@ -452,7 +452,7 @@ index f7006b900..e64bfd44b 100644
  
      /** A text font used for bounding box calculations */
 diff --git a/include/vrv/svgdevicecontext.h b/include/vrv/svgdevicecontext.h
-index 60bd9bc65..6a3d29633 100644
+index 4540ffe70..32273d80e 100644
 --- a/include/vrv/svgdevicecontext.h
 +++ b/include/vrv/svgdevicecontext.h
 @@ -12,6 +12,7 @@
@@ -472,7 +472,7 @@ index 60bd9bc65..6a3d29633 100644
  
      /**
       * Setting mm output flag (false by default)
-@@ -380,7 +381,8 @@ private:
+@@ -387,7 +388,8 @@ private:
      };
      const std::string InsertGlyphRef(const Glyph *glyph);
      std::vector<std::pair<const Glyph *, GlyphRef>> m_smuflGlyphs;
@@ -483,24 +483,23 @@ index 60bd9bc65..6a3d29633 100644
      // pugixml data
      pugi::xml_document m_svgDoc;
 diff --git a/include/vrv/toolkit.h b/include/vrv/toolkit.h
-index 6c846982c..e3f999020 100644
+index 76abab1a4..aa27f5ba0 100644
 --- a/include/vrv/toolkit.h
 +++ b/include/vrv/toolkit.h
-@@ -816,7 +816,8 @@ private:
+@@ -823,6 +823,8 @@ private:
      void SetMidiDoc();
  
  public:
--    //
 +    Doc &GetDoc() { return m_doc; }
 +
- private:
+     //
+ protected:
      Doc m_doc;
-     DocSelection m_docSelection;
 diff --git a/src/alignfunctor.cpp b/src/alignfunctor.cpp
-index 1ebf99ae5..8b5cc5e01 100644
+index ba14b138b..0d68d2dc5 100644
 --- a/src/alignfunctor.cpp
 +++ b/src/alignfunctor.cpp
-@@ -53,7 +53,8 @@ AlignHorizontallyFunctor::AlignHorizontallyFunctor(Doc *doc) : DocFunctor(doc)
+@@ -58,7 +58,8 @@ AlignHorizontallyFunctor::AlignHorizontallyFunctor(Doc *doc) : DocFunctor(doc)
      m_scoreDefRole = SCOREDEF_NONE;
      m_isFirstMeasure = false;
      m_hasMultipleLayer = false;
@@ -511,10 +510,10 @@ index 1ebf99ae5..8b5cc5e01 100644
  }
  
 diff --git a/src/beam.cpp b/src/beam.cpp
-index 1d219e3cf..e91ac54f2 100644
+index c019f7fb9..ba26d79cc 100644
 --- a/src/beam.cpp
 +++ b/src/beam.cpp
-@@ -369,6 +369,7 @@ bool BeamSegment::NeedToResetPosition(Staff *staff, const Doc *doc, BeamDrawingI
+@@ -370,6 +370,7 @@ bool BeamSegment::NeedToResetPosition(Staff *staff, const Doc *doc, BeamDrawingI
      // CASE 1: CROSS STAFF BEAMS
      // Those are easy, since they request staff space (See BeamSegment::RequestStaffSpace(...))
      if (beamInterface->m_crossStaffContent) {
@@ -522,7 +521,7 @@ index 1d219e3cf..e91ac54f2 100644
          data_BEAMPLACE place = m_beamElementCoordRefs.at(0)->m_beamRelativePlace;
          auto iter = std::find_if(m_beamElementCoordRefs.begin(), m_beamElementCoordRefs.end(),
              [&place](BeamElementCoord *coord) { return coord->m_beamRelativePlace != place; });
-@@ -401,6 +402,7 @@ bool BeamSegment::NeedToResetPosition(Staff *staff, const Doc *doc, BeamDrawingI
+@@ -402,6 +403,7 @@ bool BeamSegment::NeedToResetPosition(Staff *staff, const Doc *doc, BeamDrawingI
      }
  
      // Calculate midpoint for the beam with mixed placement
@@ -530,7 +529,7 @@ index 1d219e3cf..e91ac54f2 100644
      int min = m_beamElementCoordRefs.at(0)->m_element->GetDrawingY();
      int max = m_beamElementCoordRefs.at(0)->m_element->GetDrawingY();
      for (BeamElementCoord *coord : m_beamElementCoordRefs) {
-@@ -445,7 +447,7 @@ bool BeamSegment::NeedToResetPosition(Staff *staff, const Doc *doc, BeamDrawingI
+@@ -446,7 +448,7 @@ bool BeamSegment::NeedToResetPosition(Staff *staff, const Doc *doc, BeamDrawingI
      if ((newDirection == STEMDIRECTION_down) && (m_uniformStemLength > 0)) m_uniformStemLength *= -1;
  
      LogWarning("Insufficient space to draw mixed beam, starting at '%s'. Drawing '%s' instead.",
@@ -539,7 +538,7 @@ index 1d219e3cf..e91ac54f2 100644
          (beamInterface->m_drawingPlace == BEAMPLACE_above) ? "above" : "below");
  
      return true;
-@@ -1358,7 +1360,7 @@ void BeamSegment::CalcHorizontalBeam(const Doc *doc, const Staff *staff, const B
+@@ -1360,7 +1362,7 @@ void BeamSegment::CalcHorizontalBeam(const Doc *doc, const Staff *staff, const B
              }
          }
  
@@ -584,10 +583,10 @@ index 0aad46d2b..c9026f19c 100644
  
      // Init segment with placement information (measure, staff, etc.) as well as begin/end coordinates
 diff --git a/src/boundingbox.cpp b/src/boundingbox.cpp
-index 12a18f742..55e5eb7ee 100644
+index 7a7b486aa..cf62c737e 100644
 --- a/src/boundingbox.cpp
 +++ b/src/boundingbox.cpp
-@@ -1206,16 +1206,14 @@ SegmentedLine::SegmentedLine(int start, int end)
+@@ -1201,16 +1201,14 @@ SegmentedLine::SegmentedLine(int start, int end)
  
  std::pair<int, int> SegmentedLine::GetStartEnd(int idx) const
  {
@@ -607,269 +606,8 @@ index 12a18f742..55e5eb7ee 100644
      }
  }
  
-diff --git a/src/calcligatureorneumeposfunctor.cpp b/src/calcligatureorneumeposfunctor.cpp
-index 4ed084234..a63739fe2 100644
---- a/src/calcligatureorneumeposfunctor.cpp
-+++ b/src/calcligatureorneumeposfunctor.cpp
-@@ -80,8 +80,8 @@ FunctorCode CalcLigatureOrNeumePosFunctor::VisitLigature(Ligature *ligature)
-         // L - L
-         if ((dur1 == DURATION_long) && (dur2 == DURATION_long)) {
-             if (up) {
--                ligature->m_drawingShapes.at(n1) = LIGATURE_STEM_RIGHT_DOWN;
--                ligature->m_drawingShapes.at(n2) = LIGATURE_STEM_RIGHT_DOWN;
-+                ligature->m_drawingShapes[n1] = LIGATURE_STEM_RIGHT_DOWN;
-+                ligature->m_drawingShapes[n2] = LIGATURE_STEM_RIGHT_DOWN;
-             }
-             else {
-                 // nothing to change
-@@ -90,14 +90,14 @@ FunctorCode CalcLigatureOrNeumePosFunctor::VisitLigature(Ligature *ligature)
-         // L - B
-         else if ((dur1 == DURATION_long) && (dur2 == DURATION_breve)) {
-             if (up) {
--                ligature->m_drawingShapes.at(n1) = LIGATURE_STEM_RIGHT_DOWN;
-+                ligature->m_drawingShapes[n1] = LIGATURE_STEM_RIGHT_DOWN;
-             }
-             // automatically set oblique on B, but not with Mx and only at the beginning and end
-             else if (!isMaxima && ((n1 == 0) || isLastNote)) {
--                ligature->m_drawingShapes.at(n1) = LIGATURE_OBLIQUE;
-+                ligature->m_drawingShapes[n1] = LIGATURE_OBLIQUE;
-                 // make sure the previous one is not oblique
-                 if (n1 > 0) {
--                    ligature->m_drawingShapes.at(n1 - 1) &= ~LIGATURE_OBLIQUE;
-+                    ligature->m_drawingShapes[n1 - 1] &= ~LIGATURE_OBLIQUE;
-                 }
-             }
-         }
-@@ -108,38 +108,38 @@ FunctorCode CalcLigatureOrNeumePosFunctor::VisitLigature(Ligature *ligature)
-             }
-             // automatically set oblique on B only at the beginning and end
-             else if ((n1 == 0) || isLastNote) {
--                ligature->m_drawingShapes.at(n1) = LIGATURE_OBLIQUE;
-+                ligature->m_drawingShapes[n1] = LIGATURE_OBLIQUE;
-                 // make sure the previous one is not oblique
-                 if (n1 > 0) {
--                    ligature->m_drawingShapes.at(n1 - 1) &= ~LIGATURE_OBLIQUE;
-+                    ligature->m_drawingShapes[n1 - 1] &= ~LIGATURE_OBLIQUE;
-                 }
-                 else {
--                    ligature->m_drawingShapes.at(n1) |= LIGATURE_STEM_LEFT_DOWN;
-+                    ligature->m_drawingShapes[n1] |= LIGATURE_STEM_LEFT_DOWN;
-                 }
-             }
-         }
-         // B - L
-         else if ((dur1 == DURATION_breve) && (dur2 == DURATION_long)) {
-             if (up) {
--                ligature->m_drawingShapes.at(n2) = LIGATURE_STEM_RIGHT_DOWN;
-+                ligature->m_drawingShapes[n2] = LIGATURE_STEM_RIGHT_DOWN;
-             }
-             else {
-                 if (!isLastNote) {
--                    ligature->m_drawingShapes.at(n2) = LIGATURE_STEM_RIGHT_DOWN;
-+                    ligature->m_drawingShapes[n2] = LIGATURE_STEM_RIGHT_DOWN;
-                 }
-                 if (n1 == 0) {
--                    ligature->m_drawingShapes.at(n1) = LIGATURE_STEM_LEFT_DOWN;
-+                    ligature->m_drawingShapes[n1] = LIGATURE_STEM_LEFT_DOWN;
-                 }
-             }
-         }
-         // SB - SB
-         else if ((dur1 == DURATION_1) && (dur2 == DURATION_1)) {
--            ligature->m_drawingShapes.at(n1) = LIGATURE_STEM_LEFT_UP;
-+            ligature->m_drawingShapes[n1] = LIGATURE_STEM_LEFT_UP;
-         }
-         // SB - L (this should not happen on the first two notes, but this is an encoding problem)
-         else if ((dur1 == DURATION_1) && (dur2 == DURATION_long)) {
-             if (up) {
--                ligature->m_drawingShapes.at(n2) = LIGATURE_STEM_RIGHT_DOWN;
-+                ligature->m_drawingShapes[n2] = LIGATURE_STEM_RIGHT_DOWN;
-             }
-             else {
-                 // nothing to change
-@@ -152,18 +152,18 @@ FunctorCode CalcLigatureOrNeumePosFunctor::VisitLigature(Ligature *ligature)
-             }
-             // only set the oblique with the SB if the following B is not the start of an oblique
-             else if (note->GetLig() != LIGATUREFORM_obliqua) {
--                ligature->m_drawingShapes.at(n1) = LIGATURE_OBLIQUE;
-+                ligature->m_drawingShapes[n1] = LIGATURE_OBLIQUE;
-                 if (n1 > 0) {
--                    ligature->m_drawingShapes.at(n1 - 1) &= ~LIGATURE_OBLIQUE;
-+                    ligature->m_drawingShapes[n1 - 1] &= ~LIGATURE_OBLIQUE;
-                 }
-             }
-         }
- 
-         // Blindly set the oblique shape without trying to deal with encoding problems
-         if (oblique) {
--            ligature->m_drawingShapes.at(n1) |= LIGATURE_OBLIQUE;
-+            ligature->m_drawingShapes[n1] |= LIGATURE_OBLIQUE;
-             if (n1 > 0) {
--                ligature->m_drawingShapes.at(n1 - 1) &= ~LIGATURE_OBLIQUE;
-+                ligature->m_drawingShapes[n1 - 1] &= ~LIGATURE_OBLIQUE;
-             }
-         }
- 
-@@ -174,9 +174,9 @@ FunctorCode CalcLigatureOrNeumePosFunctor::VisitLigature(Ligature *ligature)
-             // If the previous was going down, adjust the threshold
-             if ((n1 > 0) && !previousUp) {
-                 // For oblique, stack but only from a fourth, for recta, never stack them
--                stackThreshold = (ligature->m_drawingShapes.at(n1 - 1) & LIGATURE_OBLIQUE) ? 2 : -VRV_UNSET;
-+                stackThreshold = (ligature->m_drawingShapes[n1 - 1] & LIGATURE_OBLIQUE) ? 2 : -VRV_UNSET;
-             }
--            if (diatonicStep > stackThreshold) ligature->m_drawingShapes.at(n2) = LIGATURE_STACKED;
-+            if (diatonicStep > stackThreshold) ligature->m_drawingShapes[n2] = LIGATURE_STACKED;
-         }
- 
-         oblique = false;
-@@ -200,7 +200,7 @@ FunctorCode CalcLigatureOrNeumePosFunctor::VisitLigature(Ligature *ligature)
-         // previousRight is 0 for the first note
-         int width = (note->GetDrawingRadius(m_doc, true) * 2) - m_doc->GetDrawingStemWidth(staff->m_drawingStaffSize);
-         // With stacked notes, back-track the position
--        if (ligature->m_drawingShapes.at(n1 + 1) & LIGATURE_STACKED) previousRight -= width;
-+        if (ligature->m_drawingShapes[n1 + 1] & LIGATURE_STACKED) previousRight -= width;
-         note->SetDrawingXRel(previousRight);
-         previousRight += width;
- 
-@@ -212,7 +212,7 @@ FunctorCode CalcLigatureOrNeumePosFunctor::VisitLigature(Ligature *ligature)
-         int diatonicStep = note->GetDiatonicPitch() - previousNote->GetDiatonicPitch();
- 
-         // For large interval and oblique, adjust the x position to limit the angle
--        if ((ligature->m_drawingShapes.at(n1) & LIGATURE_OBLIQUE) && (abs(diatonicStep) > 2)) {
-+        if ((ligature->m_drawingShapes[n1] & LIGATURE_OBLIQUE) && (abs(diatonicStep) > 2)) {
-             // angle stays the same from third onward (2 / 3 or a brevis per diatonic step)
-             int shift = (abs(diatonicStep) - 2) * width * 2 / 3;
-             note->SetDrawingXRel(note->GetDrawingXRel() + shift);
-@@ -263,39 +263,39 @@ FunctorCode CalcLigatureOrNeumePosFunctor::VisitNeume(Neume *neume)
-             const int lineWidth = m_doc->GetGlyphWidth(SMUFL_E9BE_chantConnectingLineAsc3rd, staffSize, false);
- 
-             if (nc->GetCurve() == curvatureDirection_CURVE_c) {
--                nc->m_drawingGlyphs.at(0).m_fontNo = SMUFL_E995_chantAuctumDesc;
--                nc->m_drawingGlyphs.at(1).m_fontNo = SMUFL_E9BE_chantConnectingLineAsc3rd;
--                nc->m_drawingGlyphs.at(2).m_fontNo = SMUFL_E9BE_chantConnectingLineAsc3rd;
--                nc->m_drawingGlyphs.at(2).m_xOffset = ncWidth - lineWidth;
--                nc->m_drawingGlyphs.at(1).m_yOffset = -1.75 * unit;
--                nc->m_drawingGlyphs.at(2).m_yOffset = -1.9 * unit;
-+                nc->m_drawingGlyphs[0].m_fontNo = SMUFL_E995_chantAuctumDesc;
-+                nc->m_drawingGlyphs[1].m_fontNo = SMUFL_E9BE_chantConnectingLineAsc3rd;
-+                nc->m_drawingGlyphs[2].m_fontNo = SMUFL_E9BE_chantConnectingLineAsc3rd;
-+                nc->m_drawingGlyphs[2].m_xOffset = ncWidth - lineWidth;
-+                nc->m_drawingGlyphs[1].m_yOffset = -1.75 * unit;
-+                nc->m_drawingGlyphs[2].m_yOffset = -1.9 * unit;
-             }
-             else if (nc->GetCurve() == curvatureDirection_CURVE_a) {
--                nc->m_drawingGlyphs.at(0).m_fontNo = SMUFL_E994_chantAuctumAsc;
--                nc->m_drawingGlyphs.at(1).m_fontNo = SMUFL_E9BE_chantConnectingLineAsc3rd;
--                nc->m_drawingGlyphs.at(2).m_fontNo = SMUFL_E9BE_chantConnectingLineAsc3rd;
--                nc->m_drawingGlyphs.at(2).m_xOffset = ncWidth - lineWidth;
--                nc->m_drawingGlyphs.at(1).m_yOffset = 0.5 * unit;
--                nc->m_drawingGlyphs.at(2).m_yOffset = 0.75 * unit;
-+                nc->m_drawingGlyphs[0].m_fontNo = SMUFL_E994_chantAuctumAsc;
-+                nc->m_drawingGlyphs[1].m_fontNo = SMUFL_E9BE_chantConnectingLineAsc3rd;
-+                nc->m_drawingGlyphs[2].m_fontNo = SMUFL_E9BE_chantConnectingLineAsc3rd;
-+                nc->m_drawingGlyphs[2].m_xOffset = ncWidth - lineWidth;
-+                nc->m_drawingGlyphs[1].m_yOffset = 0.5 * unit;
-+                nc->m_drawingGlyphs[2].m_yOffset = 0.75 * unit;
-             }
-             else {
--                nc->m_drawingGlyphs.at(0).m_fontNo = SMUFL_E9A1_chantPunctumDeminutum;
-+                nc->m_drawingGlyphs[0].m_fontNo = SMUFL_E9A1_chantPunctumDeminutum;
-             }
-         }
-         else if (hasOriscus) {
--            nc->m_drawingGlyphs.at(0).m_fontNo = SMUFL_EA2A_medRenOriscusCMN;
-+            nc->m_drawingGlyphs[0].m_fontNo = SMUFL_EA2A_medRenOriscusCMN;
-         }
-         else if (hasQuilisma) {
--            nc->m_drawingGlyphs.at(0).m_fontNo = SMUFL_E99B_chantQuilisma;
-+            nc->m_drawingGlyphs[0].m_fontNo = SMUFL_E99B_chantQuilisma;
-         }
-         else {
--            nc->m_drawingGlyphs.at(0).m_fontNo = SMUFL_E990_chantPunctum;
-+            nc->m_drawingGlyphs[0].m_fontNo = SMUFL_E990_chantPunctum;
- 
-             if (nc->GetLigated() == BOOLEAN_true) {
-                 // This is the first nc of a ligature
-                 if (!previousLig) {
-                     // Temporarily set a second line glyph
--                    nc->m_drawingGlyphs.at(0).m_fontNo = SMUFL_E9B4_chantEntryLineAsc2nd;
-+                    nc->m_drawingGlyphs[0].m_fontNo = SMUFL_E9B4_chantEntryLineAsc2nd;
-                     previousLig = true;
-                 }
-                 // This is the second
-@@ -304,26 +304,26 @@ FunctorCode CalcLigatureOrNeumePosFunctor::VisitNeume(Neume *neume)
-                     overlapWithPrevious = false;
-                     assert(previousNc);
-                     previousLig = false;
--                    nc->m_drawingGlyphs.at(0).m_yOffset = -pitchDifference * unit;
--                    previousNc->m_drawingGlyphs.at(0).m_yOffset = pitchDifference * unit;
-+                    nc->m_drawingGlyphs[0].m_yOffset = -pitchDifference * unit;
-+                    previousNc->m_drawingGlyphs[0].m_yOffset = pitchDifference * unit;
- 
-                     // set the glyph for both the current and previous nc
-                     switch (pitchDifference) {
-                         case -1:
--                            nc->m_drawingGlyphs.at(0).m_fontNo = SMUFL_E9B9_chantLigaturaDesc2nd;
--                            previousNc->m_drawingGlyphs.at(0).m_fontNo = SMUFL_E9B4_chantEntryLineAsc2nd;
-+                            nc->m_drawingGlyphs[0].m_fontNo = SMUFL_E9B9_chantLigaturaDesc2nd;
-+                            previousNc->m_drawingGlyphs[0].m_fontNo = SMUFL_E9B4_chantEntryLineAsc2nd;
-                             break;
-                         case -2:
--                            nc->m_drawingGlyphs.at(0).m_fontNo = SMUFL_E9BA_chantLigaturaDesc3rd;
--                            previousNc->m_drawingGlyphs.at(0).m_fontNo = SMUFL_E9B5_chantEntryLineAsc3rd;
-+                            nc->m_drawingGlyphs[0].m_fontNo = SMUFL_E9BA_chantLigaturaDesc3rd;
-+                            previousNc->m_drawingGlyphs[0].m_fontNo = SMUFL_E9B5_chantEntryLineAsc3rd;
-                             break;
-                         case -3:
--                            nc->m_drawingGlyphs.at(0).m_fontNo = SMUFL_E9BB_chantLigaturaDesc4th;
--                            previousNc->m_drawingGlyphs.at(0).m_fontNo = SMUFL_E9B6_chantEntryLineAsc4th;
-+                            nc->m_drawingGlyphs[0].m_fontNo = SMUFL_E9BB_chantLigaturaDesc4th;
-+                            previousNc->m_drawingGlyphs[0].m_fontNo = SMUFL_E9B6_chantEntryLineAsc4th;
-                             break;
-                         case -4:
--                            nc->m_drawingGlyphs.at(0).m_fontNo = SMUFL_E9BC_chantLigaturaDesc5th;
--                            previousNc->m_drawingGlyphs.at(0).m_fontNo = SMUFL_E9B7_chantEntryLineAsc5th;
-+                            nc->m_drawingGlyphs[0].m_fontNo = SMUFL_E9BC_chantLigaturaDesc5th;
-+                            previousNc->m_drawingGlyphs[0].m_fontNo = SMUFL_E9B7_chantEntryLineAsc5th;
-                             break;
-                         default: break;
-                     }
-@@ -331,19 +331,19 @@ FunctorCode CalcLigatureOrNeumePosFunctor::VisitNeume(Neume *neume)
-             }
-             // Check if nc is part of a ligature or is an inclinatum
-             else if (nc->HasTilt() && nc->GetTilt() == COMPASSDIRECTION_se) {
--                nc->m_drawingGlyphs.at(0).m_fontNo = SMUFL_E991_chantPunctumInclinatum;
-+                nc->m_drawingGlyphs[0].m_fontNo = SMUFL_E991_chantPunctumInclinatum;
-                 // No overlap with this shape
-                 overlapWithPrevious = false;
-             }
-             // If the nc is supposed to be a virga and currently is being rendered as a punctum
-             // change it to a virga
-             else if (nc->GetTilt() == COMPASSDIRECTION_s
--                && nc->m_drawingGlyphs.at(0).m_fontNo == SMUFL_E990_chantPunctum) {
--                nc->m_drawingGlyphs.at(0).m_fontNo = SMUFL_E996_chantPunctumVirga;
-+                && nc->m_drawingGlyphs[0].m_fontNo == SMUFL_E990_chantPunctum) {
-+                nc->m_drawingGlyphs[0].m_fontNo = SMUFL_E996_chantPunctumVirga;
-             }
-             else if (nc->GetTilt() == COMPASSDIRECTION_n
--                && nc->m_drawingGlyphs.at(0).m_fontNo == SMUFL_E990_chantPunctum) {
--                nc->m_drawingGlyphs.at(0).m_fontNo = SMUFL_E997_chantPunctumVirgaReversed;
-+                && nc->m_drawingGlyphs[0].m_fontNo == SMUFL_E990_chantPunctum) {
-+                nc->m_drawingGlyphs[0].m_fontNo = SMUFL_E997_chantPunctumVirgaReversed;
-             }
-         }
- 
-@@ -358,7 +358,7 @@ FunctorCode CalcLigatureOrNeumePosFunctor::VisitNeume(Neume *neume)
-             // The first glyph set the spacing - unless we are starting a ligature, in which case no spacing should be
-             // added between the two nc
-             if (!previousLig) {
--                xRel += m_doc->GetGlyphWidth(nc->m_drawingGlyphs.at(0).m_fontNo, staffSize, false);
-+                xRel += m_doc->GetGlyphWidth(nc->m_drawingGlyphs[0].m_fontNo, staffSize, false);
-             }
-         }
- 
 diff --git a/src/customtuning.cpp b/src/customtuning.cpp
-index 0c5c3e0ff..e3a289a5d 100644
+index 2895927db..c16c53ca5 100644
 --- a/src/customtuning.cpp
 +++ b/src/customtuning.cpp
 @@ -208,20 +208,17 @@ int CustomTuning::GetMIDIPitch(const Note *note, const int shift, const int octa
@@ -929,7 +667,7 @@ index 5b298612d..8ea119b61 100644
              }
              // Check values
 diff --git a/src/drawinginterface.cpp b/src/drawinginterface.cpp
-index ae9b3f3c5..29123ea11 100644
+index 8a0ed0242..3c3f6f865 100644
 --- a/src/drawinginterface.cpp
 +++ b/src/drawinginterface.cpp
 @@ -182,15 +182,16 @@ void BeamDrawingInterface::InitCoords(const ListOfObjects &childList, Staff *sta
@@ -954,7 +692,7 @@ index ae9b3f3c5..29123ea11 100644
  
          Staff *staff = current->GetCrossStaff(layer);
 diff --git a/src/hum/humlib.cpp b/src/hum/humlib.cpp
-index c27fd38a4..13813c9be 100644
+index 98b3b6acc..b3ec5fa4f 100644
 --- a/src/hum/humlib.cpp
 +++ b/src/hum/humlib.cpp
 @@ -1223,8 +1223,8 @@ HumNum Convert::kernToDuration(const string& aKernString) {
@@ -968,7 +706,7 @@ index c27fd38a4..13813c9be 100644
  		HumNum original(rbot, rtop);  // duration is inverse
  		HumNum output(rbot, rtop);    // duration is inverse
  		original *= 4;  // adjust to quarter note count;
-@@ -5638,7 +5638,7 @@ void Convert::makeBooleanTrackList(vector<bool>& spinelist,
+@@ -5773,7 +5773,7 @@ void Convert::makeBooleanTrackList(vector<bool>& spinelist,
  
  		// get first value:
  		if (hre.search(entries[i], "(\\d+)")) {
@@ -977,7 +715,7 @@ index c27fd38a4..13813c9be 100644
  		}
  		if (range) {
  			int direction = 1;
-@@ -6223,7 +6223,7 @@ bool GotScore::prepareMeasures(ostream& out) {
+@@ -6358,7 +6358,7 @@ bool GotScore::prepareMeasures(ostream& out) {
  			// Skip lines that do not start with "s# bar"
  			continue;
  		}
@@ -986,7 +724,7 @@ index c27fd38a4..13813c9be 100644
  		if (m_debugQ) {
  			out << ">>>>>>>>>>>>>>>>>>> PROCESSING SYSTEM = " << system << endl;
  		}
-@@ -6288,7 +6288,7 @@ bool GotScore::processSystemMeasures(int barIndex, int system, ostream& out) {
+@@ -6423,7 +6423,7 @@ bool GotScore::processSystemMeasures(int barIndex, int system, ostream& out) {
  		if (!regex_search(m_cells[i][0], match, re)) {
  			continue;
  		}
@@ -995,7 +733,7 @@ index c27fd38a4..13813c9be 100644
  		if (system != tsys) {
  			break;
  		}
-@@ -6300,7 +6300,7 @@ bool GotScore::processSystemMeasures(int barIndex, int system, ostream& out) {
+@@ -6435,7 +6435,7 @@ bool GotScore::processSystemMeasures(int barIndex, int system, ostream& out) {
  		if (!regex_search(m_cells[i][0], match, rev)) {
  			continue;
  		}
@@ -1004,7 +742,7 @@ index c27fd38a4..13813c9be 100644
  		if (voiceNumber > m_voices) {
  			m_voices = voiceNumber;
  		}
-@@ -6344,7 +6344,7 @@ bool GotScore::processSystemMeasures(int barIndex, int system, ostream& out) {
+@@ -6479,7 +6479,7 @@ bool GotScore::processSystemMeasures(int barIndex, int system, ostream& out) {
  		if (!regex_search(m_cells.at(barIndex).at(i), match, renum)) {
  			continue;
  		}
@@ -1013,7 +751,7 @@ index c27fd38a4..13813c9be 100644
  
  		if (m_debugQ) {
  			cerr << "PROCESSING MEASURE " << barnum << endl;
-@@ -7998,7 +7998,7 @@ double GotScore::durationFromRhythmToken(const std::string& token) {
+@@ -8133,7 +8133,7 @@ double GotScore::durationFromRhythmToken(const std::string& token) {
  	static const std::regex re(R"((\d+)(\.*))");
  	std::smatch m;
  	if (std::regex_search(token, m, re)) {
@@ -1022,7 +760,7 @@ index c27fd38a4..13813c9be 100644
  		double dur  = 1.0 / base;
  		for (char c : m[2].str()) {
  			if (c == '.') dur += dur/2.0;
-@@ -15775,7 +15775,7 @@ int HumHash::getValueInt(const string& ns1, const string& ns2,
+@@ -15910,7 +15910,7 @@ int HumHash::getValueInt(const string& ns1, const string& ns2,
  		int intvalue;
  		try {
  			// problem with emscripten with stoi:
@@ -1031,7 +769,7 @@ index c27fd38a4..13813c9be 100644
  			stringstream converter(value);
  			if (!(converter >> intvalue)) {
  				intvalue = 0;
-@@ -15879,7 +15879,7 @@ double HumHash::getValueFloat(const string& ns1, const string& ns2,
+@@ -16014,7 +16014,7 @@ double HumHash::getValueFloat(const string& ns1, const string& ns2,
  	} else {
  		double floatvalue;
  		try {
@@ -1040,7 +778,7 @@ index c27fd38a4..13813c9be 100644
  		} catch (invalid_argument& e) {
           std::cerr << e.what() << std::endl;
  			floatvalue = 0;
-@@ -18897,6 +18897,7 @@ bool HumPitch::setScientificPitch(const std::string& pitch) {
+@@ -19032,6 +19032,7 @@ bool HumPitch::setScientificPitch(const std::string& pitch) {
  
  
  
@@ -1048,7 +786,7 @@ index c27fd38a4..13813c9be 100644
  //////////////////////////////
  //
  // HumRegex::HumRegex -- Constructor.
-@@ -18918,7 +18919,7 @@ HumRegex::HumRegex(const string& exp, const string& options) {
+@@ -19053,7 +19054,7 @@ HumRegex::HumRegex(const string& exp, const string& options) {
  		// explicitly set the default syntax
  		m_regexflags = std::regex_constants::ECMAScript;
  	}
@@ -1057,7 +795,7 @@ index c27fd38a4..13813c9be 100644
  	m_searchflags = (std::regex_constants::match_flag_type)0;
  	m_searchflags = getTemporarySearchFlags(options);
  }
-@@ -19025,7 +19026,7 @@ void HumRegex::unsetGlobal(void) {
+@@ -19160,7 +19161,7 @@ void HumRegex::unsetGlobal(void) {
  //
  
  int HumRegex::search(const string& input, const string& exp) {
@@ -1066,7 +804,7 @@ index c27fd38a4..13813c9be 100644
  	bool result = regex_search(input, m_matches, m_regex, m_searchflags);
  	if (!result) {
  		return 0;
-@@ -19040,7 +19041,7 @@ int HumRegex::search(const string& input, const string& exp) {
+@@ -19175,7 +19176,7 @@ int HumRegex::search(const string& input, const string& exp) {
  
  int HumRegex::search(const string& input, int startindex,
  		const string& exp) {
@@ -1075,7 +813,7 @@ index c27fd38a4..13813c9be 100644
  	auto startit = input.begin() + startindex;
  	auto endit   = input.end();
  	bool result = regex_search(startit, endit, m_matches, m_regex, m_searchflags);
-@@ -19069,7 +19070,7 @@ int HumRegex::search(string* input, int startindex, const string& exp) {
+@@ -19204,7 +19205,7 @@ int HumRegex::search(string* input, int startindex, const string& exp) {
  
  int HumRegex::search(const string& input, const string& exp,
  		const string& options) {
@@ -1084,7 +822,7 @@ index c27fd38a4..13813c9be 100644
  	bool result = regex_search(input, m_matches, m_regex, getTemporarySearchFlags(options));
  	if (!result) {
  		return 0;
-@@ -19083,7 +19084,7 @@ int HumRegex::search(const string& input, const string& exp,
+@@ -19218,7 +19219,7 @@ int HumRegex::search(const string& input, const string& exp,
  
  int HumRegex::search(const string& input, int startindex, const string& exp,
  		const string& options) {
@@ -1093,7 +831,7 @@ index c27fd38a4..13813c9be 100644
  	auto startit = input.begin() + startindex;
  	auto endit   = input.end();
  	bool result = regex_search(startit, endit, m_matches, m_regex, getTemporarySearchFlags(options));
-@@ -19156,11 +19157,11 @@ int HumRegex::getMatchInt(int index) {
+@@ -19291,11 +19292,11 @@ int HumRegex::getMatchInt(int index) {
  	int output = 0;
  	if (value.size() > 0) {
  		if (isdigit(value[0])) {
@@ -1108,7 +846,7 @@ index c27fd38a4..13813c9be 100644
  		}
  	}
  	return output;
-@@ -19176,7 +19177,7 @@ int HumRegex::getMatchInt(int index) {
+@@ -19311,7 +19312,7 @@ int HumRegex::getMatchInt(int index) {
  double HumRegex::getMatchDouble(int index) {
  	string value = m_matches.str(index);
  	if (value.size() > 0) {
@@ -1117,7 +855,7 @@ index c27fd38a4..13813c9be 100644
  	} else {
  		return 0.0;
  	}
-@@ -19255,14 +19256,14 @@ int HumRegex::getMatchLength(int index) {
+@@ -19390,14 +19391,14 @@ int HumRegex::getMatchLength(int index) {
  //
  
  bool HumRegex::match(const string& input, const string& exp) {
@@ -1134,7 +872,7 @@ index c27fd38a4..13813c9be 100644
  	return regex_match(input, m_regex, getTemporarySearchFlags(options));
  }
  
-@@ -19294,7 +19295,7 @@ bool HumRegex::match(const string* input, const string& exp,
+@@ -19429,7 +19430,7 @@ bool HumRegex::match(const string* input, const string& exp,
  
  string& HumRegex::replaceDestructive(string& input, const string& replacement,
  		const string& exp) {
@@ -1143,7 +881,7 @@ index c27fd38a4..13813c9be 100644
  	input = regex_replace(input, m_regex, replacement, m_searchflags);
  	return input;
  }
-@@ -19311,7 +19312,7 @@ string& HumRegex::replaceDestructive(string* input, const string& replacement,
+@@ -19446,7 +19447,7 @@ string& HumRegex::replaceDestructive(string* input, const string& replacement,
  
  string& HumRegex::replaceDestructive(string& input, const string& replacement,
  		const string& exp, const string& options) {
@@ -1152,7 +890,7 @@ index c27fd38a4..13813c9be 100644
  	input = regex_replace(input, m_regex, replacement, getTemporarySearchFlags(options));
  	return input;
  }
-@@ -19332,7 +19333,7 @@ string& HumRegex::replaceDestructive (string* input, const string& replacement,
+@@ -19467,7 +19468,7 @@ string& HumRegex::replaceDestructive (string* input, const string& replacement,
  
  string HumRegex::replaceCopy(const string& input, const string& replacement,
  		const string& exp) {
@@ -1161,7 +899,7 @@ index c27fd38a4..13813c9be 100644
  	string output;
  	regex_replace(std::back_inserter(output), input.begin(),
  			input.end(), m_regex, replacement);
-@@ -19351,7 +19352,7 @@ string HumRegex::replaceCopy(string* input, const string& replacement,
+@@ -19486,7 +19487,7 @@ string HumRegex::replaceCopy(string* input, const string& replacement,
  
  string HumRegex::replaceCopy(const string& input, const string& exp,
  		const string& replacement, const string& options) {
@@ -1170,7 +908,7 @@ index c27fd38a4..13813c9be 100644
  	string output;
  	regex_replace(std::back_inserter(output), input.begin(),
  			input.end(), m_regex, replacement, getTemporarySearchFlags(options));
-@@ -20192,7 +20193,7 @@ bool HumTransposer::setTransposition(int keyFifths, const string &semitones) {
+@@ -20327,7 +20328,7 @@ bool HumTransposer::setTransposition(int keyFifths, const string &semitones) {
  	if (!isValidSemitones(semitones)) {
  		return false;
  	}
@@ -1179,7 +917,7 @@ index c27fd38a4..13813c9be 100644
  	return setTransposition(keyFifths, semis);
  }
  
-@@ -20619,7 +20620,7 @@ int HumTransposer::getInterval(const string &intervalName) {
+@@ -20754,7 +20755,7 @@ int HumTransposer::getInterval(const string &intervalName) {
  		return INVALID_INTERVAL_CLASS;
  	}
  
@@ -1188,7 +926,7 @@ index c27fd38a4..13813c9be 100644
  	if (dnum == 0) {
  		cerr << "Integer interval number cannot be zero: " << intervalName << endl;
  		return INVALID_INTERVAL_CLASS;
-@@ -21608,7 +21609,7 @@ void HumTransposer::intervalToDiatonicChromatic(int &diatonic, int &chromatic, c
+@@ -21743,7 +21744,7 @@ void HumTransposer::intervalToDiatonicChromatic(int &diatonic, int &chromatic, c
  		return;
  	}
  
@@ -1197,7 +935,7 @@ index c27fd38a4..13813c9be 100644
  	if (dnum == 0) {
  		cerr << "Integer interval number cannot be zero: " << intervalName << endl;
  		chromatic = INVALID_INTERVAL_CLASS;
-@@ -38343,7 +38344,7 @@ std::string HumdrumToken::getLayoutParameter(const std::string& category,
+@@ -38924,7 +38925,7 @@ std::string HumdrumToken::getLayoutParameter(const std::string& category,
  			// later).  Also not checking validity of
  			// string first (needs to start with a digit);
  
@@ -1206,7 +944,7 @@ index c27fd38a4..13813c9be 100644
  			if (n == subtokenindex + 1) {
  				return output;
  			} else {
-@@ -38419,7 +38420,7 @@ std::string HumdrumToken::getSlurLayoutParameter(const std::string& keyname,
+@@ -39000,7 +39001,7 @@ std::string HumdrumToken::getSlurLayoutParameter(const std::string& keyname,
  
  	// currently @s requires a single value (should allow a range or multiple values later)
  	// also not checking validity of string first (needs to start with a digit);
@@ -1215,7 +953,7 @@ index c27fd38a4..13813c9be 100644
  	if (s == subtokenindex + 1) {
  		return output;
  	} else {
-@@ -38489,7 +38490,7 @@ std::string HumdrumToken::getPhraseLayoutParameter(const std::string& keyname,
+@@ -39070,7 +39071,7 @@ std::string HumdrumToken::getPhraseLayoutParameter(const std::string& keyname,
  
  	// currently @s requires a single value (should allow a range or multiple values later)
  	// also not checking validity of string first (needs to start with a digit);
@@ -1224,7 +962,7 @@ index c27fd38a4..13813c9be 100644
  	if (s == subtokenindex + 1) {
  		return output;
  	} else {
-@@ -38611,7 +38612,7 @@ std::string HumdrumToken::getLayoutParameterNote(const std::string& category,
+@@ -39192,7 +39193,7 @@ std::string HumdrumToken::getLayoutParameterNote(const std::string& category,
  
  	if (!nparam.empty()) {
  		// a number number is specified from the parameter(s)
@@ -1233,7 +971,7 @@ index c27fd38a4..13813c9be 100644
  		if (n == subtokenindex + 1) {
  			return output;
  		} else {
-@@ -41348,7 +41349,7 @@ string MuseData::getEncoderDate(void) {
+@@ -41929,7 +41930,7 @@ string MuseData::getEncoderDate(void) {
  		string day   = hre.getMatch(2);
  		string year  = hre.getMatch(3);
  		if (year.size() == 2) {
@@ -1242,7 +980,7 @@ index c27fd38a4..13813c9be 100644
  			if (value < 70) {
  				value += 2000;
  			} else {
-@@ -42213,7 +42214,7 @@ string MuseData::getMeasureNumber(int index) {
+@@ -42794,7 +42795,7 @@ string MuseData::getMeasureNumber(int index) {
  							// problem, so return empty string
  							return "";
  						}
@@ -1251,7 +989,7 @@ index c27fd38a4..13813c9be 100644
  						return to_string(value);
  					}
  				}
-@@ -42971,7 +42972,7 @@ int MuseRecord::getAttributeInt(char attribute) {
+@@ -43552,7 +43553,7 @@ int MuseRecord::getAttributeInt(char attribute) {
  	} else {
  		string value = &getColumn(column+1);
  		if (value.empty()) {
@@ -1260,7 +998,7 @@ index c27fd38a4..13813c9be 100644
  			return output;
  		} else {
  			return 0;
-@@ -43283,7 +43284,7 @@ int MuseRecord::getFigureDuration(void) {
+@@ -43864,7 +43865,7 @@ int MuseRecord::getFigureDuration(void) {
  		return output;
  	} else {
  		try {
@@ -1269,7 +1007,7 @@ index c27fd38a4..13813c9be 100644
  		} catch (const std::invalid_argument& e) {
          cout << "Invalid integer: " << e.what() << ". Setting to 0." << endl;
          output = 0;
-@@ -44353,7 +44354,7 @@ int MuseRecord::getTickDuration(void) {
+@@ -44934,7 +44935,7 @@ int MuseRecord::getTickDuration(void) {
  	if (recordInfo.empty()) {
  		return 0;
  	}
@@ -1278,7 +1016,7 @@ index c27fd38a4..13813c9be 100644
  }
  
  
-@@ -44373,7 +44374,7 @@ int MuseRecord::getLineTickDuration(void) {
+@@ -44954,7 +44955,7 @@ int MuseRecord::getLineTickDuration(void) {
  	if (recordInfo.empty()) {
  		return 0;
  	}
@@ -1287,7 +1025,7 @@ index c27fd38a4..13813c9be 100644
  	if (getType() == E_muserec_backspace) {
  		return -value;
  	}
-@@ -44394,7 +44395,7 @@ int MuseRecord::getTicks(void) {
+@@ -44975,7 +44976,7 @@ int MuseRecord::getTicks(void) {
  	if (recordInfo.empty()) {
  		return 0;
  	}
@@ -1296,7 +1034,7 @@ index c27fd38a4..13813c9be 100644
  	if (getType() == E_muserec_backspace) {
  		return -value;
  	}
-@@ -44415,7 +44416,7 @@ int MuseRecord::getNoteTickDuration(void) {
+@@ -44996,7 +44997,7 @@ int MuseRecord::getNoteTickDuration(void) {
  	if (recordInfo.empty()) {
  		return value;
  	}
@@ -1305,7 +1043,7 @@ index c27fd38a4..13813c9be 100644
  	if (getType() == E_muserec_backspace) {
  		return -value;
  	}
-@@ -49464,7 +49465,7 @@ int MxmlEvent::hasSlurStart(vector<int>& directions) {
+@@ -50045,7 +50046,7 @@ int MxmlEvent::hasSlurStart(vector<int>& directions) {
  					// for now ignore the slur numbers
  					//string number = grandchild.attribute("number").value();
  					//if (!number.empty()) {
@@ -1314,7 +1052,7 @@ index c27fd38a4..13813c9be 100644
  					//	if (num != 0) {
  					//		xxx = num;
  					//	}
-@@ -49527,7 +49528,7 @@ int MxmlEvent::hasSlurStop(void) {
+@@ -50108,7 +50109,7 @@ int MxmlEvent::hasSlurStop(void) {
  							output++;
  							//string number = grandchild.attribute("number").value();
  							//if (!number.empty()) {
@@ -1323,7 +1061,7 @@ index c27fd38a4..13813c9be 100644
  							//	if (num != 0) {
  							//		return num;
  							//	} else {
-@@ -50554,7 +50555,7 @@ void MxmlEvent::addNotations(stringstream& ss, xml_node notations,
+@@ -51135,7 +51136,7 @@ void MxmlEvent::addNotations(stringstream& ss, xml_node notations,
  					}
  					if (ttype != "stop") {
  						string tstring = grandchild.child_value();
@@ -1332,7 +1070,7 @@ index c27fd38a4..13813c9be 100644
  					}
  				}
  
-@@ -50784,7 +50785,7 @@ string MxmlEvent::getRestPitch(void) const {
+@@ -51365,7 +51366,7 @@ string MxmlEvent::getRestPitch(void) const {
  		return "";
  	}
  
@@ -1341,7 +1079,7 @@ index c27fd38a4..13813c9be 100644
  	int count = 1;
  	char pc = steptext[0];
  	if (octaveval > 3) {
-@@ -84065,22 +84066,21 @@ void Tool_esac2hum::convertEsacToHumdrum(ostream& output, istream& infile) {
+@@ -86471,22 +86472,21 @@ void Tool_esac2hum::convertEsacToHumdrum(ostream& output, istream& infile) {
  
  	while (!infile.eof()) {
  		if (m_debugQ) {
@@ -1368,7 +1106,7 @@ index c27fd38a4..13813c9be 100644
  			continue;
  		}
  		convertSong(output, song);
-@@ -84170,11 +84170,11 @@ bool Tool_esac2hum::getSong(vector<string>& song, istream& infile) {
+@@ -86576,11 +86576,11 @@ bool Tool_esac2hum::getSong(vector<string>& song, istream& infile) {
  		cleanText(buffer);
  		m_inputline++;
  		if (m_debugQ) {
@@ -1382,7 +1120,7 @@ index c27fd38a4..13813c9be 100644
  				continue;
  			} else if (!hre.search(buffer, "[\\[\\]]")) {
  				// intermediate parameter line (not starting or ending)
-@@ -84188,7 +84188,7 @@ bool Tool_esac2hum::getSong(vector<string>& song, istream& infile) {
+@@ -86594,7 +86594,7 @@ bool Tool_esac2hum::getSong(vector<string>& song, istream& infile) {
  				song.push_back(buffer);
  				continue;
  			} else {
@@ -1391,7 +1129,7 @@ index c27fd38a4..13813c9be 100644
  			}
  			continue;
  		}
-@@ -84212,7 +84212,7 @@ bool Tool_esac2hum::getSong(vector<string>& song, istream& infile) {
+@@ -86618,7 +86618,7 @@ bool Tool_esac2hum::getSong(vector<string>& song, istream& infile) {
  	}
  
  	if (expectingCloseQ) {
@@ -1400,7 +1138,7 @@ index c27fd38a4..13813c9be 100644
  	}
  
  	return true;
-@@ -84354,7 +84354,7 @@ void Tool_esac2hum::printScoreContents(ostream& output) {
+@@ -86760,7 +86760,7 @@ void Tool_esac2hum::printScoreContents(ostream& output) {
  	vector<string>& errors = m_score.m_errors;
  	if (!errors.empty()) {
  		for (int z=0; z<(int)errors.size(); z++) {
@@ -1409,7 +1147,7 @@ index c27fd38a4..13813c9be 100644
  		}
  	}
  
-@@ -84372,7 +84372,7 @@ void Tool_esac2hum::printScoreContents(ostream& output) {
+@@ -86778,7 +86778,7 @@ void Tool_esac2hum::printScoreContents(ostream& output) {
  	}
  
  	for (int i=0; i<(int)m_score.size(); i++) {
@@ -1418,7 +1156,7 @@ index c27fd38a4..13813c9be 100644
  		if (m_verbose.find("p") != string::npos) {
  			output << "!!esac-phrase: " << phrase.esac;
  			if (m_verbose.find("pi") != string::npos) {
-@@ -84383,7 +84383,7 @@ void Tool_esac2hum::printScoreContents(ostream& output) {
+@@ -86789,7 +86789,7 @@ void Tool_esac2hum::printScoreContents(ostream& output) {
  			vector<string>& errors = phrase.m_errors;
  			if (!errors.empty()) {
  				for (int z=0; z<(int)errors.size(); z++) {
@@ -1427,7 +1165,7 @@ index c27fd38a4..13813c9be 100644
  				}
  			}
  			output << endl;
-@@ -84391,7 +84391,7 @@ void Tool_esac2hum::printScoreContents(ostream& output) {
+@@ -86797,7 +86797,7 @@ void Tool_esac2hum::printScoreContents(ostream& output) {
  
  		for (int j=0; j<(int)phrase.size(); j++) {
  
@@ -1436,7 +1174,7 @@ index c27fd38a4..13813c9be 100644
  			if ((j == 0) && (i > 0)) {
  				output << "!!LO:LB:g=esac" << endl;
  			}
-@@ -84432,7 +84432,7 @@ void Tool_esac2hum::printScoreContents(ostream& output) {
+@@ -86838,7 +86838,7 @@ void Tool_esac2hum::printScoreContents(ostream& output) {
  			vector<string>& errors = measure.m_errors;
  			if (!errors.empty()) {
  				for (int z=0; z<(int)errors.size(); z++) {
@@ -1445,7 +1183,7 @@ index c27fd38a4..13813c9be 100644
  				}
  			}
  
-@@ -84443,7 +84443,7 @@ void Tool_esac2hum::printScoreContents(ostream& output) {
+@@ -86849,7 +86849,7 @@ void Tool_esac2hum::printScoreContents(ostream& output) {
  
  			for (int k=0; k<(int)measure.size(); k++) {
  
@@ -1454,7 +1192,7 @@ index c27fd38a4..13813c9be 100644
  				if (m_verbose.find("n") != string::npos) {
  					output << "!!esac-note: " << note.esac;
  					if (m_verbose.find("ni") != string::npos) {
-@@ -84457,7 +84457,7 @@ void Tool_esac2hum::printScoreContents(ostream& output) {
+@@ -86863,7 +86863,7 @@ void Tool_esac2hum::printScoreContents(ostream& output) {
  					vector<string>& errors = note.m_errors;
  					if (!errors.empty()) {
  						for (int z=0; z<(int)errors.size(); z++) {
@@ -1463,7 +1201,7 @@ index c27fd38a4..13813c9be 100644
  						}
  					}
  					output << endl;
-@@ -84489,7 +84489,7 @@ bool Tool_esac2hum::Score::parseMel(const string& mel) {
+@@ -86895,7 +86895,7 @@ bool Tool_esac2hum::Score::parseMel(const string& mel) {
  	HumRegex hre;
  	if (hre.search(mel, "^\\s*$")) {
  		// no data;
@@ -1472,7 +1210,7 @@ index c27fd38a4..13813c9be 100644
  		return false;
  	}
  
-@@ -84509,7 +84509,7 @@ bool Tool_esac2hum::Score::parseMel(const string& mel) {
+@@ -86915,7 +86915,7 @@ bool Tool_esac2hum::Score::parseMel(const string& mel) {
  		string unknown = line;
  		hre.replaceDestructive(unknown, "", "[\\^0-9b\\s/._#()+-]+", "g");
  		if (!unknown.empty()) {
@@ -1481,7 +1219,7 @@ index c27fd38a4..13813c9be 100644
  		}
  		line = Tool_esac2hum::trimSpaces(line);
  		lines.push_back(line);
-@@ -84532,7 +84532,7 @@ bool Tool_esac2hum::Score::parseMel(const string& mel) {
+@@ -86938,7 +86938,7 @@ bool Tool_esac2hum::Score::parseMel(const string& mel) {
  		}
  	}
  	if (lines.empty()) {
@@ -1490,7 +1228,7 @@ index c27fd38a4..13813c9be 100644
  		return false;
  	}
  
-@@ -84797,7 +84797,7 @@ void Tool_esac2hum::Score::prepareMultipleTimeSignatures(const string& ts) {
+@@ -87203,7 +87203,7 @@ void Tool_esac2hum::Score::prepareMultipleTimeSignatures(const string& ts) {
  	string timesigs = ts;
  	hre.split(tss, timesigs, "\\s+");
  	if (tss.size() < 2) {
@@ -1499,7 +1237,7 @@ index c27fd38a4..13813c9be 100644
  	}
  
  	// Calculate tick duration of time signature in list:
-@@ -84823,7 +84823,7 @@ void Tool_esac2hum::Score::prepareMultipleTimeSignatures(const string& ts) {
+@@ -87229,7 +87229,7 @@ void Tool_esac2hum::Score::prepareMultipleTimeSignatures(const string& ts) {
  	for (int i=0; i<(int)size(); i++) {
  		Tool_esac2hum::Phrase& phrase = at(i);
  		for (int j=1; j<(int)phrase.size()-1; j++) {
@@ -1508,7 +1246,7 @@ index c27fd38a4..13813c9be 100644
  			for (int k=0; k<(int)tss.size(); k++) {
  				if (tsticks[k] == measure.m_ticks) {
  					measure.m_measureTimeSignature = "*M" + tss[k];
-@@ -84848,7 +84848,7 @@ void Tool_esac2hum::Score::prepareMultipleTimeSignatures(const string& ts) {
+@@ -87254,7 +87254,7 @@ void Tool_esac2hum::Score::prepareMultipleTimeSignatures(const string& ts) {
  			continue;
  		}
  		Tool_esac2hum::Measure& measure = phrase.back();
@@ -1517,7 +1255,7 @@ index c27fd38a4..13813c9be 100644
  
  		int mticks  = measure.m_ticks;
  		int nmticks = nextmeasure.m_ticks;
-@@ -84857,10 +84857,10 @@ void Tool_esac2hum::Score::prepareMultipleTimeSignatures(const string& ts) {
+@@ -87263,10 +87263,10 @@ void Tool_esac2hum::Score::prepareMultipleTimeSignatures(const string& ts) {
  		int found2 = -1;
  
  		for (int j=(int)tss.size() - 1; j>=0; j--) {
@@ -1530,7 +1268,7 @@ index c27fd38a4..13813c9be 100644
  				found2 = j;
  			}
  		}
-@@ -84876,10 +84876,10 @@ void Tool_esac2hum::Score::prepareMultipleTimeSignatures(const string& ts) {
+@@ -87282,10 +87282,10 @@ void Tool_esac2hum::Score::prepareMultipleTimeSignatures(const string& ts) {
  			// form two partial measures.
  			int ticksum = mticks + nmticks;
  			for (int z=0; z<(int)tsticks.size(); z++) {
@@ -1544,7 +1282,7 @@ index c27fd38a4..13813c9be 100644
  					measure.setPartialBegin();
  					nextmeasure.setPartialEnd();
  				}
-@@ -84893,10 +84893,10 @@ void Tool_esac2hum::Score::prepareMultipleTimeSignatures(const string& ts) {
+@@ -87299,10 +87299,10 @@ void Tool_esac2hum::Score::prepareMultipleTimeSignatures(const string& ts) {
  	// last measure and partial end for first measure.
  	if (empty()) {
  		// no data
@@ -1557,7 +1295,7 @@ index c27fd38a4..13813c9be 100644
  		Tool_esac2hum::Measure& lastmeasure  = back().back();
  
  		double firstticks = firstmeasure.m_ticks;
-@@ -84906,18 +84906,18 @@ void Tool_esac2hum::Score::prepareMultipleTimeSignatures(const string& ts) {
+@@ -87312,18 +87312,18 @@ void Tool_esac2hum::Score::prepareMultipleTimeSignatures(const string& ts) {
  		int foundlast  = -1;
  
  		for (int i=(int)tss.size() - 1; i>=0; i--) {
@@ -1580,7 +1318,7 @@ index c27fd38a4..13813c9be 100644
  			firstmeasure.setComplete();
  			lastmeasure.setComplete();
  		} else {
-@@ -84935,8 +84935,8 @@ void Tool_esac2hum::Score::prepareMultipleTimeSignatures(const string& ts) {
+@@ -87341,8 +87341,8 @@ void Tool_esac2hum::Score::prepareMultipleTimeSignatures(const string& ts) {
  				// use that time signture for both, mark firt measure
  				// last pickup (barnum -> 0), and mark last as partial
  				// measure start
@@ -1591,7 +1329,7 @@ index c27fd38a4..13813c9be 100644
  				firstmeasure.m_barnum = 0;
  				firstmeasure.setPartialEnd();
  				lastmeasure.setPartialBegin();
-@@ -84957,28 +84957,28 @@ void Tool_esac2hum::Score::prepareMultipleTimeSignatures(const string& ts) {
+@@ -87363,28 +87363,28 @@ void Tool_esac2hum::Score::prepareMultipleTimeSignatures(const string& ts) {
  	getMeasureList(measurelist);
  	int barnum = 1;
  	for (int i=0; i<(int)measurelist.size(); i++) {
@@ -1632,7 +1370,7 @@ index c27fd38a4..13813c9be 100644
  		}
  	}
  
-@@ -85015,7 +85015,7 @@ void Tool_esac2hum::Score::calculateKeyInformation(void) {
+@@ -87421,7 +87421,7 @@ void Tool_esac2hum::Score::calculateKeyInformation(void) {
  	for (int i=0; i<(int)notelist.size(); i++) {
  		int pc = notelist[i]->m_b40degree;
  		if ((pc >= 0) && (pc < 40)) {
@@ -1641,7 +1379,7 @@ index c27fd38a4..13813c9be 100644
  		}
  	}
  
-@@ -85028,8 +85028,8 @@ void Tool_esac2hum::Score::calculateKeyInformation(void) {
+@@ -87434,8 +87434,8 @@ void Tool_esac2hum::Score::calculateKeyInformation(void) {
  	char letter = std::toupper(tonic[0]);
  
  	// Compare counts of third and sixth pitch classes:
@@ -1652,7 +1390,7 @@ index c27fd38a4..13813c9be 100644
  	if (minorsum > majorsum) {
  		letter = std::tolower(letter);
  	}
-@@ -85227,11 +85227,11 @@ void Tool_esac2hum::Score::generateHumdrumNotes(void) {
+@@ -87633,11 +87633,11 @@ void Tool_esac2hum::Score::generateHumdrumNotes(void) {
  		return;
  	}
  
@@ -1666,7 +1404,7 @@ index c27fd38a4..13813c9be 100644
  	}
  
  }
-@@ -85318,15 +85318,15 @@ void Tool_esac2hum::Score::analyzeTies(void) {
+@@ -87724,15 +87724,15 @@ void Tool_esac2hum::Score::analyzeTies(void) {
  
  	for (int i=1; i<(int)notelist.size(); i++) {
  		// negative m_degree indicates a tied note to previous note
@@ -1689,7 +1427,7 @@ index c27fd38a4..13813c9be 100644
  			}
  		}
  	}
-@@ -85347,7 +85347,7 @@ void Tool_esac2hum::Score::getNoteList(vector<Tool_esac2hum::Note*>& notelist) {
+@@ -87753,7 +87753,7 @@ void Tool_esac2hum::Score::getNoteList(vector<Tool_esac2hum::Note*>& notelist) {
  		for (int j=0; j<(int)phrase.size(); j++) {
  			Tool_esac2hum::Measure& measure = phrase[j];
  			for (int k=0; k<(int)measure.size(); k++) {
@@ -1698,7 +1436,7 @@ index c27fd38a4..13813c9be 100644
  			}
  		}
  	}
-@@ -85394,11 +85394,11 @@ void Tool_esac2hum::Score::analyzePhrases(void) {
+@@ -87800,11 +87800,11 @@ void Tool_esac2hum::Score::analyzePhrases(void) {
  		// Find the first non-rest note and mark with phrase start:
  		bool foundNote = false;
  		for (int j=0; j<(int)notelist.size(); j++) {
@@ -1712,7 +1450,7 @@ index c27fd38a4..13813c9be 100644
  			break;
  		}
  
-@@ -85409,10 +85409,10 @@ void Tool_esac2hum::Score::analyzePhrases(void) {
+@@ -87815,10 +87815,10 @@ void Tool_esac2hum::Score::analyzePhrases(void) {
  
  		// Find the last non-rest note and mark with phrase end:
  		for (int j=(int)notelist.size()-1; j>=0; j--) {
@@ -1725,7 +1463,7 @@ index c27fd38a4..13813c9be 100644
  			break;
  		}
  	}
-@@ -85440,7 +85440,7 @@ void Tool_esac2hum::Score::getPhraseNoteList(vector<Tool_esac2hum::Note*>& notel
+@@ -87846,7 +87846,7 @@ void Tool_esac2hum::Score::getPhraseNoteList(vector<Tool_esac2hum::Note*>& notel
  	for (int i=0; i<(int)phrase.size(); i++) {
  		Tool_esac2hum::Measure& measure = phrase[i];
  		for (int j=0; j<(int)measure.size(); j++) {
@@ -1734,7 +1472,7 @@ index c27fd38a4..13813c9be 100644
  			notelist.push_back(&note);
  		}
  	}
-@@ -85461,7 +85461,7 @@ void Tool_esac2hum::Phrase::getNoteList(vector<Tool_esac2hum::Note*>& notelist)
+@@ -87867,7 +87867,7 @@ void Tool_esac2hum::Phrase::getNoteList(vector<Tool_esac2hum::Note*>& notelist)
  	for (int i=0; i<(int)phrase.size(); i++) {
  		Tool_esac2hum::Measure& measure = phrase[i];
  		for (int j=0; j<(int)measure.size(); j++) {
@@ -1743,7 +1481,7 @@ index c27fd38a4..13813c9be 100644
  			notelist.push_back(&note);
  		}
  	}
-@@ -85484,7 +85484,7 @@ bool Tool_esac2hum::Phrase::parsePhrase(const string& phrase) {
+@@ -87890,7 +87890,7 @@ bool Tool_esac2hum::Phrase::parsePhrase(const string& phrase) {
  	newphrase = trimSpaces(newphrase);
  	hre.split(bars, newphrase, "\\s+");
  	if (bars.empty()) {
@@ -1752,7 +1490,7 @@ index c27fd38a4..13813c9be 100644
  		return false;
  	}
  	int length = (int)bars.size();
-@@ -85559,7 +85559,7 @@ bool Tool_esac2hum::Measure::parseMeasure(const string& measure) {
+@@ -87965,7 +87965,7 @@ bool Tool_esac2hum::Measure::parseMeasure(const string& measure) {
  			if (!tokens.empty()) {
  				tokens.back() += measure[i];
  			} else {
@@ -1761,7 +1499,7 @@ index c27fd38a4..13813c9be 100644
  			}
  		}
  
-@@ -85569,7 +85569,7 @@ bool Tool_esac2hum::Measure::parseMeasure(const string& measure) {
+@@ -87975,7 +87975,7 @@ bool Tool_esac2hum::Measure::parseMeasure(const string& measure) {
  	}
  
  	if (tokens.empty()) {
@@ -1770,7 +1508,7 @@ index c27fd38a4..13813c9be 100644
  		return false;
  	}
  
-@@ -85630,10 +85630,10 @@ bool Tool_esac2hum::Note::parseNote(const string& note, HumNum factor) {
+@@ -88036,10 +88036,10 @@ bool Tool_esac2hum::Note::parseNote(const string& note, HumNum factor) {
  	}
  
  	if (b > 2) {
@@ -1783,7 +1521,7 @@ index c27fd38a4..13813c9be 100644
  	}
  
  	m_alter = s - b;
-@@ -85852,18 +85852,18 @@ void Tool_esac2hum::getParameters(vector<string>& infile) {
+@@ -88258,18 +88258,18 @@ void Tool_esac2hum::getParameters(vector<string>& infile) {
  		}
  		if (expectingCloseQ) {
  			if (infile[i].find("[") != string::npos) {
@@ -1805,7 +1543,7 @@ index c27fd38a4..13813c9be 100644
  				} else {
  					string value = hre.getMatch(1);
  					m_score.m_params[lastKey] += "\n" + value;
-@@ -85871,7 +85871,7 @@ void Tool_esac2hum::getParameters(vector<string>& infile) {
+@@ -88277,7 +88277,7 @@ void Tool_esac2hum::getParameters(vector<string>& infile) {
  					continue;
  				}
  			} else {
@@ -1814,7 +1552,7 @@ index c27fd38a4..13813c9be 100644
  			}
  			continue;
  		} else if (hre.search(infile[i], "^\\s*([A-Z_a-z]+)\\s*\\[([^\\]]*)\\]\\s*$")) {
-@@ -85902,7 +85902,7 @@ void Tool_esac2hum::getParameters(vector<string>& infile) {
+@@ -88308,7 +88308,7 @@ void Tool_esac2hum::getParameters(vector<string>& infile) {
  			// Do nothing: an external comment, or embedded filter processed
  			// when filter loading the file.
  		} else {
@@ -1823,7 +1561,7 @@ index c27fd38a4..13813c9be 100644
  		}
  	}
  
-@@ -85926,10 +85926,10 @@ void Tool_esac2hum::getParameters(vector<string>& infile) {
+@@ -88332,10 +88332,10 @@ void Tool_esac2hum::getParameters(vector<string>& infile) {
  		string tonic  = hre.getMatch(3);
  		if (tonic.size() >= 1) {
  			if (tonic[0] == 'b') {
@@ -1836,7 +1574,7 @@ index c27fd38a4..13813c9be 100644
  					tonic[0] = std::toupper(tonic[0]);
  				}
  			}
-@@ -85939,9 +85939,9 @@ void Tool_esac2hum::getParameters(vector<string>& infile) {
+@@ -88345,9 +88345,9 @@ void Tool_esac2hum::getParameters(vector<string>& infile) {
  		m_score.m_params["_minrhy"] = minrhy;
  		m_score.m_params["_tonic"]  = tonic;
  		m_score.m_params["_time"]   = time;
@@ -1848,7 +1586,7 @@ index c27fd38a4..13813c9be 100644
  	}
  
  	string trd = m_score.m_params["TRD"];
-@@ -85979,7 +85979,7 @@ void Tool_esac2hum::getParameters(vector<string>& infile) {
+@@ -88385,7 +88385,7 @@ void Tool_esac2hum::getParameters(vector<string>& infile) {
  	} else if (hre.search(trd, "\\bs,\\s*(\\d+)", "i")) {
  		// s, #
  	} else {
@@ -1857,7 +1595,7 @@ index c27fd38a4..13813c9be 100644
  	}
  
  	if (m_debugQ) {
-@@ -86002,13 +86002,13 @@ void Tool_esac2hum::getParameters(vector<string>& infile) {
+@@ -88408,13 +88408,13 @@ void Tool_esac2hum::getParameters(vector<string>& infile) {
  //
  
  void Tool_esac2hum::printParameters(void) {
@@ -1876,7 +1614,7 @@ index c27fd38a4..13813c9be 100644
  }
  
  
-@@ -86058,7 +86058,7 @@ void Tool_esac2hum::printFooter(ostream& output, vector<string>& infile) {
+@@ -88464,7 +88464,7 @@ void Tool_esac2hum::printFooter(ostream& output, vector<string>& infile) {
  
  	if (!m_globalComments.empty()) {
  		for (int i=0; i<(int)m_globalComments.size(); i++) {
@@ -1885,7 +1623,7 @@ index c27fd38a4..13813c9be 100644
  		}
  	}
  }
-@@ -86441,17 +86441,17 @@ int Tool_esac2hum::Phrase::getFullMeasureCount(void) {
+@@ -88847,17 +88847,17 @@ int Tool_esac2hum::Phrase::getFullMeasureCount(void) {
  	if (measureCount < 2) {
  		return measureCount;
  	}
@@ -1906,7 +1644,7 @@ index c27fd38a4..13813c9be 100644
  		measureCount--;
  	}
  
-@@ -86570,9 +86570,9 @@ void Tool_esac2hum::Score::analyzeACC(void) {
+@@ -88976,9 +88976,9 @@ void Tool_esac2hum::Score::analyzeACC(void) {
  	for (int i=0; i<(int)size(); i++) {
  		Tool_esac2hum::Phrase& phrase = at(i);
  		for (int j=0; j<(int)phrase.size(); j++) {
@@ -1918,7 +1656,7 @@ index c27fd38a4..13813c9be 100644
  			}
  		}
  		if (i < (int)size() -1) {
-@@ -86727,10 +86727,10 @@ string Tool_esac2hum::getKolbergUrl(int volume) {
+@@ -89133,10 +89133,10 @@ string Tool_esac2hum::getKolbergUrl(int volume) {
  		if (hre.search(pageinfo, "(\\d+)")) {
  			printPage = hre.getMatchInt(1);
  		} else {
@@ -1931,7 +1669,7 @@ index c27fd38a4..13813c9be 100644
  	}
  
  	// Calculate the scan page that matches with the print page:
-@@ -97982,8 +97982,8 @@ void Tool_humsort::processFile(HumdrumFile& infile) {
+@@ -101356,8 +101356,8 @@ void Tool_humsort::processFile(HumdrumFile& infile) {
  				char chb = b->at(0);
  				if ((isdigit(cha) || cha == '-' || cha == '+' || cha == '.') &&
  				    (isdigit(chb) || chb == '-' || chb == '+' || chb == '.')) {
@@ -1942,7 +1680,7 @@ index c27fd38a4..13813c9be 100644
  					if (A < B) {
  						return -1;
  					} else {
-@@ -98712,7 +98712,7 @@ bool Tool_imitation::run(HumdrumFile& infile) {
+@@ -102086,7 +102086,7 @@ bool Tool_imitation::run(HumdrumFile& infile) {
  		hre.split(values, intstring.c_str(), "[^0-9+-]+");
  		m_intervals.resize(values.size());
  		for (int i=0; i<(int)values.size(); i++) {
@@ -1951,7 +1689,7 @@ index c27fd38a4..13813c9be 100644
  			// subtract one since intervals in caluculations are zero-indexed:
  			if (m_intervals.at(i) > 0) {
  				m_intervals.at(i)--;
-@@ -101153,22 +101153,22 @@ void Tool_mei2hum::processHairpin(hairpin_info& info) {
+@@ -104527,22 +104527,22 @@ void Tool_mei2hum::processHairpin(hairpin_info& info) {
  		myit++;
  	}
  
@@ -1978,7 +1716,7 @@ index c27fd38a4..13813c9be 100644
  
  	HumNum measurestart = gm->getTimestamp();
  	HumNum timestamp;   // timestamp of event in measure
-@@ -101264,7 +101264,7 @@ void Tool_mei2hum::addExtMetaRecords(HumdrumFile& outfile, xml_document& doc) {
+@@ -104638,7 +104638,7 @@ void Tool_mei2hum::addExtMetaRecords(HumdrumFile& outfile, xml_document& doc) {
  		if (starttimevalue == "") {
  			starttime = 0.0;
  		} else {
@@ -1987,7 +1725,7 @@ index c27fd38a4..13813c9be 100644
  		}
  		if (starttime > 0.0) {
  			continue;
-@@ -101290,7 +101290,7 @@ void Tool_mei2hum::addExtMetaRecords(HumdrumFile& outfile, xml_document& doc) {
+@@ -104664,7 +104664,7 @@ void Tool_mei2hum::addExtMetaRecords(HumdrumFile& outfile, xml_document& doc) {
  		if (starttimevalue == "") {
  			starttime = 0.0;
  		} else {
@@ -1996,7 +1734,7 @@ index c27fd38a4..13813c9be 100644
  		}
  		if (starttime == 0.0) {
  			continue;
-@@ -101720,7 +101720,7 @@ void Tool_mei2hum::parseStaffDef(xml_node staffDef, HumNum starttime) {
+@@ -105094,7 +105094,7 @@ void Tool_mei2hum::parseStaffDef(xml_node staffDef, HumNum starttime) {
  		return;
  	}
  
@@ -2005,7 +1743,7 @@ index c27fd38a4..13813c9be 100644
  	if (num < 1) {
  		// to small
  		return;
-@@ -102008,16 +102008,16 @@ void Tool_mei2hum::fillWithStaffDefAttributes(mei_staffDef& staffinfo, xml_node
+@@ -105382,16 +105382,16 @@ void Tool_mei2hum::fillWithStaffDefAttributes(mei_staffDef& staffinfo, xml_node
  		staffinfo.clef = makeHumdrumClef(clefshape, clefline, clefdis, clefdisplace);
  	}
  	if ((!metercount.empty()) && (!meterunit.empty())) {
@@ -2025,7 +1763,7 @@ index c27fd38a4..13813c9be 100644
  			}
  		} else {
  			cerr << DKHTP << element.name() << "@meter.count/@meter.unit" << CURRLOC << endl;
-@@ -102026,7 +102026,7 @@ void Tool_mei2hum::fillWithStaffDefAttributes(mei_staffDef& staffinfo, xml_node
+@@ -105400,7 +105400,7 @@ void Tool_mei2hum::fillWithStaffDefAttributes(mei_staffDef& staffinfo, xml_node
  		staffinfo.timesig = "*M" + metercount + "/" + meterunit;
  	}
  	if (!keysig.empty()) {
@@ -2034,7 +1772,7 @@ index c27fd38a4..13813c9be 100644
  		int accid = 0;
  		if (keysig.find("s") != string::npos) {
  			accid = +1;
-@@ -102307,7 +102307,7 @@ HumNum Tool_mei2hum::parseMeasure(xml_node measure, HumNum starttime) {
+@@ -105681,7 +105681,7 @@ HumNum Tool_mei2hum::parseMeasure(xml_node measure, HumNum starttime) {
  	if (n.empty()) {
  		// cerr << "Warning: no measure number on measure element" << endl;
  	} else {
@@ -2043,7 +1781,7 @@ index c27fd38a4..13813c9be 100644
  	}
  	if (nnum < 0) {
  		cerr << "Error: invalid measure number: " << nnum << endl;
-@@ -102534,7 +102534,7 @@ HumNum Tool_mei2hum::parseStaff(xml_node staff, HumNum starttime) {
+@@ -105908,7 +105908,7 @@ HumNum Tool_mei2hum::parseStaff(xml_node staff, HumNum starttime) {
  	if (n.empty()) {
  		cerr << "Warning: no staff number on staff element in measure " << m_currentMeasure << endl;
  	} else {
@@ -2052,7 +1790,7 @@ index c27fd38a4..13813c9be 100644
  	}
  	if (nnum < 1) {
  		cerr << "Error: invalid staff number: " << nnum << endl;
-@@ -102615,7 +102615,7 @@ HumNum Tool_mei2hum::parseStaff_mensural(xml_node staff, HumNum starttime) {
+@@ -105989,7 +105989,7 @@ HumNum Tool_mei2hum::parseStaff_mensural(xml_node staff, HumNum starttime) {
  	if (n.empty()) {
  		cerr << "Warning: no staff number on staff element in measure " << m_currentMeasure << endl;
  	} else {
@@ -2061,7 +1799,7 @@ index c27fd38a4..13813c9be 100644
  	}
  	if (nnum < 1) {
  		cerr << "Error: invalid staff number: " << nnum << endl;
-@@ -103034,13 +103034,13 @@ HumNum Tool_mei2hum::parseTuplet(xml_node tuplet, HumNum starttime) {
+@@ -106408,13 +106408,13 @@ HumNum Tool_mei2hum::parseTuplet(xml_node tuplet, HumNum starttime) {
  	if (numbase == "") {
  		cerr << "Warning: tuplet@numbase is empty" << endl;
  	} else {
@@ -2077,7 +1815,7 @@ index c27fd38a4..13813c9be 100644
  	}
  
  	m_tupletfactor *= newfactor;
-@@ -103197,7 +103197,7 @@ bool Tool_mei2hum::beamIsValid(vector<xml_node>& beamlist) {
+@@ -106571,7 +106571,7 @@ bool Tool_mei2hum::beamIsValid(vector<xml_node>& beamlist) {
  			continue;
  		}
  		if (isdigit(dur[0])) {
@@ -2086,7 +1824,7 @@ index c27fd38a4..13813c9be 100644
  				return false;
  			}
  		} else {
-@@ -104089,7 +104089,7 @@ int Tool_mei2hum::getDotCount(xml_node node) {
+@@ -107463,7 +107463,7 @@ int Tool_mei2hum::getDotCount(xml_node node) {
  	string dots = node.attribute("dots").value();
  	int dotcount = 0;
  	if (dots != "") {
@@ -2095,7 +1833,7 @@ index c27fd38a4..13813c9be 100644
  	}
  	return dotcount;
  }
-@@ -104178,13 +104178,13 @@ void Tool_mei2hum::parseTupletSpanStart(xml_node node,
+@@ -107552,13 +107552,13 @@ void Tool_mei2hum::parseTupletSpanStart(xml_node node,
  	if (numbase == "") {
  		cerr << "Warning: tuplet@numbase is empty" << endl;
  	} else {
@@ -2111,7 +1849,7 @@ index c27fd38a4..13813c9be 100644
  	}
  
  	m_tupletfactor *= newfactor;
-@@ -104221,13 +104221,13 @@ void Tool_mei2hum::parseTupletSpanStop(string& output, xml_node node,
+@@ -107595,13 +107595,13 @@ void Tool_mei2hum::parseTupletSpanStop(string& output, xml_node node,
  	if (numbase == "") {
  		cerr << "Warning: tuplet@numbase is empty" << endl;
  	} else {
@@ -2127,7 +1865,7 @@ index c27fd38a4..13813c9be 100644
  	}
  
  	// undo the tuplet factor:
-@@ -104577,7 +104577,7 @@ string Tool_mei2hum::getHumdrumPitch(xml_node note, vector<xml_node>& children)
+@@ -107951,7 +107951,7 @@ string Tool_mei2hum::getHumdrumPitch(xml_node note, vector<xml_node>& children)
  	if (oct == "") {
  		cerr << "Empty octave" << endl;
  	} else if (isdigit(oct[0])) {
@@ -2136,7 +1874,7 @@ index c27fd38a4..13813c9be 100644
  	} else {
  		cerr << "Unknown octave value: " << oct << endl;
  	}
-@@ -104679,7 +104679,7 @@ HumNum Tool_mei2hum::getDuration(xml_node element) {
+@@ -108053,7 +108053,7 @@ HumNum Tool_mei2hum::getDuration(xml_node element) {
  		output = 8;
  	} else if (isdigit(dur[0])) {
  		output = 1;
@@ -2145,7 +1883,7 @@ index c27fd38a4..13813c9be 100644
  	} else {
  		cerr << "Unknown " << element.name() << "@dur: " << dur << endl;
  		return 0;
-@@ -104694,7 +104694,7 @@ HumNum Tool_mei2hum::getDuration(xml_node element) {
+@@ -108068,7 +108068,7 @@ HumNum Tool_mei2hum::getDuration(xml_node element) {
  	if (dots == "") {
  		dotcount = 0;
  	} else if (isdigit(dots[0])) {
@@ -2154,7 +1892,7 @@ index c27fd38a4..13813c9be 100644
  	} else {
  		cerr << "Unknown " << element.name() << "@dotcount: " << dur << endl;
  		return 0;
-@@ -104830,7 +104830,7 @@ void Tool_mei2hum::parseVerse(xml_node verse, GridStaff* staff) {
+@@ -108204,7 +108204,7 @@ void Tool_mei2hum::parseVerse(xml_node verse, GridStaff* staff) {
  	if (n.empty()) {
  		cerr << "Warning: no layer number on layer element" << endl;
  	} else {
@@ -2163,7 +1901,7 @@ index c27fd38a4..13813c9be 100644
  	}
  	if (nnum < 1) {
  		cerr << "Warning: invalid layer number: " << nnum << endl;
-@@ -104987,7 +104987,7 @@ string Tool_mei2hum::makeHumdrumClef(const string& shape,
+@@ -108361,7 +108361,7 @@ string Tool_mei2hum::makeHumdrumClef(const string& shape,
  		const string& line, const string& clefdis, const string& clefdisplace) {
  	string output = "*clef" + shape;
  	if (!clefdis.empty()) {
@@ -2172,7 +1910,7 @@ index c27fd38a4..13813c9be 100644
  		int count = 0;
  		if (number == 8) {
  			count = 1;
-@@ -105239,7 +105239,7 @@ void Tool_mei2hum::parseDir(xml_node dir, HumNum starttime) {
+@@ -108613,7 +108613,7 @@ void Tool_mei2hum::parseDir(xml_node dir, HumNum starttime) {
  	}
  
  	double meterunit = m_currentMeterUnit[staffnum - 1];
@@ -2181,7 +1919,7 @@ index c27fd38a4..13813c9be 100644
  
  	GridMeasure* gm = m_outdata.back();
  	double tsm = gm->getTimestamp().getFloat();
-@@ -105683,7 +105683,7 @@ void Tool_mei2hum::parseHarm(xml_node harm, HumNum starttime) {
+@@ -109057,7 +109057,7 @@ void Tool_mei2hum::parseHarm(xml_node harm, HumNum starttime) {
  		cerr << "Error: no timestamp on harm element" << endl;
  		return;
  	}
@@ -2190,7 +1928,7 @@ index c27fd38a4..13813c9be 100644
  	double tolerance = 0.001;
  	GridMeasure* gm = m_outdata.back();
  	double tsm = gm->getTimestamp().getFloat();
-@@ -105797,7 +105797,7 @@ void Tool_mei2hum::parseDynam(xml_node dynam, HumNum starttime) {
+@@ -109171,7 +109171,7 @@ void Tool_mei2hum::parseDynam(xml_node dynam, HumNum starttime) {
  		cerr << "Error: no timestamp on dynam element" << endl;
  		return;
  	}
@@ -2199,7 +1937,7 @@ index c27fd38a4..13813c9be 100644
  	double tolerance = 0.001;
  	GridMeasure* gm = m_outdata.back();
  	double tsm = gm->getTimestamp().getFloat();
-@@ -111973,7 +111973,7 @@ void Tool_musedata2hum::setMeasureNumber(GridMeasure* gm, MuseRecord& mr) {
+@@ -115347,7 +115347,7 @@ void Tool_musedata2hum::setMeasureNumber(GridMeasure* gm, MuseRecord& mr) {
  		gm->setMeasureNumber(-1);
  		return;
  	}
@@ -2208,7 +1946,7 @@ index c27fd38a4..13813c9be 100644
  	if (m_lastbarnum >= 0) {
  		int temp = num;
  		num = m_lastbarnum;
-@@ -112061,7 +112061,7 @@ void Tool_musedata2hum::convertLine(GridMeasure* gm, MuseRecord& mr) {
+@@ -115435,7 +115435,7 @@ void Tool_musedata2hum::convertLine(GridMeasure* gm, MuseRecord& mr) {
  		}
  
  		if (!attributes["Q"].empty()) {
@@ -2217,7 +1955,7 @@ index c27fd38a4..13813c9be 100644
  		}
  
  		string mclef = attributes["C"];
-@@ -114540,7 +114540,7 @@ void Tool_musicxml2hum::addText(GridSlice* slice, GridMeasure* measure, int part
+@@ -118035,7 +118035,7 @@ void Tool_musicxml2hum::addText(GridSlice* slice, GridMeasure* measure, int part
  				defaulty = sibling.attribute("default-y");
  				if (defaulty) {
  					dyQ = true;
@@ -2226,7 +1964,7 @@ index c27fd38a4..13813c9be 100644
  					if (number >= 0.0) {
  						placementstring = ":a";
  					} else if (number < 0.0) {
-@@ -114867,7 +114867,7 @@ void Tool_musicxml2hum::addTempo(GridSlice* slice, GridMeasure* measure, int par
+@@ -118362,7 +118362,7 @@ void Tool_musicxml2hum::addTempo(GridSlice* slice, GridMeasure* measure, int par
  
  	if (sound) {
  		string mmtok = "*MM";
@@ -2235,7 +1973,7 @@ index c27fd38a4..13813c9be 100644
  		double mmi = int(mmv + 0.001);
  		if (fabs(mmv - mmi) < 0.01) {
  			stringstream sstream;
-@@ -115854,7 +115854,7 @@ int Tool_musicxml2hum::addLyrics(GridStaff* staff, MxmlEvent* event) {
+@@ -119349,7 +119349,7 @@ int Tool_musicxml2hum::addLyrics(GridStaff* staff, MxmlEvent* event) {
  		string value = child.attribute("number").value();
  		if (hre.search(value, R"(verse(\d+))")) {
  			// Fix for Sibelius which uses number="part8verse5" format.
@@ -2244,7 +1982,7 @@ index c27fd38a4..13813c9be 100644
  		} else {
  			number = atoi(child.attribute("number").value());
  		}
-@@ -116438,7 +116438,7 @@ void Tool_musicxml2hum::addStriaLine(GridMeasure* outdata,
+@@ -119933,7 +119933,7 @@ void Tool_musicxml2hum::addStriaLine(GridMeasure* outdata,
  		for (int j=0; j<(int)stafflines[i].size(); j++) {
  			if (stafflines[i][j]) {
  				string lines = stafflines[i][j].child_value();
@@ -2253,7 +1991,7 @@ index c27fd38a4..13813c9be 100644
  				insertPartStria(linecount, *slice->at(i));
  			}
  		}
-@@ -118338,7 +118338,7 @@ void Tool_myank::getMarkString(ostream& out, HumdrumFile& infile)  {
+@@ -121833,7 +121833,7 @@ void Tool_myank::getMarkString(ostream& out, HumdrumFile& infile)  {
  	for (int i=0; i<infile.getLineCount(); i++) {
  		if (infile[i].isBarline()) {
  			if (hre.search(infile.token(i, 0), "^=.*?(\\d+)", "")) {
@@ -2262,7 +2000,7 @@ index c27fd38a4..13813c9be 100644
  				hasmark = 0;
  			}
  		}
-@@ -119665,7 +119665,7 @@ void Tool_myank::getMeasureStartStop(vector<MeasureInfo>& measurelist, HumdrumFi
+@@ -123160,7 +123160,7 @@ void Tool_myank::getMeasureStartStop(vector<MeasureInfo>& measurelist, HumdrumFi
  		//if (!hre.search(infile.token(i, 0), "^=.*(\\d+)")) {
  		//   continue;
  		//}
@@ -2271,7 +2009,7 @@ index c27fd38a4..13813c9be 100644
  		if (!sscanf(infile.token(i, 0)->c_str(), "=%d", &barnum1)) {
  			continue;
  		}
-@@ -119677,7 +119677,7 @@ void Tool_myank::getMeasureStartStop(vector<MeasureInfo>& measurelist, HumdrumFi
+@@ -123172,7 +123172,7 @@ void Tool_myank::getMeasureStartStop(vector<MeasureInfo>& measurelist, HumdrumFi
  				continue;
  			}
  			//if (hre.search(infile.token(ii, 0), "^=.*(\\d+)")) {
@@ -2280,7 +2018,7 @@ index c27fd38a4..13813c9be 100644
  			//   current.stop = ii;
  			//   lastend = ii;
  			//   i = ii - 1;
-@@ -119686,7 +119686,7 @@ void Tool_myank::getMeasureStartStop(vector<MeasureInfo>& measurelist, HumdrumFi
+@@ -123181,7 +123181,7 @@ void Tool_myank::getMeasureStartStop(vector<MeasureInfo>& measurelist, HumdrumFi
  			//}
  			if (hre.search(infile.token(ii, 0), "=[^\\d]*(\\d+)")) {
  			// if (sscanf(infile.token(ii, 0), "=%d", &barnum2)) {
@@ -2289,7 +2027,7 @@ index c27fd38a4..13813c9be 100644
  				current.stop = ii;
  				lastend = ii;
  				i = ii - 1;
-@@ -128008,7 +128008,7 @@ string Tool_rphrase::getCompositeLabel(HumdrumFile& infile) {
+@@ -131690,7 +131690,7 @@ string Tool_rphrase::getCompositeLabel(HumdrumFile& infile) {
  	HumRegex hre;
  
  	if (hre.search(voices, "^\\d+$")) {
@@ -2298,7 +2036,7 @@ index c27fd38a4..13813c9be 100644
  		if (vint != (int)kstarts.size()) {
  			output += "(";
  			output += to_string(kstarts.size());
-@@ -130494,7 +130494,7 @@ int Tool_semitones::processKernSpines(HumdrumFile& infile, int line, int start,
+@@ -134176,7 +134176,7 @@ int Tool_semitones::processKernSpines(HumdrumFile& infile, int line, int start,
              if (!isdigit(intervals[i].back())) {
  					continue;
  				}
@@ -2308,7 +2046,7 @@ index c27fd38a4..13813c9be 100644
  					markInterval(toks[i]);
  				} else if (m_downQ && m_stepQ && (value < 0) && (value > -m_leap)) {
 diff --git a/src/ioabc.cpp b/src/ioabc.cpp
-index 7f497b5b7..a4800a596 100644
+index a8fd8b52d..fb429866e 100644
 --- a/src/ioabc.cpp
 +++ b/src/ioabc.cpp
 @@ -1101,7 +1101,7 @@ void ABCInput::ParseLyrics()
@@ -2329,7 +2067,7 @@ index 7f497b5b7..a4800a596 100644
              ++i;
          }
          if (i >= (int)m_lineNoteArray.size()) break;
-@@ -1266,7 +1266,7 @@ void ABCInput::ReadMusicCode(const std::string &musicCode, Section *section)
+@@ -1268,7 +1268,7 @@ void ABCInput::ReadMusicCode(const std::string &musicCode, Section *section)
              ++i;
              ++i;
              std::string information;
@@ -2338,7 +2076,7 @@ index 7f497b5b7..a4800a596 100644
                  information.push_back(musicCode.at(i));
                  ++i;
              }
-@@ -1295,7 +1295,7 @@ void ABCInput::ReadMusicCode(const std::string &musicCode, Section *section)
+@@ -1297,7 +1297,7 @@ void ABCInput::ReadMusicCode(const std::string &musicCode, Section *section)
              ++i;
              if (!isspace(musicCode.at(i))) {
                  std::string decorationString;
@@ -2347,7 +2085,7 @@ index 7f497b5b7..a4800a596 100644
                      decorationString.push_back(musicCode.at(i));
                      ++i;
                  }
-@@ -1734,7 +1734,7 @@ void ABCInput::ReadMusicCode(const std::string &musicCode, Section *section)
+@@ -1736,7 +1736,7 @@ void ABCInput::ReadMusicCode(const std::string &musicCode, Section *section)
                  ++i;
              }
              std::string chordSymbol;
@@ -2357,7 +2095,7 @@ index 7f497b5b7..a4800a596 100644
                  ++i;
              }
 diff --git a/src/iohumdrum.cpp b/src/iohumdrum.cpp
-index 8ca7bfa2c..0979f0b3b 100644
+index ad04c4f6f..a4c1d02d9 100644
 --- a/src/iohumdrum.cpp
 +++ b/src/iohumdrum.cpp
 @@ -3176,7 +3176,7 @@ DateWithErrors HumdrumInput::dateWithErrorsFromHumdrumDate(const std::string &hu
@@ -2405,7 +2143,7 @@ index 8ca7bfa2c..0979f0b3b 100644
                      // std::string tempostr = to_string(tempo);
                      scoreDef->SetMidiBpm(tempo * m_globalTempoScaling * m_localTempoScaling.getFloat());
                      foundtempo = true;
-@@ -8926,16 +8926,16 @@ void HumdrumInput::setMensurationSymbol(
+@@ -8929,16 +8929,16 @@ void HumdrumInput::setMensurationSymbol(
          std::string num4 = hre.getMatch(4);
  
          if (!num1.empty()) {
@@ -2426,7 +2164,7 @@ index 8ca7bfa2c..0979f0b3b 100644
          }
  
          std::stringstream warning;
-@@ -9133,10 +9133,10 @@ void HumdrumInput::setTimeSig(ELEMENT element, hum::HTp timesigtok, hum::HTp met
+@@ -9136,10 +9136,10 @@ void HumdrumInput::setTimeSig(ELEMENT element, hum::HTp timesigtok, hum::HTp met
      int count = -1;
      int unit = -1;
      if (timesigtok && regex_search(*timesigtok, matches, regex("^\\*M(\\d+)/(\\d+)%(\\d+)"))) {
@@ -2441,7 +2179,7 @@ index 8ca7bfa2c..0979f0b3b 100644
          if ((metersig == "3") && (bot == 3) && (bot2 == 2)) {
              MeterSig *vrvmetersig = getMeterSig(element);
              vrvmetersig->SetCount({ { 3 }, MeterCountSign::None });
-@@ -9146,8 +9146,8 @@ void HumdrumInput::setTimeSig(ELEMENT element, hum::HTp timesigtok, hum::HTp met
+@@ -9149,8 +9149,8 @@ void HumdrumInput::setTimeSig(ELEMENT element, hum::HTp timesigtok, hum::HTp met
          }
      }
      else if (timesigtok && regex_search(*timesigtok, matches, regex("^\\*M(\\d+)/(\\d+)"))) {
@@ -2452,7 +2190,7 @@ index 8ca7bfa2c..0979f0b3b 100644
          if (unit == 0) {
              // Breve time signature not possible in MEI, so change to whole note unit:
              count *= 2;
-@@ -9160,9 +9160,9 @@ void HumdrumInput::setTimeSig(ELEMENT element, hum::HTp timesigtok, hum::HTp met
+@@ -9163,9 +9163,9 @@ void HumdrumInput::setTimeSig(ELEMENT element, hum::HTp timesigtok, hum::HTp met
              checkMeterSigParameters(vrvmetersig, timesigtok);
          }
          else if (*metersigtok == "*met()") {
@@ -2464,7 +2202,7 @@ index 8ca7bfa2c..0979f0b3b 100644
              vrvmetersig->SetUnit(unit);
              vrvmetersig->SetVisible(BOOLEAN_false);
          }
-@@ -9182,9 +9182,9 @@ void HumdrumInput::setTimeSig(ELEMENT element, hum::HTp timesigtok, hum::HTp met
+@@ -9185,9 +9185,9 @@ void HumdrumInput::setTimeSig(ELEMENT element, hum::HTp timesigtok, hum::HTp met
              && (metersigtok->find('O') == std::string::npos)) {
              // Only storing the time signature if there is no mensuration
              // otherwise verovio will display both.
@@ -2476,7 +2214,7 @@ index 8ca7bfa2c..0979f0b3b 100644
              vrvmetersig->SetUnit(unit);
          }
          else {
-@@ -9192,7 +9192,7 @@ void HumdrumInput::setTimeSig(ELEMENT element, hum::HTp timesigtok, hum::HTp met
+@@ -9195,7 +9195,7 @@ void HumdrumInput::setTimeSig(ELEMENT element, hum::HTp timesigtok, hum::HTp met
              // are in reference to it (can't add meter.count since
              // this will also print a time signature.
              // Count now allowed (suppress time signature display with @form="invis").
@@ -2485,7 +2223,7 @@ index 8ca7bfa2c..0979f0b3b 100644
              if (unit == 0) {
                  count *= 2;
                  unit = 1;
-@@ -17826,12 +17826,12 @@ void HumdrumInput::processLinkedDirection(int index, hum::HTp token, int staffin
+@@ -17831,12 +17831,12 @@ void HumdrumInput::processLinkedDirection(int index, hum::HTp token, int staffin
          }
          if (key == "vgrp") {
              if ((!value.empty()) && std::isdigit(value[0])) {
@@ -2500,7 +2238,7 @@ index 8ca7bfa2c..0979f0b3b 100644
              }
          }
      }
-@@ -19187,7 +19187,7 @@ void HumdrumInput::processDynamics(hum::HTp token, int staffindex)
+@@ -19192,7 +19192,7 @@ void HumdrumInput::processDynamics(hum::HTp token, int staffindex)
                          hairpin->SetVgrp(VGRP_DYNAM_DEFAULT);
                      }
                      else if (std::isdigit(verticalgroup[0])) {
@@ -2509,7 +2247,7 @@ index 8ca7bfa2c..0979f0b3b 100644
                      }
                      else {
                          // don't set a vertical group for this token
-@@ -19336,7 +19336,7 @@ void HumdrumInput::processDynamics(hum::HTp token, int staffindex)
+@@ -19341,7 +19341,7 @@ void HumdrumInput::processDynamics(hum::HTp token, int staffindex)
                      hairpin->SetVgrp(VGRP_DYNAM_DEFAULT);
                  }
                  else if (std::isdigit(verticalgroup[0])) {
@@ -2518,7 +2256,7 @@ index 8ca7bfa2c..0979f0b3b 100644
                  }
                  else {
                      // don't set a vertical group for this token
-@@ -19691,7 +19691,7 @@ void HumdrumInput::addDynamicsMark(hum::HTp dyntok, hum::HTp token, hum::HLp lin
+@@ -19696,7 +19696,7 @@ void HumdrumInput::addDynamicsMark(hum::HTp dyntok, hum::HTp token, hum::HLp lin
                  dynam->SetVgrp(VGRP_DYNAM_DEFAULT);
              }
              else if (std::isdigit(verticalgroup[0])) {
@@ -2527,7 +2265,7 @@ index 8ca7bfa2c..0979f0b3b 100644
              }
              else {
                  // don't set a vertical group for this token
-@@ -20128,7 +20128,7 @@ bool HumdrumInput::hasAboveParameter(hum::HTp token, const std::string &category
+@@ -20134,7 +20134,7 @@ bool HumdrumInput::hasAboveParameter(hum::HTp token, const std::string &category
                  else if (!value.empty()) {
                      // b=2 means below the staff below the attached staff.
                      if (isdigit(value[0])) {
@@ -2536,7 +2274,7 @@ index 8ca7bfa2c..0979f0b3b 100644
                          if (output) {
                              output = -(output - 1);
                          }
-@@ -20178,7 +20178,7 @@ bool HumdrumInput::hasCenterParameter(hum::HTp token, const std::string &categor
+@@ -20184,7 +20184,7 @@ bool HumdrumInput::hasCenterParameter(hum::HTp token, const std::string &categor
                  else if (!value.empty()) {
                      // c=2 means below the staff below the attached staff.
                      if (isdigit(value[0])) {
@@ -2545,7 +2283,7 @@ index 8ca7bfa2c..0979f0b3b 100644
                          if (output) {
                              output = -(output - 1);
                          }
-@@ -20342,7 +20342,7 @@ bool HumdrumInput::hasBelowParameter(hum::HTp token, const std::string &category
+@@ -20348,7 +20348,7 @@ bool HumdrumInput::hasBelowParameter(hum::HTp token, const std::string &category
                  else if (!value.empty()) {
                      // b=2 means below the staff below the attached staff.
                      if (isdigit(value[0])) {
@@ -2554,7 +2292,7 @@ index 8ca7bfa2c..0979f0b3b 100644
                          if (output) {
                              output = -(output - 1);
                          }
-@@ -21783,11 +21783,11 @@ void HumdrumInput::insertMeterSigElement(
+@@ -21789,11 +21789,11 @@ void HumdrumInput::insertMeterSigElement(
      int count = -1;
      int unit = -1;
      if (regex_search(*tsig, matches, regex("^\\*M(\\d+)/(\\d+)"))) {
@@ -2569,7 +2307,7 @@ index 8ca7bfa2c..0979f0b3b 100644
      }
      // deal with non-rational units here.
      if (count < 0) {
-@@ -23897,7 +23897,7 @@ void HumdrumInput::assignScalingToTupletGroup(std::vector<humaux::HumdrumBeamAnd
+@@ -23903,7 +23903,7 @@ void HumdrumInput::assignScalingToTupletGroup(std::vector<humaux::HumdrumBeamAnd
      // Set a specific number for the tuplet (which make sense).
      std::string num = tggroup[0]->token->getLayoutParameter("TUP", "num");
      if (!num.empty()) {
@@ -2578,7 +2316,7 @@ index 8ca7bfa2c..0979f0b3b 100644
          if (numvalue > 0) {
              hum::HumNum scale = num;
              scale /= tggroup[0]->num;
-@@ -25317,7 +25317,7 @@ void HumdrumInput::assignVerticalGroup(Pedal *pedal, hum::HTp token)
+@@ -25323,7 +25323,7 @@ void HumdrumInput::assignVerticalGroup(Pedal *pedal, hum::HTp token)
          pedal->SetVgrp(VGRP_PEDAL_DEFAULT);
      }
      else if (std::isdigit(vg[0])) {
@@ -2587,7 +2325,7 @@ index 8ca7bfa2c..0979f0b3b 100644
          if (value < 0) {
              // do not assign a vertical group
          }
-@@ -25906,7 +25906,7 @@ void HumdrumInput::convertMRest(MRest *rest, hum::HTp token, int subtoken, int s
+@@ -25912,7 +25912,7 @@ void HumdrumInput::convertMRest(MRest *rest, hum::HTp token, int subtoken, int s
      int ottava = token->getValueInt("auto", "ottava");
  
      if ((!oloc.empty()) && (!ploc.empty())) {
@@ -2596,7 +2334,7 @@ index 8ca7bfa2c..0979f0b3b 100644
          olocint -= ottava;
          rest->SetOloc(olocint);
          if (ploc == "C") {
-@@ -25979,7 +25979,7 @@ void HumdrumInput::convertRest(Rest *rest, hum::HTp token, int subtoken, int sta
+@@ -25985,7 +25985,7 @@ void HumdrumInput::convertRest(Rest *rest, hum::HTp token, int subtoken, int sta
      if (percussionQ) {
          if ((!oloc.empty()) && (!ploc.empty())) {
              // treat as treble clef, but convert to @loc
@@ -2605,7 +2343,7 @@ index 8ca7bfa2c..0979f0b3b 100644
              olocint -= ottava;
              int plocint = 0;
              if (ploc == "C") {
-@@ -26010,7 +26010,7 @@ void HumdrumInput::convertRest(Rest *rest, hum::HTp token, int subtoken, int sta
+@@ -26016,7 +26016,7 @@ void HumdrumInput::convertRest(Rest *rest, hum::HTp token, int subtoken, int sta
      }
      else {
          if ((!oloc.empty()) && (!ploc.empty())) {
@@ -2614,7 +2352,7 @@ index 8ca7bfa2c..0979f0b3b 100644
              olocint -= ottava;
              rest->SetOloc(olocint);
              if (ploc == "C") {
-@@ -26118,7 +26118,7 @@ void HumdrumInput::setStemLength(Note *note, hum::HTp token)
+@@ -26124,7 +26124,7 @@ void HumdrumInput::setStemLength(Note *note, hum::HTp token)
      if (stemlen.empty()) {
          return;
      }
@@ -2623,7 +2361,7 @@ index 8ca7bfa2c..0979f0b3b 100644
      note->SetStemLen(value);
  }
  
-@@ -29282,7 +29282,7 @@ void HumdrumInput::addMordent(Object *linked, hum::HTp token)
+@@ -29288,7 +29288,7 @@ void HumdrumInput::addMordent(Object *linked, hum::HTp token)
              bool hasaccid = accid.empty() ? false : true;
              int accidval = 0;
              if (hasaccid) {
@@ -2632,7 +2370,7 @@ index 8ca7bfa2c..0979f0b3b 100644
                  switch (accidval) {
                      case -1: mordent->SetAccidlower(ACCIDENTAL_WRITTEN_f); break;
                      case 0: mordent->SetAccidlower(ACCIDENTAL_WRITTEN_n); break;
-@@ -29298,7 +29298,7 @@ void HumdrumInput::addMordent(Object *linked, hum::HTp token)
+@@ -29304,7 +29304,7 @@ void HumdrumInput::addMordent(Object *linked, hum::HTp token)
              bool hasaccid = accid.empty() ? false : true;
              int accidval = 0;
              if (hasaccid) {
@@ -2641,7 +2379,7 @@ index 8ca7bfa2c..0979f0b3b 100644
                  switch (accidval) {
                      case -1: mordent->SetAccidupper(ACCIDENTAL_WRITTEN_f); break;
                      case 0: mordent->SetAccidupper(ACCIDENTAL_WRITTEN_n); break;
-@@ -29446,7 +29446,7 @@ void HumdrumInput::addTrill(Object *linked, hum::HTp token)
+@@ -29452,7 +29452,7 @@ void HumdrumInput::addTrill(Object *linked, hum::HTp token)
      bool hasaccid = accid.empty() ? false : true;
      int accidval = 0;
      if (hasaccid) {
@@ -2650,7 +2388,7 @@ index 8ca7bfa2c..0979f0b3b 100644
          switch (accidval) {
              case -1: trill->SetAccidupper(ACCIDENTAL_WRITTEN_f); break;
              case 0: trill->SetAccidupper(ACCIDENTAL_WRITTEN_n); break;
-@@ -30162,7 +30162,7 @@ void HumdrumInput::setupSystemMeasure(int startline, int endline)
+@@ -30168,7 +30168,7 @@ void HumdrumInput::setupSystemMeasure(int startline, int endline)
          if (ending) {
              std::smatch matches;
              if (regex_search(currentsection, matches, regex("(\\d+)$"))) {
@@ -2659,7 +2397,7 @@ index 8ca7bfa2c..0979f0b3b 100644
              }
              else {
                  endnum = 0;
-@@ -32204,7 +32204,7 @@ void HumdrumInput::prepareSections()
+@@ -32210,7 +32210,7 @@ void HumdrumInput::prepareSections()
  
          //        std::smatch matches;
          //        if (regex_search(*((string *)infile.token(i, 0)), matches, regex("(\\d+)$"))) {
@@ -2669,10 +2407,10 @@ index 8ca7bfa2c..0979f0b3b 100644
          //        }
          //        else {
 diff --git a/src/iomei.cpp b/src/iomei.cpp
-index 90551d2a5..244df446d 100644
+index c39f4424e..bb09ce157 100644
 --- a/src/iomei.cpp
 +++ b/src/iomei.cpp
-@@ -1589,7 +1589,7 @@ void MEIOutput::WriteRevisionDesc(pugi::xml_node meiHead)
+@@ -1611,7 +1611,7 @@ void MEIOutput::WriteRevisionDesc(pugi::xml_node meiHead)
          value = chromatic;
      }
      else if (transposer.IsValidSemitones(transposition)) {
@@ -2681,7 +2419,7 @@ index 90551d2a5..244df446d 100644
      }
      else if (transposer.IsValidKeyTonic(transposition)) {
          // Prepare message for the KeyTonic transposition
-@@ -8847,7 +8847,7 @@ void MEIInput::UpgradeDurGesTo_4_0_0(pugi::xml_node element, DurationInterface *
+@@ -9104,7 +9104,7 @@ void MEIInput::UpgradeDurGesTo_4_0_0(pugi::xml_node element, DurationInterface *
      if (element.attribute("dur.ges")) {
          std::string durGes = element.attribute("dur.ges").as_string();
          if (durGes.back() == 'p') {
@@ -2690,7 +2428,7 @@ index 90551d2a5..244df446d 100644
          }
          else if (durGes.back() == 'r') {
              durGes.pop_back();
-@@ -8855,11 +8855,13 @@ void MEIInput::UpgradeDurGesTo_4_0_0(pugi::xml_node element, DurationInterface *
+@@ -9112,11 +9112,13 @@ void MEIInput::UpgradeDurGesTo_4_0_0(pugi::xml_node element, DurationInterface *
          }
          else if (durGes.back() == 's') {
              durGes.pop_back();
@@ -2708,442 +2446,8 @@ index 90551d2a5..244df446d 100644
              }
          }
          element.remove_attribute("dur.ges");
-diff --git a/src/iomusxml.cpp b/src/iomusxml.cpp
-index 0192c599b..ef8299039 100644
---- a/src/iomusxml.cpp
-+++ b/src/iomusxml.cpp
-@@ -287,7 +287,7 @@ void MusicXmlInput::InsertClefToLayer(Staff *staff, Layer *layer, Clef *clef, in
-         Layer *otherLayer = vrv_cast<Layer *>(listLayer);
-         if (m_layerTimes.find(otherLayer) == m_layerTimes.end()) continue;
-         // Get first element for the same (or higher if same is not present) duration
--        const auto &start = m_layerTimes.at(otherLayer).lower_bound(scoreOnset);
-+        const auto &start = m_layerTimes[otherLayer].lower_bound(scoreOnset);
-         // Add either clef or #sameas, depending on the layer we're adding to
-         Clef *clefToAdd = NULL;
-         if (listLayer == layer) {
-@@ -305,14 +305,14 @@ void MusicXmlInput::InsertClefToLayer(Staff *staff, Layer *layer, Clef *clef, in
-         else {
-             // If corresponding time couldn't be found (i.e. it's higher than any other duration in the layer) - add
-             // clef to the end of the layer
--            if (start == m_layerTimes.at(otherLayer).end()) {
-+            if (start == m_layerTimes[otherLayer].end()) {
-                 otherLayer->AddChild(clefToAdd);
--                m_layerTimes.at(otherLayer).emplace(std::prev(m_layerTimes.at(otherLayer).end())->first, clefToAdd);
-+                m_layerTimes[otherLayer].emplace(std::prev(m_layerTimes[otherLayer].end())->first, clefToAdd);
-             }
-             else {
-                 // Always try to add clefs at the end of current duration, to honor their order in the musicxml
-                 const int actualScoreOnSet = start->first;
--                auto end = m_layerTimes.at(otherLayer).upper_bound(actualScoreOnSet);
-+                auto end = m_layerTimes[otherLayer].upper_bound(actualScoreOnSet);
-                 LayerElement *layerElement = (--end)->second;
-                 this->InsertClefIntoObject(layerElement, clefToAdd, otherLayer, scoreOnset, true);
-             }
-@@ -325,7 +325,7 @@ void MusicXmlInput::InsertClefIntoObject(
- {
-     if (layerElement->GetParent()->Is(LAYER)) {
-         this->InsertClefIntoObject(layer, clef, layerElement, insertAfter);
--        m_layerTimes.at(layer).emplace(scoreOnset, clef);
-+        m_layerTimes[layer].emplace(scoreOnset, clef);
-     }
-     else {
-         Object *parent = layerElement->GetParent();
-@@ -375,7 +375,7 @@ void MusicXmlInput::AddMeasure(Section *section, Measure *measure, int i)
-         // Prefer any measure with matching index (measure numbers might be non-unique)
-         for (Object *object : matchingMeasures) {
-             Measure *matchingMeasure = vrv_cast<Measure *>(object);
--            if (m_measureCounts.at(matchingMeasure) == i) {
-+            if (m_measureCounts[matchingMeasure] == i) {
-                 existingMeasure = matchingMeasure;
-                 break;
-             }
-@@ -439,16 +439,16 @@ void MusicXmlInput::AddLayerElement(Layer *layer, LayerElement *element, int dur
-     assert(element);
- 
-     int currTime = 0;
--    if (m_layerEndTimes.contains(layer)) currTime = m_layerEndTimes.at(layer);
-+    if (m_layerEndTimes.contains(layer)) currTime = m_layerEndTimes[layer];
-     if ((layer->GetChildren().size() == 0 && m_durTotal > 0) || currTime < m_durTotal) {
-         this->FillSpace(layer, m_durTotal - currTime, true);
-     }
- 
--    if (m_elementStackMap.at(layer).empty()) {
-+    if (m_elementStackMap[layer].empty()) {
-         layer->AddChild(element);
-     }
-     else {
--        m_elementStackMap.at(layer).back()->AddChild(element);
-+        m_elementStackMap[layer].back()->AddChild(element);
-     }
-     // Recheck if AddChild was successful
-     if (!element->GetParent()) return;
-@@ -533,9 +533,9 @@ Layer *MusicXmlInput::SelectLayer(short int layerNum, Staff *staff)
- void MusicXmlInput::RemoveLastFromStack(ClassId classId, Layer *layer)
- {
-     std::vector<LayerElement *>::reverse_iterator riter;
--    for (riter = m_elementStackMap.at(layer).rbegin(); riter != m_elementStackMap.at(layer).rend(); ++riter) {
-+    for (riter = m_elementStackMap[layer].rbegin(); riter != m_elementStackMap[layer].rend(); ++riter) {
-         if ((*riter)->Is(classId)) {
--            m_elementStackMap.at(layer).erase((riter + 1).base());
-+            m_elementStackMap[layer].erase((riter + 1).base());
-             return;
-         }
-     }
-@@ -543,8 +543,8 @@ void MusicXmlInput::RemoveLastFromStack(ClassId classId, Layer *layer)
- 
- bool MusicXmlInput::IsInStack(ClassId classId, Layer *layer)
- {
--    return (m_elementStackMap.at(layer).end()
--        != std::find_if(m_elementStackMap.at(layer).begin(), m_elementStackMap.at(layer).end(),
-+    return (m_elementStackMap[layer].end()
-+        != std::find_if(m_elementStackMap[layer].begin(), m_elementStackMap[layer].end(),
-             [classId](LayerElement *element) { return element->Is(classId); }));
- }
- 
-@@ -588,11 +588,11 @@ void MusicXmlInput::FillSpace(Layer *layer, int dur, bool withClefs, int offset)
-         Space *space = new Space();
-         space->SetDur(space->AttDurationLog::StrToDuration(durStr));
-         space->SetDurPpq(m_ppq * quarters);
--        if (m_elementStackMap.at(layer).empty()) {
-+        if (m_elementStackMap[layer].empty()) {
-             layer->AddChild(space);
-         }
-         else {
--            m_elementStackMap.at(layer).back()->AddChild(space);
-+            m_elementStackMap[layer].back()->AddChild(space);
-         }
-         dur -= m_ppq * quarters;
-         offset += m_ppq * quarters;
-@@ -602,7 +602,8 @@ void MusicXmlInput::FillSpace(Layer *layer, int dur, bool withClefs, int offset)
- 
- void MusicXmlInput::GenerateID(pugi::xml_node node)
- {
--    std::string id = std::string(node.name()).at(0) + Object::GenerateHashID();
-+    std::string name = node.name();
-+    std::string id = (name.empty() ? std::string("x") : std::string(1, name[0])) + Object::GenerateHashID();
-     node.append_attribute("xml:id").set_value(id.c_str());
- }
- 
-@@ -856,7 +857,7 @@ void MusicXmlInput::PrintMetronome(pugi::xml_node metronome, Tempo *tempo)
-                 std::string matches("0123456789");
-                 std::size_t offset = iter->second.find_first_of(matches);
-                 if (offset < iter->second.length()) {
--                    const double mmval = std::stod(iter->second.substr(offset));
-+                    const double mmval = strtod(iter->second.substr(offset).c_str(), nullptr);
-                     tempo->SetMm(mmval);
-                 }
-                 if (!iter->second.empty()) {
-@@ -2273,7 +2274,7 @@ void MusicXmlInput::ReadMusicXmlDirection(
-             }
-             else {
-                 const int measureDifference
--                    = m_measureCounts.at(measure) - m_bracketStack.front().second.m_lastMeasureCount;
-+                    = m_measureCounts[measure] - m_bracketStack.front().second.m_lastMeasureCount;
-                 m_bracketStack.front().first->SetLendsym(
-                     this->ConvertLineEndSymbol(bracket.attribute("line-end").as_string()));
-                 if (measureDifference >= 0) {
-@@ -2284,7 +2285,7 @@ void MusicXmlInput::ReadMusicXmlDirection(
-         }
-         else {
-             BracketSpan *bracketSpan = new BracketSpan();
--            musicxml::OpenSpanner openBracket(voiceNumber, m_measureCounts.at(measure));
-+            musicxml::OpenSpanner openBracket(voiceNumber, m_measureCounts[measure]);
-             bracketSpan->SetColor(bracket.attribute("color").as_string());
-             bracketSpan->SetLform(
-                 bracketSpan->AttLineRendBase::StrToLineform(bracket.attribute("line-type").as_string()));
-@@ -2308,7 +2309,7 @@ void MusicXmlInput::ReadMusicXmlDirection(
-             std::vector<std::pair<ControlElement *, musicxml::OpenDashes>>::iterator iter = m_openDashesStack.begin();
-             while (iter != m_openDashesStack.end()) {
-                 if (iter->second.m_dirN == dashesNumber && iter->second.m_staffNum == staffNum) {
--                    const int measureDifference = m_measureCounts.at(measure) - iter->second.m_measureCount;
-+                    const int measureDifference = m_measureCounts[measure] - iter->second.m_measureCount;
-                     if (measureDifference >= 0) {
-                         if (iter->first->Is(DYNAM))
-                             dynamic_cast<Dynam *>(iter->first)
-@@ -2354,7 +2355,7 @@ void MusicXmlInput::ReadMusicXmlDirection(
-                 }
-             }
-             if (controlElement) {
--                musicxml::OpenDashes openDashes(dashesNumber, staffNum, m_measureCounts.at(measure));
-+                musicxml::OpenDashes openDashes(dashesNumber, staffNum, m_measureCounts[measure]);
-                 m_openDashesStack.push_back({ controlElement, openDashes });
-             }
-             else {
-@@ -2423,7 +2424,7 @@ void MusicXmlInput::ReadMusicXmlDirection(
-                 else {
-                     dir->SetLform(LINEFORM_dashed);
-                 }
--                musicxml::OpenDashes openDashes(extNumber, staffNum, m_measureCounts.at(measure));
-+                musicxml::OpenDashes openDashes(extNumber, staffNum, m_measureCounts[measure]);
-                 m_openDashesStack.push_back({ dir, openDashes });
-             }
-         }
-@@ -2500,7 +2501,7 @@ void MusicXmlInput::ReadMusicXmlDirection(
-                 else {
-                     dynam->SetLform(LINEFORM_dashed);
-                 }
--                musicxml::OpenDashes openDashes(extNumber, staffNum, m_measureCounts.at(measure));
-+                musicxml::OpenDashes openDashes(extNumber, staffNum, m_measureCounts[measure]);
-                 m_openDashesStack.push_back({ dynam, openDashes });
-             }
-         }
-@@ -2517,7 +2518,7 @@ void MusicXmlInput::ReadMusicXmlDirection(
-             std::vector<std::pair<Hairpin *, musicxml::OpenSpanner>>::iterator iter;
-             for (iter = m_hairpinStack.begin(); iter != m_hairpinStack.end(); ++iter) {
-                 if (iter->second.m_dirN == hairpinNumber) {
--                    const int measureDifference = m_measureCounts.at(measure) - iter->second.m_lastMeasureCount;
-+                    const int measureDifference = m_measureCounts[measure] - iter->second.m_lastMeasureCount;
-                     if (measureDifference >= 0) {
-                         iter->first->SetTstamp2(std::pair<int, double>(measureDifference, timeStamp));
-                     }
-@@ -2538,12 +2539,12 @@ void MusicXmlInput::ReadMusicXmlDirection(
-             }
-             if (!matchedWedge) {
-                 m_hairpinStopStack.push_back(std::tuple<int, double, musicxml::OpenSpanner>(
--                    0, timeStamp, musicxml::OpenSpanner(hairpinNumber, m_measureCounts.at(measure))));
-+                    0, timeStamp, musicxml::OpenSpanner(hairpinNumber, m_measureCounts[measure])));
-             }
-         }
-         else {
-             Hairpin *hairpin = new Hairpin();
--            musicxml::OpenSpanner openHairpin(hairpinNumber, m_measureCounts.at(measure));
-+            musicxml::OpenSpanner openHairpin(hairpinNumber, m_measureCounts[measure]);
-             if (HasAttributeWithValue(wedge->node(), "type", "crescendo")) {
-                 hairpin->SetForm(hairpinLog_FORM_cres);
-             }
-@@ -2586,7 +2587,7 @@ void MusicXmlInput::ReadMusicXmlDirection(
-             hairpin->SetVgrp(defaultY);
-             // match new hairpin to existing hairpin stop
-             for (auto iter = m_hairpinStopStack.begin(); iter != m_hairpinStopStack.end(); ++iter) {
--                const int measureDifference = std::get<2>(*iter).m_lastMeasureCount - m_measureCounts.at(measure);
-+                const int measureDifference = std::get<2>(*iter).m_lastMeasureCount - m_measureCounts[measure];
-                 if ((std::get<2>(*iter).m_dirN == hairpinNumber) && (measureDifference == 0)) {
-                     if (measureDifference >= 0) {
-                         hairpin->SetTstamp2(std::pair<int, double>(measureDifference, std::get<1>(*iter)));
-@@ -2700,7 +2701,7 @@ void MusicXmlInput::ReadMusicXmlDirection(
-         voiceNumber = (voiceNumber < 1) ? 1 : voiceNumber;
-         if (HasAttributeWithValue(lead, "type", "stop")) {
-             const int measureDifference
--                = m_measureCounts.at(measure) - m_bracketStack.front().second.m_lastMeasureCount;
-+                = m_measureCounts[measure] - m_bracketStack.front().second.m_lastMeasureCount;
-             if (measureDifference >= 0) {
-                 m_bracketStack.front().first->SetTstamp2(std::pair<int, double>(measureDifference, timeStamp));
-             }
-@@ -2709,7 +2710,7 @@ void MusicXmlInput::ReadMusicXmlDirection(
-         else {
-             // std::string symbol = lead.node().attribute("symbol").as_string();
-             BracketSpan *bracketSpan = new BracketSpan();
--            musicxml::OpenSpanner openBracket(voiceNumber, m_measureCounts.at(measure));
-+            musicxml::OpenSpanner openBracket(voiceNumber, m_measureCounts[measure]);
-             bracketSpan->SetColor(lead.attribute("color").as_string());
-             // bracketSpan->SetPlace(bracketSpan->AttPlacementRelStaff::StrToStaffrel(placeStr.c_str()));
-             bracketSpan->SetFunc(bracketSpanLog_FUNC_analytical);
-@@ -2975,7 +2976,7 @@ void MusicXmlInput::ReadMusicXmlNote(
-             if (!isChord) {
-                 FTrem *fTrem = new FTrem();
-                 this->AddLayerElement(layer, fTrem);
--                m_elementStackMap.at(layer).push_back(fTrem);
-+                m_elementStackMap[layer].push_back(fTrem);
-                 int beamFloatNum = tremolo.node().text().as_int(); // number of floating beams
-                 int beamAttachedNum = 0; // number of attached beams
-                 while (beamStart && beamAttachedNum < 8) { // count number of (attached) beams, max 8
-@@ -2993,7 +2994,7 @@ void MusicXmlInput::ReadMusicXmlNote(
-             if (!isChord) {
-                 BTrem *bTrem = new BTrem();
-                 this->AddLayerElement(layer, bTrem);
--                m_elementStackMap.at(layer).push_back(bTrem);
-+                m_elementStackMap[layer].push_back(bTrem);
-                 if (HasAttributeWithValue(tremolo.node(), "type", "unmeasured")) {
-                     bTrem->SetForm(tremForm_FORM_unmeas);
-                     tremSlashNum = 0;
-@@ -3009,8 +3010,8 @@ void MusicXmlInput::ReadMusicXmlNote(
-     int duration = node.child("duration").text().as_int();
-     // In chords, make sure a note does not extend first note's duration.
-     // See https://github.com/rism-digital/verovio/issues/4225
--    if (isChord && duration && m_elementStackMap.at(layer).back()->Is(CHORD)) {
--        Chord *chord = vrv_cast<Chord *>(m_elementStackMap.at(layer).back());
-+    if (isChord && duration && m_elementStackMap[layer].back()->Is(CHORD)) {
-+        Chord *chord = vrv_cast<Chord *>(m_elementStackMap[layer].back());
-         if (chord) duration = std::min(duration, chord->GetDurPpq());
-     }
-     const int noteStaffNum = node.child("staff").text().as_int();
-@@ -3064,7 +3065,7 @@ void MusicXmlInput::ReadMusicXmlNote(
-                 element = mRest;
-                 if (cue) mRest->SetCue(BOOLEAN_true);
-                 if (!stepStr.empty()) mRest->SetPloc(ConvertStepToPitchName(stepStr));
--                if (!octaveStr.empty()) mRest->SetOloc(std::stoi(octaveStr));
-+                if (!octaveStr.empty()) mRest->SetOloc((int)strtol(octaveStr.c_str(), nullptr, 10));
-                 if (!noteID.empty()) {
-                     mRest->SetID(noteID);
-                 }
-@@ -3091,7 +3092,7 @@ void MusicXmlInput::ReadMusicXmlNote(
-                 if (dots > 0) rest->SetDots(dots);
-                 if (cue) rest->SetCue(BOOLEAN_true);
-                 if (!stepStr.empty()) rest->SetPloc(ConvertStepToPitchName(stepStr));
--                if (!octaveStr.empty()) rest->SetOloc(std::stoi(octaveStr));
-+                if (!octaveStr.empty()) rest->SetOloc((int)strtol(octaveStr.c_str(), nullptr, 10));
-                 if (!noteID.empty()) {
-                     rest->SetID(noteID);
-                 }
-@@ -3155,16 +3156,13 @@ void MusicXmlInput::ReadMusicXmlNote(
-             if (note->HasPname()) {
-                 ListOfObjects accids = note->FindAllDescendantsByType(ACCID);
-                 if (!accids.size()) {
--                    try {
--                        for (const auto &current : m_currentAccids.at(note->GetPname())) {
-+                    auto accidIt = m_currentAccids.find(note->GetPname());
-+                    if (accidIt != m_currentAccids.end()) {
-+                        for (const auto &current : accidIt->second) {
-                             Accid *accid = new Accid();
-                             note->AddChild(accid);
-                             accid->IsAttribute(false);
- 
--                            // to make sure the new *gestural* accidental conforms to the carried-over *written*
--                            // accidental, we translate the latter to a SMuFL glyph and set the gestural accidental to
--                            // the MEI equivalent of the written accidental. The custom tuning will always choose
--                            // the SMuFL glyph over the gestural or written accidentals.
-                             accid->SetAccidGes(Att::AccidentalWrittenToGestural(current.m_accid));
-                             if (!current.m_glyphName.empty()) {
-                                 accid->SetGlyphName(current.m_glyphName);
-@@ -3177,9 +3175,6 @@ void MusicXmlInput::ReadMusicXmlNote(
-                             }
-                         }
-                     }
--                    catch (std::out_of_range &e) {
--                        LogWarning("MusicXML import: Unexpected pitch %d", note->GetPname());
--                    }
-                 }
-                 else {
-                     m_currentAccids[note->GetPname()].clear();
-@@ -3228,20 +3223,20 @@ void MusicXmlInput::ReadMusicXmlNote(
-         TabGrp *tabGrp = NULL;
-         if (isTablature) {
-             // create the tabGrp if we are starting a new tabGrp
--            if (m_elementStackMap.at(layer).empty() || !m_elementStackMap.at(layer).back()->Is(TABGRP)) {
-+            if (m_elementStackMap[layer].empty() || !m_elementStackMap[layer].back()->Is(TABGRP)) {
-                 tabGrp = new TabGrp();
-                 tabGrp->SetDur(ConvertTypeToDur(typeStr));
-                 tabGrp->SetDurPpq(duration);
-                 if (dots > 0) tabGrp->SetDots(dots);
-                 tabGrp->AddChild(new TabDurSym());
-                 this->AddLayerElement(layer, tabGrp, duration);
--                m_elementStackMap.at(layer).push_back(tabGrp);
-+                m_elementStackMap[layer].push_back(tabGrp);
-                 element = tabGrp;
-             }
-         }
-         else if (nextIsChord) {
-             // create the chord if we are starting a new chord
--            if (m_elementStackMap.at(layer).empty() || !m_elementStackMap.at(layer).back()->Is(CHORD)) {
-+            if (m_elementStackMap[layer].empty() || !m_elementStackMap[layer].back()->Is(CHORD)) {
-                 chord = new Chord();
-                 chord->SetDur(ConvertTypeToDur(typeStr));
-                 chord->SetDurPpq(duration);
-@@ -3256,7 +3251,7 @@ void MusicXmlInput::ReadMusicXmlNote(
-                     chord->SetStemMod(STEMMODIFIER_z);
-                 }
-                 this->AddLayerElement(layer, chord, duration);
--                m_elementStackMap.at(layer).push_back(chord);
-+                m_elementStackMap[layer].push_back(chord);
-                 element = chord;
-                 if (cue) chord->SetCue(BOOLEAN_true);
-                 if (grace) {
-@@ -3272,9 +3267,9 @@ void MusicXmlInput::ReadMusicXmlNote(
-         }
-         // If the current note is part of a chord.
-         if (!isTablature && (nextIsChord || node.child("chord"))) {
--            if (chord == NULL && m_elementStackMap.at(layer).size() > 0
--                && m_elementStackMap.at(layer).back()->Is(CHORD)) {
--                chord = vrv_cast<Chord *>(m_elementStackMap.at(layer).back());
-+            if (chord == NULL && m_elementStackMap[layer].size() > 0
-+                && m_elementStackMap[layer].back()->Is(CHORD)) {
-+                chord = vrv_cast<Chord *>(m_elementStackMap[layer].back());
-             }
-             if (!chord) {
-                 LogError("MusicXML import: Chord starting point has not been found");
-@@ -3304,7 +3299,7 @@ void MusicXmlInput::ReadMusicXmlNote(
-         if (cue) note->SetCue(BOOLEAN_true);
- 
-         // set attributes to the note if we are not in a chord
--        if (!isTablature && (m_elementStackMap.at(layer).empty() || !m_elementStackMap.at(layer).back()->Is(CHORD))) {
-+        if (!isTablature && (m_elementStackMap[layer].empty() || !m_elementStackMap[layer].back()->Is(CHORD))) {
-             if (!typeStr.empty()) note->SetDur(ConvertTypeToDur(typeStr));
-             note->SetDurPpq(duration);
-             if (dots > 0) note->SetDots(dots);
-@@ -3591,7 +3586,7 @@ void MusicXmlInput::ReadMusicXmlNote(
-         // if we are ending a chord or tabGrp remove it from the stack
-         if (!nextIsChord) {
-             const ClassId classId = isTablature ? TABGRP : CHORD;
--            if (!m_elementStackMap.at(layer).empty() && m_elementStackMap.at(layer).back()->Is(classId)) {
-+            if (!m_elementStackMap[layer].empty() && m_elementStackMap[layer].back()->Is(classId)) {
-                 this->SetChordStaff(layer);
- 
-                 this->RemoveLastFromStack(classId, layer);
-@@ -3793,7 +3788,7 @@ void MusicXmlInput::ReadMusicXmlNote(
-                 trill->SetPlace(
-                     trill->AttPlacementRelStaff::StrToStaffrel(xmlTrillLine.node().attribute("placement").as_string()));
-             }
--            musicxml::OpenSpanner openTrill(1, m_measureCounts.at(measure));
-+            musicxml::OpenSpanner openTrill(1, m_measureCounts[measure]);
-             m_trillStack.push_back({ trill, openTrill });
-         }
-         for (pugi::xml_node xmlAccidMark = xmlTrill.node().next_sibling("accidental-mark"); xmlAccidMark;
-@@ -3811,7 +3806,7 @@ void MusicXmlInput::ReadMusicXmlNote(
-             = notations.node().select_node("ornaments/wavy-line[@type='stop']").node().attribute("number").as_int();
-         std::vector<std::pair<Trill *, musicxml::OpenSpanner>>::iterator iter = m_trillStack.begin();
-         while (iter != m_trillStack.end()) {
--            const int measureDifference = m_measureCounts.at(measure) - iter->second.m_lastMeasureCount;
-+            const int measureDifference = m_measureCounts[measure] - iter->second.m_lastMeasureCount;
-             if (atoi(((iter->first)->GetN()).c_str()) == extNumber) {
-                 (iter->first)
-                     ->SetTstamp2(std::pair<int, double>(
-@@ -4240,7 +4235,7 @@ void MusicXmlInput::ReadMusicXmlTupletStart(const pugi::xml_node &node, const pu
- 
-     Tuplet *tuplet = new Tuplet();
-     this->AddLayerElement(layer, tuplet);
--    m_elementStackMap.at(layer).push_back(tuplet);
-+    m_elementStackMap[layer].push_back(tuplet);
-     short int num = node.select_node("time-modification/actual-notes").node().text().as_int();
-     short int numbase = node.select_node("time-modification/normal-notes").node().text().as_int();
-     if (tupletStart.first_child()) {
-@@ -4259,7 +4254,7 @@ void MusicXmlInput::ReadMusicXmlTupletStart(const pugi::xml_node &node, const pu
- void MusicXmlInput::ReadMusicXmlBeamStart(const pugi::xml_node &node, const pugi::xml_node &beamStart, Layer *layer)
- {
-     if (!beamStart || (node.select_node("notations/ornaments/tremolo[@type='start']"))) return;
--    if (m_elementStackMap.at(layer).size() > 0 && m_elementStackMap.at(layer).back()->Is(BEAM)) {
-+    if (m_elementStackMap[layer].size() > 0 && m_elementStackMap[layer].back()->Is(BEAM)) {
-         LogDebug("MusicXML import: Adding a beam to a beam");
-         if (!node.child("grace")) return;
-     }
-@@ -4268,7 +4263,7 @@ void MusicXmlInput::ReadMusicXmlBeamStart(const pugi::xml_node &node, const pugi
-     if (beamStart.attribute("id")) beam->SetID(beamStart.attribute("id").as_string());
-     if (beamStart.attribute("fan")) beam->SetForm(ConvertBeamFanToForm(beamStart.attribute("fan").as_string()));
-     this->AddLayerElement(layer, beam);
--    m_elementStackMap.at(layer).push_back(beam);
-+    m_elementStackMap[layer].push_back(beam);
- }
- 
- void MusicXmlInput::ReadMusicXmlTies(
-@@ -5045,7 +5040,7 @@ std::string MusicXmlInput::ConvertDegreeToText(pugi::xml_node harmony)
- 
-                 if (result != Kind2FirstAddable.end()) {
-                     int firstAddable = result->second;
--                    if (std::stoi(degreeValue) >= firstAddable) {
-+                    if ((int)strtol(degreeValue.c_str(), nullptr, 10) >= firstAddable) {
-                         degreeText += "add";
-                     }
-                 }
-@@ -5222,7 +5217,7 @@ std::string MusicXmlInput::GetOrnamentGlyphNumber(int attributes) const
- void MusicXmlInput::SetChordStaff(Layer *layer)
- {
-     // if all notes in the chord have @staff attribute set one for the chord as well
--    Chord *chord = vrv_cast<Chord *>(m_elementStackMap.at(layer).back());
-+    Chord *chord = vrv_cast<Chord *>(m_elementStackMap[layer].back());
-     if (!chord) return;
- 
-     const ArrayOfObjects &children = chord->GetChildren();
 diff --git a/src/iopae.cpp b/src/iopae.cpp
-index d52431489..839e63a6d 100644
+index e6d706564..d9c2b6e59 100644
 --- a/src/iopae.cpp
 +++ b/src/iopae.cpp
 @@ -11,8 +11,8 @@
@@ -3687,7 +2991,7 @@ index d52431489..839e63a6d 100644
          // Default to quarter note
          if (m_pedanticMode) return false;
 diff --git a/src/object.cpp b/src/object.cpp
-index 71297011b..4c764ee59 100644
+index a427a4189..c1bd00661 100644
 --- a/src/object.cpp
 +++ b/src/object.cpp
 @@ -105,7 +105,7 @@ Object::Object(const Object &object) : BoundingBox(object)
@@ -3705,10 +3009,10 @@ index 71297011b..4c764ee59 100644
          m_attClasses = object.m_attClasses;
 -        m_interfaces = object.m_interfaces;
 +        m_interfaceBits = object.m_interfaceBits;
+         // Copy attribute values (necessary because assignment operator is not virtual)
+         object.CopyAttributesTo(this);
          // New id
-         this->GenerateID();
-         // For now do now copy them
-@@ -232,8 +232,8 @@ void Object::Reset()
+@@ -234,8 +234,8 @@ void Object::Reset()
  
  void Object::RegisterInterface(std::vector<AttClassId> *attClasses, InterfaceId interfaceId)
  {
@@ -3720,10 +3024,10 @@ index 71297011b..4c764ee59 100644
  
  bool Object::IsMilestoneElement() const
 diff --git a/src/options.cpp b/src/options.cpp
-index dcee5e10c..006d159dd 100644
+index 7e3ec3c2f..87a900e4f 100644
 --- a/src/options.cpp
 +++ b/src/options.cpp
-@@ -1940,8 +1940,10 @@ Options &Options::operator=(const Options &options)
+@@ -1974,8 +1974,10 @@ Options &Options::operator=(const Options &options)
      MapOfStrOptions const *items = options.GetItems();
      MapOfStrOptions::const_iterator iter;
      for (iter = items->begin(); iter != items->end(); ++iter) {
@@ -3737,10 +3041,10 @@ index dcee5e10c..006d159dd 100644
      }
  
 diff --git a/src/preparedatafunctor.cpp b/src/preparedatafunctor.cpp
-index d4cdd6852..567a3414d 100644
+index f2093b1ad..cb3735b80 100644
 --- a/src/preparedatafunctor.cpp
 +++ b/src/preparedatafunctor.cpp
-@@ -266,10 +266,12 @@ FunctorCode PrepareCrossStaffFunctor::VisitLayerElement(LayerElement *layerEleme
+@@ -299,10 +299,12 @@ FunctorCode PrepareCrossStaffFunctor::VisitLayerElement(LayerElement *layerEleme
      m_currentCrossStaff = NULL;
      m_currentCrossLayer = NULL;
  
@@ -3755,7 +3059,7 @@ index d4cdd6852..567a3414d 100644
              layerElement->GetID().c_str());
          return FUNCTOR_CONTINUE;
      }
-@@ -278,7 +280,7 @@ FunctorCode PrepareCrossStaffFunctor::VisitLayerElement(LayerElement *layerEleme
+@@ -311,7 +313,7 @@ FunctorCode PrepareCrossStaffFunctor::VisitLayerElement(LayerElement *layerEleme
      // Check if we have a cross-staff to itself...
      if (layerElement->m_crossStaff == parentStaff) {
          LogWarning("The cross staff reference '%d' for element '%s' seems to be identical to the parent staff",
@@ -3764,7 +3068,7 @@ index d4cdd6852..567a3414d 100644
          layerElement->m_crossStaff = NULL;
          return FUNCTOR_CONTINUE;
      }
-@@ -301,7 +303,7 @@ FunctorCode PrepareCrossStaffFunctor::VisitLayerElement(LayerElement *layerEleme
+@@ -334,7 +336,7 @@ FunctorCode PrepareCrossStaffFunctor::VisitLayerElement(LayerElement *layerEleme
      if (!layerElement->m_crossLayer) {
          // Nothing we can do
          LogWarning("Could not get the layer with cross-staff reference '%d' for element '%s'",
@@ -3815,7 +3119,7 @@ index 680176f3e..68c3c4b51 100644
      }
      for (char32_t c : text) {
 diff --git a/src/rest.cpp b/src/rest.cpp
-index 32a6130e3..ce21f4b11 100644
+index a97682a44..181014baf 100644
 --- a/src/rest.cpp
 +++ b/src/rest.cpp
 @@ -607,11 +607,17 @@ int Rest::GetRestOffsetFromOptions(
@@ -3856,18 +3160,18 @@ index bb542fd03..6001ed1d8 100644
      data_DURATION penultDur = penultElementDurPair.second;
      /// Evaluates what is the type of the penultimate element in the sequence. If it is a rest, it forbids Alteration
 diff --git a/src/svgdevicecontext.cpp b/src/svgdevicecontext.cpp
-index 716e30384..34c88181b 100644
+index 70d2f7bb6..c0d13772c 100644
 --- a/src/svgdevicecontext.cpp
 +++ b/src/svgdevicecontext.cpp
-@@ -43,6 +43,7 @@ SvgDeviceContext::SvgDeviceContext(const std::string &docId) : DeviceContext(SVG
-     m_originY = 0;
+@@ -44,6 +44,7 @@ SvgDeviceContext::SvgDeviceContext(const std::string &docId) : DeviceContext(SVG
+     m_textY = 0;
  
      m_smuflGlyphs.clear();
 +    m_smuflGlyphLookup.clear();
  
      m_committed = false;
      m_vrvTextFont = false;
-@@ -100,25 +101,21 @@ SvgDeviceContext::GlyphRef::GlyphRef(const Glyph *glyph, int count, const std::s
+@@ -102,25 +103,21 @@ SvgDeviceContext::GlyphRef::GlyphRef(const Glyph *glyph, int count, const std::s
  
  const std::string SvgDeviceContext::InsertGlyphRef(const Glyph *glyph)
  {
@@ -3901,7 +3205,7 @@ index 716e30384..34c88181b 100644
      m_glyphCodeFontCounter[code] = count + 1;
  
      return id;
-@@ -909,6 +906,7 @@ void SvgDeviceContext::DrawPolyline(int n, Point points[], bool close)
+@@ -925,6 +922,7 @@ void SvgDeviceContext::DrawPolyline(int n, Point points[], bool close)
      if (n > 2) polylineChild.append_attribute("fill") = "none";
  
      std::string pointsString;
@@ -3909,7 +3213,7 @@ index 716e30384..34c88181b 100644
      for (int i = 0; i < n; ++i) {
          pointsString += StringFormat("%d,%d ", points[i].x, points[i].y);
      }
-@@ -944,9 +942,12 @@ void SvgDeviceContext::DrawPolygon(int n, Point points[])
+@@ -960,9 +958,12 @@ void SvgDeviceContext::DrawPolygon(int n, Point points[])
          polygonChild.append_attribute("fill-opacity") = currentBrush.GetOpacity();
      }
  
@@ -3925,10 +3229,10 @@ index 716e30384..34c88181b 100644
      polygonChild.append_attribute("points") = pointsString.c_str();
  }
 diff --git a/src/toolkit.cpp b/src/toolkit.cpp
-index 7239619f5..cc556601a 100644
+index 4cd1afa30..fa1205725 100644
 --- a/src/toolkit.cpp
 +++ b/src/toolkit.cpp
-@@ -734,13 +734,10 @@ bool Toolkit::LoadData(const std::string &data, bool resetLogBuffer)
+@@ -759,13 +759,10 @@ bool Toolkit::LoadData(const std::string &data, bool resetLogBuffer)
      }
  
      else if (inputFrom == ESAC) {
@@ -3986,10 +3290,10 @@ index 6f1a2f750..aa582b6b7 100644
          LogError("Integer interval number cannot be zero: %s", intervalName.c_str());
          chromatic = INVALID_INTERVAL_CLASS;
 diff --git a/src/view_control.cpp b/src/view_control.cpp
-index 30338b130..4d0cb15d9 100644
+index 436fca51d..3ff633720 100644
 --- a/src/view_control.cpp
 +++ b/src/view_control.cpp
-@@ -1921,6 +1921,7 @@ void View::DrawDynamSymbolOnly(DeviceContext *dc, Staff *staff, Dynam *dynam, co
+@@ -1924,6 +1924,7 @@ void View::DrawDynamSymbolOnly(DeviceContext *dc, Staff *staff, Dynam *dynam, co
  
      // calculate width of the symbol-only dynamic; generally it consists of only one symbol, but in case when it's
      // combination of different dynamics glyphs we need to get total width of all elements
@@ -3998,10 +3302,10 @@ index 30338b130..4d0cb15d9 100644
      int width = 0;
      for (int i = 0; i < (int)dynamSymbol.size(); ++i) {
 diff --git a/src/vrv.cpp b/src/vrv.cpp
-index 4fdc059ed..e8f727df6 100644
+index 9ab974797..769c0b825 100644
 --- a/src/vrv.cpp
 +++ b/src/vrv.cpp
-@@ -357,11 +357,13 @@ std::string UTF16to8(const std::u16string &in)
+@@ -355,11 +355,13 @@ std::string UTF16to8(const std::u16string &in)
                      cp = ((lead - 0xD800) << 10) + (trail - 0xDC00) + 0x10000;
                  }
                  else {
@@ -4018,7 +3322,7 @@ index 4fdc059ed..e8f727df6 100644
          }
          else {
 diff --git a/tools/c_wrapper.cpp b/tools/c_wrapper.cpp
-index cc9e8ae52..396c70709 100644
+index 92fb42323..2a9eb07a2 100644
 --- a/tools/c_wrapper.cpp
 +++ b/tools/c_wrapper.cpp
 @@ -14,9 +14,9 @@ using namespace vrv;
@@ -4034,7 +3338,7 @@ index cc9e8ae52..396c70709 100644
  
  void enableLogToBuffer(bool value)
 diff --git a/tools/c_wrapper.h b/tools/c_wrapper.h
-index 924dfa03f..3e4075c2f 100644
+index bc630dc73..f02d458b8 100644
 --- a/tools/c_wrapper.h
 +++ b/tools/c_wrapper.h
 @@ -13,7 +13,7 @@ extern "C" {
