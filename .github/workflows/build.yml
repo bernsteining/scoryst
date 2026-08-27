@@ -1,0 +1,118 @@
+name: build
+
+on:
+  push:
+    branches: [master]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+# Allow the release job to create a GitHub Release on tag pushes.
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        # Submodules are intentionally NOT fetched here: the Makefile's
+        # `submodule` target performs the sparse checkout and applies the
+        # WASM-safety patch, so we let it own that flow.
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build toolchain image (emsdk + wasi-stub + binaryen)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          load: true
+          tags: scoryst-builder:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Fetch verovio submodule and apply patch
+        run: make submodule
+
+      - name: Compile scoryst.wasm
+        run: |
+          docker run --rm -v "$PWD:/src" scoryst-builder:latest \
+            make -j"$(nproc)" wasm
+
+      - name: Report artifact size
+        run: ls -lh pkg/scoryst.wasm
+
+      - name: Install Typst
+        run: |
+          VERSION="$(sed -n 's/^compiler = "\(.*\)"/\1/p' pkg/typst.toml)"
+          echo "Installing Typst v$VERSION"
+          curl -fsSL "https://github.com/typst/typst/releases/download/v${VERSION}/typst-x86_64-unknown-linux-musl.tar.xz" \
+            | sudo tar -xJ --strip-components=1 -C /usr/local/bin typst-x86_64-unknown-linux-musl/typst
+          typst --version
+
+      - name: Smoke-test rendering (every notation format)
+        run: |
+          set -e
+          mkdir -p ci-render
+          declare -A FILES=(
+            [musicxml]=test/examples/adagio.xml
+            [abc]=test/examples/scarborough-fair.abc
+            [mei]=test/examples/schubert.mei
+            [humdrum]=test/examples/sample-humdrum.krn
+            [esac]=test/examples/hildebrandslied.esac
+            [cmme]=test/examples/cmme.xml
+          )
+          for fmt in "${!FILES[@]}"; do
+            src="${FILES[$fmt]}"
+            echo "::group::render $fmt ($src)"
+            printf '#import "../pkg/scoryst.typ": score\n#score(read("%s"))\n' "../$src" > "ci-render/$fmt.typ"
+            typst compile --root . "ci-render/$fmt.typ" "ci-render/$fmt.pdf"
+            echo "::endgroup::"
+          done
+          ls -lh ci-render/
+
+      - name: Upload wasm artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: scoryst-wasm
+          path: pkg/scoryst.wasm
+          if-no-files-found: error
+
+      - name: Upload render smoke-test PDFs
+        uses: actions/upload-artifact@v4
+        with:
+          name: scoryst-render-smoke-test
+          path: ci-render/*.pdf
+
+  # On a version tag (vX.Y.Z), package the Typst universe layout and attach
+  # the built wasm + package files to a GitHub Release.
+  release:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download built wasm
+        uses: actions/download-artifact@v4
+        with:
+          name: scoryst-wasm
+          path: pkg
+
+      - name: Package Typst universe layout
+        run: scripts/package.sh
+
+      - name: Zip package
+        run: |
+          VERSION="$(sed -n 's/^version = "\(.*\)"/\1/p' pkg/typst.toml)"
+          (cd dist/packages/preview/scoryst && zip -r "$GITHUB_WORKSPACE/scoryst-${VERSION}.zip" "$VERSION")
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            pkg/scoryst.wasm
+            scoryst-*.zip
+          generate_release_notes: true
