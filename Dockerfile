@@ -1,4 +1,6 @@
-FROM docker.io/emscripten/emsdk:latest
+# Pin emsdk for reproducible builds. Bump deliberately; verify the wasm still
+# links (recent emsdk links object-only inputs as C — the Makefile uses em++).
+FROM docker.io/emscripten/emsdk:6.0.8
 
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal
 ENV PATH="/root/.cargo/bin:${PATH}"
