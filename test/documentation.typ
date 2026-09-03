@@ -1,11 +1,11 @@
-#import "../pkg/scoryst.typ": score, pages
+#import "../pkg/scoryst.typ": score, pages, version, convert, available-options, render-blocks
 #import "@preview/zebraw:0.6.1": *
 #set page(width: 210mm, height: 297mm, margin: 15mm)
 #set text(size: 11pt)
 #show link: it => underline(text(fill: rgb("#1a5fb4"), it))
 
 // Example helper: shows code then rendered output with minimal spacing
-#let doc-scope = (score: score, pages: pages, read: read)
+#let doc-scope = (score: score, pages: pages, read: read, convert: convert, version: version, render-blocks: render-blocks)
 #show raw.where(lang: "example"): it => {
   let code = it.text
   zebraw(numbering: false, raw(block: true, lang: "typst", code))
@@ -32,7 +32,9 @@
  #link("https://github.com/bernsteining/scoryst")[#text(size: 16pt, fill: blue)[github.com/bernsteining/scoryst]] · #link("https://typst.app/universe/package/scoryst")[#text(size: 16pt, fill: blue)[typst.app/universe/package/scoryst]]
 
   #v(1em)
-  #text(size: 12pt, fill: gray)[v0.1.3 — 2026-06-21]
+  #text(size: 12pt, fill: gray)[v0.2.0 — 2026-09-01]
+
+  #text(size: 11pt, fill: gray)[Powered by Verovio #version()]
 ]
   
 #v(1fr)
@@ -62,11 +64,13 @@ Render inline ABC notation:
 #score("X:1\nM:4/4\nK:C\nCDEF|GABc|")
 ````
 
-Or define a show rule to render ABC code blocks automatically:
+Or enable the `render-blocks` show rule and write music directly in fenced code
+blocks (`abc`, `musicxml`, `mei`, `humdrum`/`kern`, `esac`, `pae`, `volpiano`,
+`cmme`):
 
 ````example
-#import "../pkg/scoryst.typ": score
-#show raw.where(lang: "abc"): it => score(it.text)
+#import "../pkg/scoryst.typ": render-blocks
+#show: render-blocks
 
 ```abc
 X:1
@@ -104,62 +108,55 @@ Useful to loop over pages of a multi-page score.
 
 = Verovio Options
 
-Options are passed as a Typst dictionary. They map directly to
+Options are passed as a Typst dictionary and map directly to
 #link("https://book.verovio.org/toolkit-reference/toolkit-options.html")[Verovio's toolkit options].
-Both kebab-case and camelCase keys are accepted (e.g. `adjust-page-height` or `adjustPageHeight`).
+Both kebab-case and camelCase keys are accepted (e.g. `adjust-page-height`
+or `adjustPageHeight`).
 
-#set text(size: 10.5pt)
-
-#align(center, table(
-  columns: (auto, auto, auto),
-  align: (left, left, left),
-  [`adjust-page-height`], [`true`], [Crop SVG height to content],
-  [`adjust-page-width`], [`false`], [Crop SVG width to content],
-  [`scale`], [`100`], [Scale factor (percent)],
-  [`font`], [`"Leipzig"`], [Music font: Leipzig, Bravura, Gootville, Leland, Petaluma],
-  [`input-from`], [`"auto"`], [Format: auto, mei, musicxml, abc, humdrum, esac, pae, volpiano, cmme],
-  [`page-width`], [`2100`], [Page width (MEI units)],
-  [`page-height`], [`2970`], [Page height (MEI units)],
-  [`page-margin-top`], [`50`], [Top margin],
-  [`page-margin-bottom`], [`50`], [Bottom margin],
-  [`page-margin-left`], [`50`], [Left margin],
-  [`page-margin-right`], [`50`], [Right margin],
-  [`landscape`], [`false`], [Landscape orientation],
-  [`breaks`], [`"auto"`], [Line breaks: auto, line, encoded, none],
-  [`condense`], [`"auto"`], [Condense: auto, none, encoded],
-  [`transpose`], [`""`], [Transpose (e.g. "M2" for major second up)],
-  [`header`], [`"auto"`], [Header: auto, none, encoded],
-  [`footer`], [`"auto"`], [Footer: auto, none, encoded],
-  [`spacing-staff`], [`12`], [Spacing between staves],
-  [`spacing-system`], [`12`], [Spacing between systems],
-  [`spacing-linear`], [`0.25`], [Linear spacing factor],
-  [`spacing-non-linear`], [`0.6`], [Non-linear spacing factor],
-  [`unit`], [`9`], [Base unit size (half staff space)],
-  [`stem-width`], [`0.2`], [Stem width],
-  [`bar-line-width`], [`0.3`], [Bar line width],
-  [`staff-line-width`], [`0.15`], [Staff line width],
-  [`lyric-size`], [`4.5`], [Lyrics font size],
-  [`hairpin-size`], [`3.0`], [Hairpin height],
-  [`svg-view-box`], [`false`], [Use viewBox instead of width/height],
-  [`svg-remove-xlink`], [`false`], [Use href instead of xlink:href],
-  [`svg-bounding-boxes`], [`false`], [Add bounding box rects (debug)],
-  [`remove-ids`], [`false`], [Strip element IDs from SVG],
-  [`smufl-text-font`], [`"embedded"`], [SMuFL text font: embedded, linked, none],
-  [`pedal-style`], [`"auto"`], [Pedal marking style: auto, line, pedstar, altpedstar],
-  [`font-fallback`], [`"Leipzig"`], [Music font fallback for missing glyphs: Leipzig, Bravura],
-  [`lyric-elision`], [`"regular"`], [Lyric elision width: regular, narrow, wide, unicode],
-  [`multi-rest-style`], [`"auto"`], [Multi-measure rest style: auto, default, block, symbols],
-  [`system-divider`], [`"none"`], [System divider display: none, auto, left, left-right],
-  [`duration-equivalence`], [`"brevis"`], [Mensural duration equivalence: brevis, semibrevis, minima],
-  [`ligature-oblique`], [`"auto"`], [Ligature oblique shape: auto, straight, curved],
-  [`mensural-responsive-view`], [`"none"`], [Mensural responsive view: none, auto, selection],
+// --- Helpers: option tables generated from available-options() ---------------
+#let _fmt-default(v) = {
+  if type(v) == bool { if v { "true" } else { "false" } }
+  else if type(v) == str { if v == "" { "\"\"" } else { "\"" + v + "\"" } }
+  else if type(v) == array { "[" + v.map(x => "\"" + str(x) + "\"").join(", ") + "]" }
+  else { str(v) }
+}
+#let _fmt-type(t) = {
+  if t == "std::string" { "string" } else if t == "std::string-list" { "enum" } else { t }
+}
+#let _opt-table(rows) = table(
+  columns: (auto, auto, auto, 1fr),
+  align: (left, left, left, left),
+  inset: 4pt,
+  table.header([*Option*], [*Type*], [*Default*], [*Description*]),
+  ..rows.map(((k, o)) => (
+    raw(k),
+    _fmt-type(o.at("type", default: "")),
+    raw(_fmt-default(o.at("default", default: ""))),
+    o.at("description", default: ""),
+  )).flatten()
 )
-)
+// Flatten every option into a key -> option lookup.
+#let _all-opts = {
+  let m = (:)
+  for (gid, grp) in available-options().at("groups") {
+    for (k, o) in grp.at("options") { m.insert(k, o) }
+  }
+  m
+}
 
+The options below are the ones you'll reach for most often; the values are read
+at compile time from `available-options()`, so they always match the bundled
+Verovio #version(). The *complete* list of every option, grouped by category, is
+in the #link(<appendix-options>)[appendix].
+
+#let _common = (
+  "adjustPageHeight", "adjustPageWidth", "scale", "font", "inputFrom", "breaks",
+  "pageWidth", "pageHeight", "landscape", "header", "footer", "transpose",
+  "spacingStaff", "spacingSystem", "unit",
+)
+#set text(size: 9.5pt)
+#_opt-table(_common.map(k => (k, _all-opts.at(k, default: none))).filter(((k, o)) => o != none))
 #set text(size: 11pt)
-
-#align(center, [Full reference: #link("https://book.verovio.org/toolkit-reference/toolkit-options.html")])
-
 
 #pagebreak()
 
@@ -187,8 +184,8 @@ Five #link("https://www.smufl.org/")[SMuFL]-compliant music fonts are available.
 
 = Supported Input Formats
 
-Verovio auto-detects the input format for ABC, MusicXML, MEI, Humdrum, and EsAC.
-For PAE, Volpiano, and CMME, pass `input-from` explicitly.
+All eight input formats are auto-detected, so `#score(data)` just works. Pass
+`options: (input-from: "…")` only to override detection.
 
 All the files used in the examples are available in the project's #link("https://github.com/bernsteining/scoryst")[Github].
 
@@ -293,13 +290,11 @@ a German folk ballad. EsAC is auto-detected by Verovio.
 
 Plaine & Easie Code is a compact text notation used by #link("https://rism.info")[RISM] to catalogue
 musical incipits — the opening bars of a piece. It encodes clef, key signature,
-time signature, and note data as key-value pairs.
-Requires `input-from: "pae"`.
+time signature, and note data as key-value pairs. Auto-detected.
 
 ````example
 #score(
   "@clef:G-2\n@keysig:xF\n@timesig:3/8\n@data:=25//$xFCG @c 2-4.-'8E/{6AGFE}{8A''C}'B''4D{6C'B}/{''DC'BA}{''8EA}",
-  options: (input-from: "pae"),
 )
 ````
 
@@ -312,10 +307,10 @@ Requires `input-from: "pae"`.
 
 Volpiano is a text encoding for medieval chant notation, used by the
 CANTUS database. Here is _Veni Creator Spiritus_, the famous Pentecost hymn.
-Requires `input-from: "volpiano"`.
+Auto-detected from its clef-and-hyphen prefix (pass `input-from: "volpiano"` to force it).
 
 ```example
-#score("1---g--h-ij---hgf--g--hg---k--lk--k7---hG--f---h--k--lk---l--m--l---k--lm---kj7--hg--kl---g--gh--k---jk---h---gf--h--hjh7---g--f--g7---3", options: (input-from: "volpiano"))
+#score("1---g--h-ij---hgf--g--hg---k--lk--k7---hG--f---h--k--lk---l--m--l---k--lm---kj7--hg--kl---g--gh--k---jk---h---gf--h--hjh7---g--f--g7---3")
 ```
 
 == CMME
@@ -324,9 +319,77 @@ Requires `input-from: "volpiano"`.
 · #link("https://github.com/tdumitrescu/cmme-music")[Download CMME files]
 
 CMME is an XML format for mensural notation (medieval and Renaissance music).
-Requires `input-from: "cmme"`.
+Auto-detected.
 
 ```example
-#score(read("examples/cmme.xml"), options: (input-from: "cmme"))
+#score(read("examples/cmme.xml"))
 ```
 
+
+#pagebreak()
+
+= Format Conversion
+
+Beyond rendering, scoryst can transcode notation between formats with
+`convert(data, to: ...)`. The input format is auto-detected; the supported
+output targets are `"mei"` (canonical MEI) and `"pae"` (#link("https://www.iaml.info/plaine-easie-code")[Plaine & Easie]).
+This is useful for normalizing input, archiving a canonical MEI copy, or
+inspecting how Verovio interprets a score.
+
+Convert ABC to Plaine & Easie:
+
+```typst
+#let pae = convert("X:1\nL:1/4\nK:C\nCDEF|GABc|", to: "pae")
+```
+
+#let pae = convert("X:1\nL:1/4\nK:C\nCDEF|GABc|", to: "pae")
+#zebraw(numbering: false, raw(block: true, pae))
+
+Convert the same melody to MEI (the canonical, richly-structured encoding
+Verovio renders from). MEI is verbose, so here are its first lines:
+
+```typst
+#let mei = convert("X:1\nL:1/4\nK:C\nCDEF|GABc|", to: "mei")
+```
+
+#let mei = convert("X:1\nL:1/4\nK:C\nCDEF|GABc|", to: "mei")
+#zebraw(numbering: false, raw(block: true, lang: "xml", mei.split("\n").slice(0, 12).join("\n")))
+
+= Changelog
+
+*v0.2.0 — 2026-09-01*
+- Upgraded to Verovio 6.3.0.
+- New API: `version()`, `convert()` (to MEI or PAE), and `available-options()`.
+- The Verovio options reference is now generated from `available-options()`.
+- Continuous integration (GitHub Actions): build with a pinned toolchain plus a render smoke test.
+
+*v0.1.3 — 2026-06-21*
+- WASM-safety patches for exception-raising Verovio code paths (including the tuning library).
+
+*v0.1.2 — 2026-05-31*
+- Renamed the API to `score` / `pages`; both kebab-case and camelCase option keys accepted.
+- Added Plaine & Easie (PAE) and EsAC input formats.
+- Enum options passed as integers to avoid a WASM hang; Verovio logs forwarded to Typst.
+
+*v0.1.1 — 2026-04-15*
+- Renamed the package to scoryst; note-head position fix for upward stems.
+
+*v0.1.0 — 2026-04-04*
+- Initial release: Verovio-based engraving of MusicXML, MEI, ABC, Humdrum, and CMME.
+
+#pagebreak()
+
+= Appendix: Complete Verovio Options <appendix-options>
+
+Every Verovio option, grouped by category, generated at compile time from
+`available-options()` (Verovio #version()). Command-line-only options are
+omitted. Enum options list their accepted values in the description.
+
+#set text(size: 8.5pt)
+#for (gid, grp) in available-options().at("groups").pairs().sorted(key: p => p.at(0)) {
+  let opts = grp.at("options").pairs().filter(((k, o)) => not o.at("cmdOnly", default: false))
+  if opts.len() == 0 { continue }
+  heading(level: 2, grp.at("name"))
+  _opt-table(opts)
+}
+#set text(size: 11pt)

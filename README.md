@@ -8,9 +8,12 @@ A Typst plugin to render music notation from multiple formats using
 ## Features
 
 - **8 input formats**: [ABC](https://en.wikipedia.org/wiki/ABC_notation), [MusicXML](https://en.wikipedia.org/wiki/MusicXML), [MEI](https://music-encoding.org/), [Humdrum](https://wiki.ccarh.org/images/6/6e/Humdrum-File-Format.pdf), [EsAC](https://wiki.ccarh.org/wiki/EsAC), [PAE](https://www.iaml.info/plaine-easie-code/), [Volpiano](https://cantusdatabase.org/static/documents/2.%20Volpiano%20Protocols.pdf), [CMME](https://www.cmme.org/)
+- **Automatic format detection**: all 8 formats are detected from the data — `input-from` is only needed to override
+- **Format conversion**: transcode any input to MEI or Plaine & Easie with `convert`
+- **Code-block rendering**: `#show: scoryst.render-blocks` auto-renders fenced ` ```abc `, ` ```musicxml `, … blocks
 - **5 [SMuFL](https://www.smufl.org/)-compliant music fonts**: Leipzig (default), Bravura, Gootville, Leland, Petaluma
 - **Full Verovio options**: scale, font, page layout, and all
-  [toolkit options](https://book.verovio.org/toolkit-reference/toolkit-options.html)
+  [toolkit options](https://book.verovio.org/toolkit-reference/toolkit-options.html); introspect them at compile time with `available-options`
 - **Multi-page support**: render individual pages of long scores
 - **Binary font loading**: fonts pre-compiled to binary for instant init
 
@@ -21,7 +24,7 @@ Check the [documentation](https://github.com/bernsteining/scoryst/blob/master/te
 Some formats are too verbose to write inline here, so only compact formats are written inline here.
 
 ```typst
-#import "@preview/scoryst:0.1.3": score, pages
+#import "@preview/scoryst:0.2.0": score, pages
 
 // ABC notation (auto-detected)
 #score("X:1\nM:4/4\nK:C\nCDEF|GABc|")
@@ -38,14 +41,14 @@ Some formats are too verbose to write inline here, so only compact formats are w
 // EsAC - Essen Associative Code (auto-detected)
 #score(read("hildebrandslied.esac"))
 
-// PAE - Plaine & Easie Code (requires explicit format)
-#score("@clef:G-2\n@keysig:\n@timesig:4/4\n@data:''4CDEF/GABc", options: (input-from: "pae"))
+// PAE - Plaine & Easie Code (auto-detected)
+#score("@clef:G-2\n@keysig:\n@timesig:4/4\n@data:''4CDEF/GABc")
 
-// Volpiano (requires explicit format)
-#score("1---g--h-ij---hgf--g--hg---k--lk--k7", options: (input-from: "volpiano"))
+// Volpiano (auto-detected)
+#score("1---g--h-ij---hgf--g--hg---k--lk--k7")
 
-// CMME (requires explicit format)
-#score(read("cmme.xml"), options: (input-from: "cmme"))
+// CMME (auto-detected)
+#score(read("cmme.xml"))
 
 // Change font
 #score(data, options: (font: "Petaluma"))
@@ -56,6 +59,11 @@ Some formats are too verbose to write inline here, so only compact formats are w
 #for p in range(1, n + 1) {
   score(data, page: p)
 }
+
+// Transcode to another format (input is auto-detected)
+#import "@preview/scoryst:0.2.0": convert
+#let mei = convert("X:1\nK:C\nCDEF|", to: "mei")  // -> canonical MEI
+#let pae = convert(read("adagio.xml"), to: "pae") // -> Plaine & Easie
 ```
 
 ### API
@@ -69,6 +77,33 @@ format. `..args` are forwarded to Typst's `image()` function (`width`,
 **`pages(data, options: none)`**
 
 Returns the number of pages for the given music data.
+
+**`convert(data, to: "mei", options: none)`**
+
+Transcodes music notation to another format. The input format is auto-detected;
+`to` is `"mei"` (canonical MEI) or `"pae"` (Plaine & Easie). Returns a string.
+
+**`available-options()`**
+
+Returns Verovio's full option catalogue as a nested dictionary (grouped by
+category, each option carrying its `title`, `description`, `type`, and
+`default`). Used to generate the options reference in the
+[documentation](https://github.com/bernsteining/scoryst/blob/master/test/documentation.pdf).
+
+**`version()`**
+
+Returns the bundled Verovio version string (e.g. `"6.3.0"`).
+
+**`render-blocks(options: none, body)`** (show rule)
+
+Auto-renders fenced code blocks whose language is a supported format
+(`abc`, `musicxml`, `mei`, `humdrum`/`kern`, `esac`, `pae`, `volpiano`, `cmme`).
+Enable it with `#show: scoryst.render-blocks` (or, with defaults,
+`#show: scoryst.render-blocks.with(options: (font: "Bravura"))`); after that a
+` ```abc ` or ` ```musicxml ` block renders directly as a score.
+
+Unknown option keys are reported at compile time with a suggestion
+(e.g. *unknown option "spacng-staff", did you mean "spacing-staff"?*).
 
 ### Verovio Options
 

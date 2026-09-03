@@ -1,10 +1,10 @@
 [package]
 name = "scoryst"
-version = "0.1.3"
+version = "0.2.0"
 entrypoint = "scoryst.typ"
 authors = ["bernsteining"]
 license = "LGPL-3.0-only"
-description = "🎼 Music engraving in Typst — render ABC, MusicXML, MEI, Humdrum, Volpiano, EsAC, PAE, and CMME notations"
+description = "🎼 Music engraving: render ABC, MusicXML, MEI, Humdrum, Volpiano, EsAC, PAE, and CMME notations."
 repository = "https://github.com/bernsteining/scoryst"
 keywords = [
   "music",
@@ -35,4 +35,4 @@ keywords = [
 ]
 categories = ["visualization", "integration"]
 disciplines = ["music", "education"]
-compiler = "0.14.2"
+compiler = "0.14.0"
