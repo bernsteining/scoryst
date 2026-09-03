@@ -361,7 +361,6 @@ Verovio renders from). MEI is verbose, so here are its first lines:
 - Upgraded to Verovio 6.3.0.
 - New API: `version()`, `convert()` (to MEI or PAE), and `available-options()`.
 - The Verovio options reference is now generated from `available-options()`.
-- Continuous integration (GitHub Actions): build with a pinned toolchain plus a render smoke test.
 
 *v0.1.3 — 2026-06-21*
 - WASM-safety patches for exception-raising Verovio code paths (including the tuning library).
