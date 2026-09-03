@@ -19,6 +19,34 @@ A Typst plugin to render music notation from multiple formats using
 
 Check the [documentation](https://github.com/bernsteining/scoryst/blob/master/test/documentation.pdf) for a full demonstration with examples.
 
+## Examples
+
+Code in, engraved score out. (Formats are auto-detected.)
+
+**ABC**
+```typ
+#score("X:1\nT:Ode to Joy\nM:4/4\nK:C\nEEFG|GFED|CCDE|E2D2|")
+```
+<img src="docs/img/abc.svg" alt="ABC example rendered" width="520">
+
+**MusicXML** — a full grand-staff score
+```typ
+#score(read("adagio.xml"))
+```
+<img src="docs/img/musicxml.svg" alt="MusicXML example rendered" width="720">
+
+**Plaine & Easie** — a RISM incipit
+```typ
+#score("@clef:G-2\n@keysig:xF\n@timesig:3/8\n@data:=25//$xFCG @c 2-4.-'8E")
+```
+<img src="docs/img/pae.svg" alt="Plaine & Easie example rendered" width="420">
+
+**Volpiano** — medieval chant
+```typ
+#score("1---g--h-ij---hgf--g--hg---k--lk--k7")
+```
+<img src="docs/img/volpiano.svg" alt="Volpiano example rendered" width="520">
+
 ## Usage
 
 Some formats are too verbose to write inline here, so only compact formats are written inline here.
