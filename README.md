@@ -9,13 +9,9 @@ A Typst plugin to render music notation from multiple formats using
 
 - **8 input formats**: [ABC](https://en.wikipedia.org/wiki/ABC_notation), [MusicXML](https://en.wikipedia.org/wiki/MusicXML), [MEI](https://music-encoding.org/), [Humdrum](https://wiki.ccarh.org/images/6/6e/Humdrum-File-Format.pdf), [EsAC](https://wiki.ccarh.org/wiki/EsAC), [PAE](https://www.iaml.info/plaine-easie-code/), [Volpiano](https://cantusdatabase.org/static/documents/2.%20Volpiano%20Protocols.pdf), [CMME](https://www.cmme.org/)
 - **Automatic format detection**: all 8 formats are detected from the data
-- **Format conversion**: transcode any input to MEI or Plaine & Easie with `convert`
-- **Code-block rendering**: `#show: scoryst.render-blocks` auto-renders fenced ` ```abc `, ` ```musicxml `, … blocks
 - **5 [SMuFL](https://www.smufl.org/)-compliant music fonts**: Leipzig (default), Bravura, Gootville, Leland, Petaluma
 - **Full Verovio options**: scale, font, page layout, and all
-  [toolkit options](https://book.verovio.org/toolkit-reference/toolkit-options.html); introspect them at compile time with `available-options`
-- **Multi-page support**: render individual pages of long scores
-- **Binary font loading**: fonts pre-compiled to binary for instant init
+  [toolkit options](https://book.verovio.org/toolkit-reference/toolkit-options.html)
 
 Check the [documentation](https://github.com/bernsteining/scoryst/blob/master/test/documentation.pdf) for a full demonstration with examples.
 
@@ -29,7 +25,7 @@ Code in, engraved score out (formats are auto-detected):
 <img src="docs/img/abc.svg" alt="Ode to Joy rendered by scoryst" width="520">
 
 See the [documentation](https://github.com/bernsteining/scoryst/blob/master/test/documentation.pdf)
-for every supported format (MusicXML, MEI, Humdrum, EsAC, PAE, Volpiano, CMME) with rendered examples.
+for every feature with rendered examples.
 
 ## Usage
 
@@ -129,16 +125,13 @@ Enable it with `#show: scoryst.render-blocks` (or, with defaults,
 `#show: scoryst.render-blocks.with(options: (font: "Bravura"))`); after that a
 ` ```abc ` or ` ```musicxml ` block renders directly as a score.
 
-Unknown option keys are reported at compile time with a suggestion
-(e.g. *unknown option "spacng-staff", did you mean "spacing-staff"?*).
-
 ### Verovio Options
 
 Options are passed as a Typst dictionary and map directly to
 [Verovio's toolkit options](https://book.verovio.org/toolkit-reference/toolkit-options.html).
 Both kebab-case and camelCase keys are accepted (e.g. `adjust-page-height` or `adjustPageHeight`).
 
-The full option catalogue from the bundled Verovio follows (command-line-only options omitted). Keys are shown in camelCase; the kebab-case form works too.
+The full option catalogue from the bundled Verovio follows (command-line-only options omitted), shown in camelCase.
 
 #### Base short options
 
