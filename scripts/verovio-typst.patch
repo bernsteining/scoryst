@@ -373,6 +373,19 @@ index 85ab60997..1c30671a7 100644
  
      /**
       * String for storing a comments attached to the object when printing an MEI element.
+diff --git a/include/vrv/options.h b/include/vrv/options.h
+index 50b0a70ed..f16793516 100644
+--- a/include/vrv/options.h
++++ b/include/vrv/options.h
+@@ -412,7 +412,7 @@ private:
+ public:
+     //
+ private:
+-    const std::map<int, std::string> *m_values;
++    const std::map<int, std::string> *m_values = NULL; // WASM-safety: default null
+     int m_value;
+     int m_defaultValue;
+ };
 diff --git a/include/vrv/resources.h b/include/vrv/resources.h
 index f7006b900..e64bfd44b 100644
 --- a/include/vrv/resources.h
@@ -3024,10 +3037,61 @@ index a427a4189..c1bd00661 100644
  
  bool Object::IsMilestoneElement() const
 diff --git a/src/options.cpp b/src/options.cpp
-index 7e3ec3c2f..87a900e4f 100644
+index 7e3ec3c2f..0055dbbfa 100644
 --- a/src/options.cpp
 +++ b/src/options.cpp
-@@ -1974,8 +1974,10 @@ Options &Options::operator=(const Options &options)
+@@ -157,12 +157,9 @@ jsonxx::Object Option::ToJson() const
+     else if (optIntMap) {
+         opt << "type" << "std::string-list";
+         opt << "default" << optIntMap->GetDefaultStrValue();
+-        std::vector<std::string> strValues = optIntMap->GetStrValues(false);
+-        jsonxx::Array values;
+-        for (const std::string &value : strValues) {
+-            values << value;
+-        }
+-        opt << "values" << values;
++        // WASM-safety: the enum value list is intentionally omitted. Enumerating
++        // some options' value map dereferences an invalid pointer and traps in the
++        // exception-free wasm build; scoryst ships the enum choices itself.
+     }
+ 
+     if (this->IsCmdOnly()) {
+@@ -544,18 +541,18 @@ bool OptionIntMap::SetValue(const std::string &value)
+ 
+ std::string OptionIntMap::GetStrValue() const
+ {
+-    assert(m_values);
+-    assert(m_values->count(m_value));
+-
+-    return (m_values->at(m_value));
++    // WASM-safety: map::at() throws (aborts in the exception-free wasm build).
++    if (!m_values) return "";
++    auto it = m_values->find(m_value);
++    return (it != m_values->end()) ? it->second : "";
+ }
+ 
+ std::string OptionIntMap::GetDefaultStrValue() const
+ {
+-    assert(m_values);
+-    assert(m_values->count(m_defaultValue));
+-
+-    return (m_values->at(m_defaultValue));
++    // WASM-safety: see GetStrValue.
++    if (!m_values) return "";
++    auto it = m_values->find(m_defaultValue);
++    return (it != m_values->end()) ? it->second : "";
+ }
+ 
+ bool OptionIntMap::SetValue(int value)
+@@ -573,6 +570,7 @@ std::vector<std::string> OptionIntMap::GetStrValues(bool withoutDefault) const
+     assert(m_values);
+ 
+     std::vector<std::string> strValues;
++    if (!m_values) return strValues; // WASM-safety
+     strValues.reserve(m_values->size());
+     std::map<int, std::string>::const_iterator it;
+     for (it = m_values->cbegin(); it != m_values->cend(); ++it) {
+@@ -1974,8 +1972,10 @@ Options &Options::operator=(const Options &options)
      MapOfStrOptions const *items = options.GetItems();
      MapOfStrOptions::const_iterator iter;
      for (iter = items->begin(); iter != items->end(); ++iter) {

@@ -21,6 +21,11 @@ extern "C" {
     int vrvToolkit_getPageCount(void *toolkit);
     const char *vrvToolkit_fixSmuflText(void *toolkit, const char *svg);
     const char *vrvToolkit_getLog(void *toolkit);
+    const char *vrvToolkit_getVersion(void *toolkit);
+    const char *vrvToolkit_getMEI(void *toolkit, const char *options);
+    const char *vrvToolkit_getHumdrum(void *toolkit);
+    const char *vrvToolkit_renderToPAE(void *toolkit);
+    const char *vrvToolkit_getAvailableOptions(void *toolkit);
     void enableLog(int level);
     void enableLogToBuffer(bool value);
 }
@@ -40,21 +45,30 @@ static void send_result(const char *s) {
     wasm_minimal_protocol_send_result_to_host(s, strlen(s));
 }
 
+/* Send "<prefix>. <verovio log>" as the plugin error, with the log flattened to
+ * a single line so Typst shows a clean, readable message. */
 static void send_error(const char *prefix, void *tk) {
     const char *log = vrvToolkit_getLog(tk);
-    if (log && log[0]) {
-        size_t plen = strlen(prefix);
-        size_t llen = strlen(log);
-        char *msg = (char *)malloc(plen + llen + 1);
-        if (msg) {
-            memcpy(msg, prefix, plen);
-            memcpy(msg + plen, log, llen + 1);
-            send_result(msg);
-            free(msg);
-            return;
+    size_t plen = strlen(prefix);
+    size_t llen = (log) ? strlen(log) : 0;
+    char *msg = (char *)malloc(plen + llen + 4);
+    if (!msg) { send_result(prefix); return; }
+
+    size_t n = 0;
+    memcpy(msg, prefix, plen);
+    n = plen;
+    if (llen) {
+        msg[n++] = '.';
+        msg[n++] = ' ';
+        for (size_t i = 0; i < llen; i++) {
+            char c = log[i];
+            msg[n++] = (c == '\n' || c == '\r') ? ' ' : c;
         }
+        while (n > 0 && msg[n - 1] == ' ') n--; // trim trailing spaces
     }
-    send_result(prefix);
+    msg[n] = '\0';
+    send_result(msg);
+    free(msg);
 }
 
 /* Fresh toolkit per render — eliminates state leaking between renders.
@@ -91,8 +105,13 @@ static bool load_music(void *tk, const char *music_data, const char *options,
         vrvToolkit_setOptions(tk, options);
     }
 
+    if (!music_data || music_data[0] == '\0') {
+        send_result("scoryst: the input is empty — pass music notation to score()");
+        return false;
+    }
+
     if (!vrvToolkit_loadData(tk, music_data)) {
-        send_error("verovio failed to load music data: ", tk);
+        send_error("scoryst: could not parse the input as music notation", tk);
         return false;
     }
 
@@ -191,6 +210,75 @@ int page_count(int music_len, int options_len) {
     int len = snprintf(result, sizeof(result), "%d", count);
 
     wasm_minimal_protocol_send_result_to_host(result, len);
+    free(buf);
+    return 0;
+}
+
+/**
+ * version() -> i32
+ * Sends the bundled Verovio version string (e.g. "6.3.0").
+ */
+extern "C" EMSCRIPTEN_KEEPALIVE
+int version() {
+    void *tk = get_toolkit();
+    if (!tk) { send_result("failed to initialize verovio toolkit"); return 1; }
+    send_result(vrvToolkit_getVersion(tk));
+    return 0;
+}
+
+/**
+ * available_options() -> i32
+ * Sends Verovio's option catalogue as a JSON string.
+ */
+extern "C" EMSCRIPTEN_KEEPALIVE
+int available_options() {
+    void *tk = get_toolkit();
+    if (!tk) { send_result("failed to initialize verovio toolkit"); return 1; }
+    send_result(vrvToolkit_getAvailableOptions(tk));
+    return 0;
+}
+
+/**
+ * convert(music_data_len: i32, options_len: i32, fmt_len: i32) -> i32
+ * Transcodes the input to another notation. fmt is one of: mei, humdrum, pae.
+ */
+extern "C" EMSCRIPTEN_KEEPALIVE
+int convert(int music_len, int options_len, int fmt_len) {
+    int total = music_len + options_len + fmt_len;
+    char *buf = (char *)malloc(total + 3);
+    if (!buf) { send_result("allocation failed"); return 1; }
+
+    wasm_minimal_protocol_write_args_to_buffer(buf);
+
+    // Capture the format selector (last segment) before split_args mutates the buffer.
+    char fmt_buf[16] = {0};
+    if (fmt_len > 0 && fmt_len < 15) {
+        memcpy(fmt_buf, buf + music_len + options_len, fmt_len);
+    }
+
+    char *music_data, *options;
+    split_args(buf, music_len, options_len, &music_data, &options);
+
+    void *tk = get_toolkit();
+    if (!tk) { send_result("failed to initialize verovio toolkit"); free(buf); return 1; }
+
+    if (!load_music(tk, music_data, options, options_len)) { free(buf); return 1; }
+
+    const char *out = nullptr;
+    if (strcmp(fmt_buf, "mei") == 0) {
+        out = vrvToolkit_getMEI(tk, "");
+    } else if (strcmp(fmt_buf, "pae") == 0) {
+        out = vrvToolkit_renderToPAE(tk);
+    } else {
+        char msg[80];
+        snprintf(msg, sizeof(msg), "unsupported convert target '%s' (use \"mei\" or \"pae\")", fmt_buf);
+        send_result(msg);
+        free(buf);
+        return 1;
+    }
+
+    if (!out) { send_result("verovio conversion failed"); free(buf); return 1; }
+    send_result(out);
     free(buf);
     return 0;
 }
