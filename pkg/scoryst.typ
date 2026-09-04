@@ -129,11 +129,11 @@
 
 /// Render music notation to an SVG image.
 ///
-/// - data: Music data as a string (MusicXML, MEI, ABC, Humdrum, etc.)
-/// - options: Verovio options as a dictionary (optional)
-/// - page: Page number to render (default: 1)
-/// - ..args: Additional arguments forwarded to Typst's `image` function
-///           (e.g., `width`, `height`, `fit`, `alt`)
+/// - data (str): Music data (MusicXML, MEI, ABC, Humdrum, EsAC, PAE, Volpiano, CMME); the format is auto-detected.
+/// - options (dictionary): Verovio options (optional).
+/// - page (int): Page number to render.
+/// - ..args (arguments): Forwarded to Typst's `image` function (e.g. `width`, `height`, `fit`, `alt`).
+/// -> content
 #let score(data, options: none, page: 1, ..args) = {
   let options = _maybe-volpiano(data, options)
   let data-bytes = bytes(data)
@@ -150,22 +150,24 @@
 
 /// Get the number of pages for a music document.
 ///
-/// - data: Music data as a string
-/// - options: Verovio options as a dictionary (optional)
+/// - data (str): Music data (format auto-detected).
+/// - options (dictionary): Verovio options (optional).
+/// -> int
 #let pages(data, options: none) = {
   let options = _maybe-volpiano(data, options)
   int(str(plugin.page_count(bytes(data), bytes(_serialize-options(options)))))
 }
 
 /// The bundled Verovio version string (e.g. "6.3.0").
+/// -> str
 // Verovio appends a build tag such as "[emscripten]"; drop it.
 #let version() = str(plugin.version()).split("[").at(0)
 
 /// Transcode music notation to another format.
 ///
-/// - data: Music data as a string (input format is auto-detected)
-/// - to: Output format — "mei" (canonical MEI) or "pae" (Plaine & Easie)
-/// - options: Verovio options as a dictionary (optional)
+/// - data (str): Music data (input format is auto-detected).
+/// - to (str): Output format — "mei" (canonical MEI) or "pae" (Plaine & Easie).
+/// - options (dictionary): Verovio options (optional).
 /// -> str
 #let convert(data, to: "mei", options: none) = {
   assert(
@@ -177,8 +179,13 @@
 }
 
 /// Show-rule helper: auto-render fenced code blocks whose language is a
-/// supported notation format. Use as `#show: scoryst.render-blocks`, or with
-/// options: `#show: scoryst.render-blocks.with(options: (font: "Bravura"))`.
+/// supported notation format (`abc`, `musicxml`, `mei`, `humdrum`/`kern`,
+/// `esac`, `pae`, `volpiano`, `cmme`). Use as `#show: scoryst.render-blocks`, or
+/// with options: `#show: scoryst.render-blocks.with(options: (font: "Bravura"))`.
+///
+/// - options (dictionary): Default Verovio options for rendered blocks (optional).
+/// - body (content): Content the show rule is applied to.
+/// -> content
 #let render-blocks(options: none, body) = {
   let langs = (
     abc: "abc", musicxml: "musicxml", mei: "mei", humdrum: "humdrum",
