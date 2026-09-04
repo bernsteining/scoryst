@@ -123,11 +123,26 @@ Returns the bundled Verovio version string (e.g. `"6.3.0"`).
 
 **`render-blocks(options: none, body)`** (show rule)
 
-Auto-renders fenced code blocks whose language is a supported format
-(`abc`, `musicxml`, `mei`, `humdrum`/`kern`, `esac`, `pae`, `volpiano`, `cmme`).
-Enable it with `#show: scoryst.render-blocks` (or, with defaults,
-`#show: scoryst.render-blocks.with(options: (font: "Bravura"))`); after that a
-` ```abc ` or ` ```musicxml ` block renders directly as a score.
+Renders any fenced code block **tagged with a notation format as its language**
+directly as a score. Enable it once with `#show: scoryst.render-blocks` (or, with
+default options, `#show: scoryst.render-blocks.with(options: (font: "Bravura"))`).
+
+The language tag selects the block and sets the format:
+
+| Code fence | Format |
+|------------|--------|
+| ` ```abc ` | ABC |
+| ` ```musicxml ` | MusicXML |
+| ` ```mei ` | MEI |
+| ` ```humdrum ` or ` ```kern ` | Humdrum |
+| ` ```esac ` | EsAC |
+| ` ```pae ` | Plaine & Easie |
+| ` ```volpiano ` | Volpiano |
+| ` ```cmme ` | CMME |
+
+Blocks in any other language are left untouched. (This is separate from the
+automatic format detection used by `score` — here the fence language names the
+format explicitly.)
 
 ### Verovio Options
 
