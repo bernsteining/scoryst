@@ -1,14 +1,16 @@
-# Pin emsdk for reproducible builds. Bump deliberately; verify the wasm still
-# links (recent emsdk links object-only inputs as C — the Makefile uses em++).
-FROM docker.io/emscripten/emsdk:6.0.8
+# Pin emsdk for reproducible builds; its bundled binaryen (wasm-opt) is used for
+# both emcc's internal optimization and the Makefile's explicit wasm-opt pass, so
+# the whole toolchain is one pinned version. Bump deliberately; verify the wasm
+# still links (the Makefile uses em++ because recent emsdk links object-only
+# inputs as C) and that every notation format still renders.
+FROM docker.io/emscripten/emsdk:6.0.9
+
+# The emsdk image doesn't put upstream/bin on PATH; add it so `make` picks up the
+# bundled wasm-opt instead of needing a separately pinned binaryen.
+ENV PATH="/emsdk/upstream/bin:${PATH}"
 
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal
 ENV PATH="/root/.cargo/bin:${PATH}"
 RUN cargo install wasi-stub
-
-# Install official binaryen release (overrides emsdk's patched version for reproducible builds)
-ARG BINARYEN_VERSION=128
-RUN curl -sL https://github.com/WebAssembly/binaryen/releases/download/version_${BINARYEN_VERSION}/binaryen-version_${BINARYEN_VERSION}-x86_64-linux.tar.gz \
-    | tar xz -C /usr/local/bin --strip-components=2 binaryen-version_${BINARYEN_VERSION}/bin/wasm-opt
 
 WORKDIR /src
