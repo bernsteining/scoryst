@@ -35,4 +35,4 @@ keywords = [
 ]
 categories = ["visualization", "integration"]
 disciplines = ["music", "education"]
-compiler = "0.14.0"
+compiler = "0.14.2"
