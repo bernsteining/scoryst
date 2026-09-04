@@ -2,6 +2,10 @@
 
 # Scoryst - Music Engraving Plugin for Typst
 
+[![Typst Universe](https://img.shields.io/badge/Typst_Universe-scoryst-239dad?logo=typst)](https://typst.app/universe/package/scoryst)
+[![Build](https://github.com/bernsteining/scoryst/actions/workflows/build.yml/badge.svg)](https://github.com/bernsteining/scoryst/actions/workflows/build.yml)
+[![License: LGPL v3](https://img.shields.io/badge/License-LGPLv3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
+
 A Typst plugin to render music notation from multiple formats using
 [Verovio](https://www.verovio.org/), compiled to WASM.
 
@@ -132,6 +136,9 @@ Options are passed as a Typst dictionary and map directly to
 Both kebab-case and camelCase keys are accepted (e.g. `adjust-page-height` or `adjustPageHeight`).
 
 The full option catalogue from the bundled Verovio follows (command-line-only options omitted), shown in camelCase.
+
+<details>
+<summary><b>Full Verovio option catalogue</b> (212 options)</summary>
 
 #### Base short options
 
@@ -389,6 +396,8 @@ The full option catalogue from the bundled Verovio follows (command-line-only op
 | `gabcExtendedSymbols` | bool | false | Enable the S-GABC proposed symbols: `r` for uncertain reading and `"` for clarifying lines |
 | `gabcStaffLines` | int | `4` | Number of staff lines for GABC import (the GABC `staff-lines:` header value) |
 | `liquescentWithoutTails` | bool | false | Render liquescent head without tails |
+
+</details>
 
 ## Building
 
